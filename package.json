@@ -1,0 +1,54 @@
+{
+  "name": "branded-token.js",
+  "version": "0.1.0",
+  "description": "JS interaction layer to interact with branded-tokens and composer contracts.",
+  "main": "index.js",
+  "scripts": {
+    "pre-commit": "lint-staged"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenSTFoundation/branded-token.js.git"
+  },
+  "keywords": [
+    "OpenST",
+    "OST",
+    "Mosaic",
+    "Simple Token",
+    "Token Economy",
+    "web3",
+    "Ethereum",
+    "EIP20"
+  ],
+  "homepage": "https://openst.org",
+  "author": "OpenST Ltd.",
+  "license": "LGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/OpenSTFoundation/branded-token.js/issues"
+  },
+  "dependencies": {
+    "mosaic-tbd": "git@github.com:OpenSTFoundation/mosaic-tbd.git"
+  },
+  "devDependencies": {
+    "lint-staged": "7.2.0",
+    "os": "0.1.1",
+    "pre-commit": "1.2.2",
+    "prettier": "1.13.7",
+    "shelljs": "0.8.1",
+    "solc": "0.4.23",
+    "node-cmd": "3.0.0",
+    "edit-json-file": "1.0.8",
+    "chai": "4.1.2",
+    "mocha": "5.0.0",
+    "commander": "2.8.1"
+  },
+  "pre-commit": [
+    "pre-commit"
+  ],
+  "lint-staged": {
+    "*.js": [
+      "prettier --write --config .prettierrc.json",
+      "git add"
+    ]
+  }
+}
