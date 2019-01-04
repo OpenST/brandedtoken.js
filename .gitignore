@@ -67,3 +67,5 @@ package-lock.json
 #Webpack related files.
 tmp/*
 !tmp/.gitkeep
+
+.idea/*
