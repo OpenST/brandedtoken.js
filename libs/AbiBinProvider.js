@@ -5,10 +5,18 @@ const fs = require('fs'),
   path = require('path');
 //__NOT_FOR_WEB__END__
 
-const mosaicTBD = require('mosaic-tbd');
-const mAbiBinProvider = mosaicTBD.AbiBinProvider;
+const Mosaic = require('mosaic-tbd');
+const AbiBinProvider = Mosaic.AbiBinProvider;
 
-class AbiBinProvider extends mAbiBinProvider {
+/*
+  Note: Extending is not really a great idea here.
+  Eventually, many packages may end-up extending the original AbiBinProvider.
+  Solution:
+  The AbiBinProvider of the mosaic-tbd should be able to add look-up paths.
+  Then, it should be able to look-up through all locations and return the correct ABI/BIN.
+*/
+
+class BtAbiBinProvider extends AbiBinProvider {
   getABI(contractName) {
     const oThis = this;
     let abi = null,
@@ -41,4 +49,4 @@ class AbiBinProvider extends mAbiBinProvider {
   }
 }
 
-module.exports = AbiBinProvider;
+module.exports = BtAbiBinProvider;
