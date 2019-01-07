@@ -4,7 +4,7 @@ const Web3 = require('web3');
 const BN = require('bn.js');
 const AbiBinProvider = require('../../libs/AbiBinProvider');
 
-const ContractName = 'TestBrandedToken';
+const ContractName = 'BrandedToken';
 const DEFAULT_DECIMALS = 18;
 const DEFAULT_CONVERSION_RATE_DECIMALS = 5;
 
