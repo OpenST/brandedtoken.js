@@ -119,8 +119,6 @@ class BTHelper {
     txOptions = defaultOptions;
 
     let args = [valueToken, symbol, name, decimals, conversionRate, conversionRateDecimals, organization];
-    console.log('args', args);
-    console.log('bin', bin);
 
     const contract = new web3.eth.Contract(abi, null, txOptions);
     let tx = contract.deploy(

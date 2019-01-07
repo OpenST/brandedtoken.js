@@ -19,7 +19,7 @@ let web3WalletHelper = new Web3WalletHelper(web3);
 //Contract Address. TBD: Do not forget to set caBT = null below.
 //ca stands for contract address.
 let caBT = null;
-let caOrganization = '0x39e1a58d972d84188DB7f39a06FC56C5bec59c3d';
+let caOrganization = null;
 
 let validateReceipt = (receipt) => {
   assert.isNotNull(receipt, 'Transaction Receipt is null');

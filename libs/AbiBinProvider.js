@@ -19,35 +19,34 @@ const AbiBinProvider = Mosaic.AbiBinProvider;
 class BtAbiBinProvider extends AbiBinProvider {
   getABI(contractName) {
     const oThis = this;
-    let abi = null,
-      abiFileContent;
+    let abi = null;
     try {
       abi = super.getABI(contractName);
-      return abi;
     } catch (e) {
       //__NOT_FOR_WEB__BEGIN__
       let fPath = path.resolve(__dirname, oThis.abiFolderPath, contractName + '.abi');
-      abiFileContent = fs.readFileSync(fPath, 'utf8');
+      let abiFileContent = fs.readFileSync(fPath, 'utf8');
       abi = JSON.parse(abiFileContent);
-      return abi;
       //__NOT_FOR_WEB__END__
     }
+    return abi;
   }
 
   getBIN(contractName) {
     const oThis = this;
-    let bin = null,
-      binFileContent;
+    let bin = null;
     try {
       bin = super.getBIN(contractName);
-      return bin;
     } catch (e) {
       //__NOT_FOR_WEB__BEGIN__
       let fPath = path.resolve(__dirname, oThis.binFolderPath, contractName + '.bin');
       bin = fs.readFileSync(fPath, 'utf8');
-      return bin;
+      if (typeof bin === 'string' && bin.indexOf('0x') != 0) {
+        bin = '0x' + bin;
+      }
       //__NOT_FOR_WEB__END__
     }
+    return bin;
   }
 }
 
