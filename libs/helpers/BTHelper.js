@@ -150,6 +150,14 @@ class BTHelper {
         return txReceipt;
       });
   }
+
+  static get DEFAULT_DECIMALS() {
+    return DEFAULT_DECIMALS;
+  }
+
+  static get DEFAULT_CONVERSION_RATE_DECIMALS() {
+    return DEFAULT_CONVERSION_RATE_DECIMALS;
+  }
 }
 
 module.exports = BTHelper;

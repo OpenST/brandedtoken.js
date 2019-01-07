@@ -4,14 +4,11 @@ const Web3 = require('web3');
 const Mosaic = require('mosaic-tbd');
 const AbiBinProvider = require('../libs/AbiBinProvider');
 const BTHelper = require('../libs/helpers/BTHelper');
+const UBTHelper = require('../libs/helpers/UBTHelper');
 
 class EconomySetup extends Mosaic.ChainSetup {
   constructor(originWeb3, auxiliaryWeb3) {
     super(originWeb3, auxiliaryWeb3);
-  }
-
-  static get BTHelper() {
-    return BTHelper;
   }
 
   setup() {
@@ -52,7 +49,21 @@ class EconomySetup extends Mosaic.ChainSetup {
           | 2. Deploy Cogateway [Aux]             | 2. Deploy Cogateway [Aux]             |
           | 3. Activate Gateway [Orig]            | 3. Activate Gateway [Orig]            |
           |---------------------------------------|---------------------------------------|
+          |                        F.  Set Gateway & CoGateway                            |
+          |---------------------------------------|---------------------------------------|
+          | 1. Set CoGateway in OSTPrime [Aux]    | 1. Set CoGateway in UBT               |
+          |                                       | 2. Set Gateway in BT [Orig]           |
+          |                                       |    (liftRestriction)                  |
+          |---------------------------------------|---------------------------------------|
     */
+  }
+
+  static get BTHelper() {
+    return BTHelper;
+  }
+
+  static get UBTHelper() {
+    return UBTHelper;
   }
 }
 

@@ -4,9 +4,8 @@ const Web3 = require('web3');
 const BN = require('bn.js');
 const AbiBinProvider = require('../../libs/AbiBinProvider');
 
-const ContractName = 'BrandedToken';
+const ContractName = 'UtilityBrandedToken';
 const DEFAULT_DECIMALS = 18;
-const DEFAULT_CONVERSION_RATE_DECIMALS = 5;
 
 class BTHelper {
   constructor(web3, address) {
@@ -20,12 +19,10 @@ class BTHelper {
   //Supported Configurations for setup
   {
     deployer: config.deployerAddress,
-    valueToken: config.simpleTokenContractAddress,
+    token: brandedTokenContractAddress,
     symbol: "BT"
     name: "MyBrandedToken"
     decimals: "18"
-    conversionRate: 
-    conversionRateDecimals: 
     organization: 
   }
   Both deployer, chainOwner & valueToken are mandatory configurations.
@@ -35,6 +32,12 @@ class BTHelper {
     const oThis = this;
     web3 = web3 || oThis.web3;
 
+    //valueToken
+    if (!config.token) {
+      throw new Error('Mandatory configuration "token" missing. Set config.token address');
+    }
+
+    //Organization
     if (!config.organization) {
       throw new Error('Mandatory configuration "organization" missing. Set config.organization address.');
     }
@@ -51,7 +54,14 @@ class BTHelper {
     deployParams.gasPrice = 0;
 
     //1. Deploy the Contract
-    let promiseChain = oThis.deploy(simpleToken, config.organization, deployParams);
+    let promiseChain = oThis.deploy(
+      config.token,
+      config.symbol,
+      config.name,
+      config.decimals,
+      config.organization,
+      deployParams
+    );
 
     return promiseChain;
   }
@@ -66,11 +76,6 @@ class BTHelper {
       throw new Error('Mandatory configuration "deployer" missing. Set config.deployer address');
     }
 
-    //valueToken
-    if (!config.valueToken) {
-      throw new Error('Mandatory configuration "valueToken" missing. Set config.valueToken address');
-    }
-
     //symbol
     if (!config.symbol) {
       throw new Error('Mandatory configuration "symbol" missing. Set config.symbol address');
@@ -81,37 +86,25 @@ class BTHelper {
       throw new Error('Mandatory configuration "name" missing. Set config.name address');
     }
 
-    //conversionRate
-    if (!config.conversionRate) {
-      throw new Error('Mandatory configuration "conversionRate" missing. Set config.conversionRate address');
-    }
-
     //decimals
     if (!config.decimals) {
       config.decimals = DEFAULT_DECIMALS;
     }
 
-    //conversionRateDecimals
-    if (!config.decimals) {
-      config.decimals = DEFAULT_CONVERSION_RATE_DECIMALS;
-    }
-
     return true;
   }
 
-  deploy(valueToken, symbol, name, decimals, conversionRate, conversionRateDecimals, organization, txOptions, web3) {
+  deploy(_token, _symbol, _name, _decimals, _organization, txOptions, web3) {
     const oThis = this;
     web3 = web3 || oThis.web3;
-    decimals = decimals || DEFAULT_DECIMALS;
-    conversionRateDecimals = conversionRateDecimals || DEFAULT_DECIMALS;
+    _decimals = _decimals || DEFAULT_DECIMALS;
 
     const abiBinProvider = oThis.abiBinProvider;
     const abi = abiBinProvider.getABI(ContractName);
     const bin = abiBinProvider.getBIN(ContractName);
 
     let defaultOptions = {
-      gas: '7000000',
-      gasPrice: 0
+      gas: '8000000'
     };
 
     if (txOptions) {
@@ -119,7 +112,8 @@ class BTHelper {
     }
     txOptions = defaultOptions;
 
-    let args = [valueToken, symbol, name, decimals, conversionRate, conversionRateDecimals, organization];
+    let args = [_token, _symbol, _name, _decimals, _organization];
+
     const contract = new web3.eth.Contract(abi, null, txOptions);
     let tx = contract.deploy(
       {
@@ -149,6 +143,10 @@ class BTHelper {
         console.log(`\t - ${ContractName} Contract Address:`, oThis.address);
         return txReceipt;
       });
+  }
+
+  static get DEFAULT_DECIMALS() {
+    return DEFAULT_DECIMALS;
   }
 }
 
