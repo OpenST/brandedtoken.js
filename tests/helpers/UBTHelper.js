@@ -7,7 +7,7 @@ const chai = require('chai'),
 
 const Setup = Package.EconomySetup,
   OrganizationHelper = Setup.OrganizationHelper,
-  UBTHelper = Setup.UBTHelper,
+  UBTHelper = Setup.UtilityBrandedTokenHelper,
   assert = chai.assert;
 
 const config = require('../../tests/utils/configReader'),
@@ -67,7 +67,7 @@ describe('tests/helpers/UBTHelper', function() {
   });
 
   if (!caUBT) {
-    it('should deploy new BrandedToken contract', function() {
+    it('should deploy new UtilityBrandedToken contract', function() {
       this.timeout(60000);
       return helper
         .deploy(SomeValidAddress, 'TBT', 'Test', 10, caOrganization, deployParams)
@@ -78,24 +78,19 @@ describe('tests/helpers/UBTHelper', function() {
     });
   }
 
-  // //Initialize OSTPrime
-  // it('should initialize OSTPrime', function() {
-  //   this.timeout(60000);
-  //   let ownerParams = Object.assign({}, deployParams);
-  //   ownerParams.from = config.chainOwner;
-  //   return helper.initialize(ownerParams).then(validateReceipt);
-  // });
-
-  // //Test Setup
-  // it('should setup OSTPrime', function() {
-  //   this.timeout(60000);
-  //   const ostPrimeConfig = {
-  //     deployer: config.deployerAddress,
-  //     organization: caOrganization,
-  //     chainOwner: chainOwner
-  //   };
-  //   return helper.setup(SomeValidAddress, ostPrimeConfig, deployParams);
-  // });
+  //Test Setup
+  it('should setup UtilityBrandedToken', function() {
+    this.timeout(60000);
+    const ubtConfig = {
+      deployer: config.deployerAddress,
+      token: SomeValidAddress,
+      symbol: 'BT',
+      name: 'MyBrandedToken',
+      decimals: '18',
+      organization: caOrganization
+    };
+    return helper.setup(ubtConfig, deployParams);
+  });
 });
 
 // Go easy on RPC Client (Geth)

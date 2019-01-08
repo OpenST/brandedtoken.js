@@ -7,7 +7,7 @@ const AbiBinProvider = require('../../libs/AbiBinProvider');
 const ContractName = 'UtilityBrandedToken';
 const DEFAULT_DECIMALS = 18;
 
-class BTHelper {
+class UBTHelper {
   constructor(web3, address) {
     const oThis = this;
     oThis.web3 = web3;
@@ -20,12 +20,12 @@ class BTHelper {
   {
     deployer: config.deployerAddress,
     token: brandedTokenContractAddress,
-    symbol: "BT"
-    name: "MyBrandedToken"
-    decimals: "18"
-    organization: 
+    symbol: "BT",
+    name: "MyBrandedToken",
+    decimals: "18",
+    organization: '0x...'
   }
-  Both deployer, chainOwner & valueToken are mandatory configurations.
+  All configurations are mandatory.
 */
 
   setup(config, txOptions, web3) {
@@ -42,7 +42,7 @@ class BTHelper {
       throw new Error('Mandatory configuration "organization" missing. Set config.organization address.');
     }
 
-    OSTPrimeHelper.validateSetupConfig(config);
+    UBTHelper.validateSetupConfig(config);
 
     if (!txOptions) {
       txOptions = txOptions || {};
@@ -145,9 +145,44 @@ class BTHelper {
       });
   }
 
+  setCoGateway(cogateway, txOptions, contractAddress, web3) {
+    const oThis = this;
+    web3 = web3 || oThis.web3;
+    contractAddress = contractAddress || oThis.address;
+
+    let defaultOptions = {
+      gas: '60000',
+      gasPrice: '0x5B9ACA00'
+    };
+
+    if (txOptions) {
+      Object.assign(defaultOptions, txOptions);
+    }
+    txOptions = defaultOptions;
+
+    const abiBinProvider = oThis.abiBinProvider;
+    const abi = abiBinProvider.getABI(ContractName);
+    const contract = new web3.eth.Contract(abi, contractAddress, txOptions);
+    let tx = contract.methods.setCoGateway(cogateway);
+
+    console.log(`* setCoGateway on ${ContractName}`);
+    return tx
+      .send(txOptions)
+      .on('transactionHash', function(transactionHash) {
+        console.log('\t - transaction hash:', transactionHash);
+      })
+      .on('receipt', function(receipt) {
+        console.log('\t - Receipt:\n\x1b[2m', JSON.stringify(receipt), '\x1b[0m\n');
+      })
+      .on('error', function(error) {
+        console.log('\t !! Error !!', error, '\n\t !! ERROR !!\n');
+        return Promise.reject(error);
+      });
+  }
+
   static get DEFAULT_DECIMALS() {
     return DEFAULT_DECIMALS;
   }
 }
 
-module.exports = BTHelper;
+module.exports = UBTHelper;
