@@ -28,7 +28,7 @@ class BTHelper {
     conversionRateDecimals: 
     organization: 
   }
-  Both deployer, chainOwner & valueToken are mandatory configurations.
+  All configurations are mandatory.
 */
 
   setup(config, txOptions, web3) {
@@ -39,7 +39,7 @@ class BTHelper {
       throw new Error('Mandatory configuration "organization" missing. Set config.organization address.');
     }
 
-    OSTPrimeHelper.validateSetupConfig(config);
+    BTHelper.validateSetupConfig(config);
 
     if (!txOptions) {
       txOptions = txOptions || {};
@@ -50,8 +50,26 @@ class BTHelper {
     deployParams.from = config.deployer;
     deployParams.gasPrice = 0;
 
+    let valueToken, symbol, name, decimals, conversionRate, conversionRateDecimals, organization;
+    valueToken = config.valueToken;
+    symbol = config.symbol;
+    name = config.name;
+    decimals = config.decimals;
+    conversionRate = config.conversionRate;
+    conversionRateDecimals = config.conversionRateDecimals;
+    organization = config.organization;
+
     //1. Deploy the Contract
-    let promiseChain = oThis.deploy(simpleToken, config.organization, deployParams);
+    let promiseChain = oThis.deploy(
+      valueToken,
+      symbol,
+      name,
+      decimals,
+      conversionRate,
+      conversionRateDecimals,
+      organization,
+      deployParams
+    );
 
     return promiseChain;
   }

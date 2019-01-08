@@ -7,7 +7,7 @@ const chai = require('chai'),
 
 const Setup = Package.EconomySetup,
   OrganizationHelper = Setup.OrganizationHelper,
-  BTHelper = Setup.BTHelper,
+  BTHelper = Setup.BrandedTokenHelper,
   assert = chai.assert;
 
 const config = require('../../tests/utils/configReader'),
@@ -78,24 +78,21 @@ describe('tests/helpers/BTHelper', function() {
     });
   }
 
-  // //Initialize OSTPrime
-  // it('should initialize OSTPrime', function() {
-  //   this.timeout(60000);
-  //   let ownerParams = Object.assign({}, deployParams);
-  //   ownerParams.from = config.chainOwner;
-  //   return helper.initialize(ownerParams).then(validateReceipt);
-  // });
-
-  // //Test Setup
-  // it('should setup OSTPrime', function() {
-  //   this.timeout(60000);
-  //   const ostPrimeConfig = {
-  //     deployer: config.deployerAddress,
-  //     organization: caOrganization,
-  //     chainOwner: chainOwner
-  //   };
-  //   return helper.setup(SimpleTokenAddress, ostPrimeConfig, deployParams);
-  // });
+  //Test Setup
+  it('should setup BrandedToken', function() {
+    this.timeout(60000);
+    const helperConfig = {
+      deployer: config.deployerAddress,
+      valueToken: SimpleTokenAddress,
+      symbol: 'BT',
+      name: 'MyBrandedToken',
+      decimals: '18',
+      conversionRate: '1000',
+      conversionRateDecimals: 5,
+      organization: caOrganization
+    };
+    return helper.setup(helperConfig, deployParams);
+  });
 });
 
 // Go easy on RPC Client (Geth)

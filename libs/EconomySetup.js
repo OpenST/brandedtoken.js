@@ -13,6 +13,8 @@ class EconomySetup extends Mosaic.ChainSetup {
 
   setup() {
     /*
+
+    
           |---------------------------------------|---------------------------------------|
           |            Chain-Setup                |               Economy-Setup           |
           |---------------------------------------|---------------------------------------|
@@ -55,14 +57,18 @@ class EconomySetup extends Mosaic.ChainSetup {
           |                                       | 2. Set Gateway in BT [Orig]           |
           |                                       |    (liftRestriction)                  |
           |---------------------------------------|---------------------------------------|
+          |                     G.  Deploy GatewayComposer (Optional)                     |
+          |---------------------------------------|---------------------------------------|
+
+
     */
   }
 
-  static get BTHelper() {
+  static get BrandedTokenHelper() {
     return BTHelper;
   }
 
-  static get UBTHelper() {
+  static get UtilityBrandedTokenHelper() {
     return UBTHelper;
   }
 }
