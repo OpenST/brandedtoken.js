@@ -169,6 +169,45 @@ class BTHelper {
       });
   }
 
+  liftRestriction(addresses, organizationWorker, txOptions, contractAddress, web3) {
+    const oThis = this;
+    web3 = web3 || oThis.web3;
+    contractAddress = contractAddress || oThis.address;
+
+    let defaultOptions = {
+      from: organizationWorker,
+      gas: '100000'
+    };
+
+    if (txOptions) {
+      Object.assign(defaultOptions, txOptions);
+    }
+    txOptions = defaultOptions;
+
+    if (typeof addresses === 'string') {
+      addresses = [addresses];
+    }
+
+    const abiBinProvider = oThis.abiBinProvider;
+    const abi = abiBinProvider.getABI(ContractName);
+    const contract = new web3.eth.Contract(abi, contractAddress, txOptions);
+    let tx = contract.methods.liftRestriction(addresses);
+    console.log('txOptions', JSON.stringify(txOptions));
+    console.log(`* liftRestriction (gateway, simpleStake) on ${ContractName}`);
+    return tx
+      .send(txOptions)
+      .on('transactionHash', function(transactionHash) {
+        console.log('\t - transaction hash:', transactionHash);
+      })
+      .on('receipt', function(receipt) {
+        console.log('\t - Receipt:\n\x1b[2m', JSON.stringify(receipt), '\x1b[0m\n');
+      })
+      .on('error', function(error) {
+        console.log('\t !! Error !!', error, '\n\t !! ERROR !!\n');
+        return Promise.reject(error);
+      });
+  }
+
   static get DEFAULT_DECIMALS() {
     return DEFAULT_DECIMALS;
   }

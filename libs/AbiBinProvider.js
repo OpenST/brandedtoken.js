@@ -8,27 +8,35 @@ const fs = require('fs'),
 const Mosaic = require('mosaic-tbd');
 const AbiBinProvider = Mosaic.AbiBinProvider;
 
-/*
-  Note: Extending is not really a great idea here.
-  Eventually, many packages may end-up extending the original AbiBinProvider.
-  Solution:
-  The AbiBinProvider of the mosaic-tbd should be able to add look-up paths.
-  Then, it should be able to look-up through all locations and return the correct ABI/BIN.
-*/
+let DEFAULT_ABI_FOLDER_PATH, DEFAULT_BIN_FOLDER_PATH;
+//__NOT_FOR_WEB__BEGIN__
+DEFAULT_ABI_FOLDER_PATH = path.resolve(__dirname, '../contracts/abi/');
+DEFAULT_BIN_FOLDER_PATH = path.resolve(__dirname, '../contracts/bin/');
+//__NOT_FOR_WEB__END__
 
 class BtAbiBinProvider extends AbiBinProvider {
+  constructor(abiFolderPath, binFolderPath, mosaicAbiFolderPath, mosaicBinFolderPath) {
+    abiFolderPath = abiFolderPath || DEFAULT_ABI_FOLDER_PATH;
+    binFolderPath = binFolderPath || DEFAULT_BIN_FOLDER_PATH;
+    super(abiFolderPath, binFolderPath);
+    this.mosaicAbiBinProvider = new AbiBinProvider(mosaicAbiFolderPath, mosaicBinFolderPath);
+  }
+
   getABI(contractName) {
     const oThis = this;
     let abi = null;
     try {
       abi = super.getABI(contractName);
     } catch (e) {
-      //__NOT_FOR_WEB__BEGIN__
-      let fPath = path.resolve(__dirname, oThis.abiFolderPath, contractName + '.abi');
-      let abiFileContent = fs.readFileSync(fPath, 'utf8');
-      abi = JSON.parse(abiFileContent);
-      //__NOT_FOR_WEB__END__
+      //Just catch the exception. Do nothing.
     }
+
+    if (!abi) {
+      //We did not find abi in our location.
+      //Lets get it from mosaicAbiBinProvider.
+      return mosaicAbiBinProvider.getABI(contractName);
+    }
+
     return abi;
   }
 
@@ -38,13 +46,13 @@ class BtAbiBinProvider extends AbiBinProvider {
     try {
       bin = super.getBIN(contractName);
     } catch (e) {
-      //__NOT_FOR_WEB__BEGIN__
-      let fPath = path.resolve(__dirname, oThis.binFolderPath, contractName + '.bin');
-      bin = fs.readFileSync(fPath, 'utf8');
-      if (typeof bin === 'string' && bin.indexOf('0x') != 0) {
-        bin = '0x' + bin;
-      }
-      //__NOT_FOR_WEB__END__
+      //Just catch the exception. Do nothing.
+    }
+
+    if (!bin) {
+      //We did not find abi in our location.
+      //Lets get it from mosaicAbiBinProvider.
+      return mosaicAbiBinProvider.getBIN(contractName);
     }
     return bin;
   }

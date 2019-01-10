@@ -56,7 +56,8 @@ describe('tests/helpers/BTHelper', function() {
         let orgHelper = new OrganizationHelper(web3, caOrganization);
         const orgConfig = {
           deployer: config.deployerAddress,
-          owner: config.deployerAddress
+          owner: config.deployerAddress,
+          workers: [config.facilitatorAddress]
         };
         return orgHelper.setup(orgConfig).then(function() {
           caOrganization = orgHelper.address;
@@ -92,6 +93,13 @@ describe('tests/helpers/BTHelper', function() {
       organization: caOrganization
     };
     return helper.setup(helperConfig, deployParams);
+  });
+
+  it('should lift restrictions', function() {
+    this.timeout(60000);
+    return helper
+      .liftRestriction([caOrganization, config.deployerAddress], config.facilitatorAddress)
+      .then(validateReceipt);
   });
 });
 

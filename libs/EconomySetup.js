@@ -54,7 +54,8 @@ class EconomySetup extends Mosaic.ChainSetup {
           |                        F.  Set Gateway & CoGateway                            |
           |---------------------------------------|---------------------------------------|
           | 1. Set CoGateway in OSTPrime [Aux]    | 1. Set CoGateway in UBT               |
-          |                                       | 2. Set Gateway in BT [Orig]           |
+          |                                       | 2. Lift Resctrictions in BT [Orig]    |
+          |                                       |    Set Gateway & SimpleStake          |
           |                                       |    (liftRestriction)                  |
           |---------------------------------------|---------------------------------------|
           |                     G.  Deploy GatewayComposer (Optional)                     |

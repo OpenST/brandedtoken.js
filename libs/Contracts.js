@@ -15,36 +15,36 @@ class Contracts {
   BrandedToken(address, options) {
     const oThis = this;
     let web3 = oThis.originWeb3;
-    return Contracts.GetBrandedToken(web3, address, options);
+    return Contracts.getBrandedToken(web3, address, options);
   }
 
   GatewayComposer() {
     const oThis = this;
     let web3 = oThis.originWeb3;
-    return Contracts.GetGatewayComposer(web3, address, options);
+    return Contracts.getGatewayComposer(web3, address, options);
   }
 
   UtilityBrandedToken() {
     const oThis = this;
     let web3 = oThis.auxiliaryWeb3;
-    return Contracts.GetUtilityBrandedToken(web3, address, options);
+    return Contracts.getUtilityBrandedToken(web3, address, options);
   }
 
-  static GetBrandedToken(web3, address, options) {
+  static getBrandedToken(web3, address, options) {
     web3 = Contracts._getWeb3(web3);
     let jsonInterface = abProvider.getABI('BrandedToken');
     let contract = new web3.eth.Contract(jsonInterface, address, options);
     return contract;
   }
 
-  static GetGatewayComposer(web3, address, options) {
+  static getGatewayComposer(web3, address, options) {
     web3 = Contracts._getWeb3(web3);
     let jsonInterface = abProvider.getABI('GatewayComposer');
     let contract = new web3.eth.Contract(jsonInterface, address, options);
     return contract;
   }
 
-  static GetUtilityBrandedToken(web3, address, options) {
+  static getUtilityBrandedToken(web3, address, options) {
     web3 = Contracts._getWeb3(web3);
     let jsonInterface = abProvider.getABI('UtilityBrandedToken');
     let contract = new web3.eth.Contract(jsonInterface, address, options);
