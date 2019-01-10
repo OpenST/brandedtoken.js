@@ -101,6 +101,13 @@ describe('tests/helpers/BTHelper', function() {
       .liftRestriction([caOrganization, config.deployerAddress], config.facilitatorAddress)
       .then(validateReceipt);
   });
+
+  // it('should lift restrictions from gateway and stakeVault addresses', function () {
+  //   let gateway = "0xe23338a00852250653Ba00563C4A38f559c4E5d5";
+  //   this.timeout(60000);
+  //   return helper
+  //     .setGateway(gateway, config.facilitatorAddress);
+  // });
 });
 
 // Go easy on RPC Client (Geth)

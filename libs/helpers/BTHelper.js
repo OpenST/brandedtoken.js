@@ -3,6 +3,7 @@
 const Web3 = require('web3');
 const BN = require('bn.js');
 const AbiBinProvider = require('../../libs/AbiBinProvider');
+const Contracts = require('../../libs/Contracts');
 
 const ContractName = 'BrandedToken';
 const DEFAULT_DECIMALS = 18;
@@ -169,6 +170,23 @@ class BTHelper {
       });
   }
 
+  setGateway(gateway, organizationWorker, txOptions, contractAddress, web3) {
+    const oThis = this;
+    web3 = web3 || oThis.web3;
+    contractAddress = contractAddress || oThis.address;
+
+    let gatewayContract = Contracts.getEIP20Gateway(web3, gateway);
+
+    console.log(`* Fetching simpleStake Address`);
+    return gatewayContract.methods
+      .stakeVault()
+      .call()
+      .then(function(stakeVault) {
+        console.log('\t - stakeVault', stakeVault);
+        return oThis.liftRestriction([gateway, stakeVault], organizationWorker, txOptions, contractAddress, web3);
+      });
+  }
+
   liftRestriction(addresses, organizationWorker, txOptions, contractAddress, web3) {
     const oThis = this;
     web3 = web3 || oThis.web3;
@@ -192,8 +210,8 @@ class BTHelper {
     const abi = abiBinProvider.getABI(ContractName);
     const contract = new web3.eth.Contract(abi, contractAddress, txOptions);
     let tx = contract.methods.liftRestriction(addresses);
-    console.log('txOptions', JSON.stringify(txOptions));
-    console.log(`* liftRestriction (gateway, simpleStake) on ${ContractName}`);
+
+    console.log(`* liftRestriction for [${addresses.join(',')}] on ${ContractName}`);
     return tx
       .send(txOptions)
       .on('transactionHash', function(transactionHash) {

@@ -75,8 +75,6 @@ class GCHelper {
   deploy(owner, valueToken, brandedToken, txOptions, web3) {
     const oThis = this;
     web3 = web3 || oThis.web3;
-    decimals = decimals || DEFAULT_DECIMALS;
-    conversionRateDecimals = conversionRateDecimals || DEFAULT_DECIMALS;
 
     const abiBinProvider = oThis.abiBinProvider;
     const abi = abiBinProvider.getABI(ContractName);

@@ -2,9 +2,11 @@
 
 const Web3 = require('web3');
 const AbiBinProvider = require('../libs/AbiBinProvider');
+const Mosaic = require('mosaic-tbd');
+const Contracts = Mosaic.Contracts;
 let abProvider = new AbiBinProvider();
 
-class Contracts {
+class BTContracts extends Contracts {
   constructor(originWeb3, auxiliaryWeb3) {
     const oThis = this;
 
@@ -61,3 +63,5 @@ class Contracts {
     throw 'Invalid web3. Please provide an instanceof Web3(version: ' + Web3.version + ' )';
   }
 }
+
+module.exports = BTContracts;
