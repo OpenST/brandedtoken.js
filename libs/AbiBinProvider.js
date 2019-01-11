@@ -16,10 +16,12 @@ DEFAULT_BIN_FOLDER_PATH = path.resolve(__dirname, '../contracts/bin/');
 
 class BtAbiBinProvider extends AbiBinProvider {
   constructor(abiFolderPath, binFolderPath, mosaicAbiFolderPath, mosaicBinFolderPath) {
+    const oThis = this;
+
     abiFolderPath = abiFolderPath || DEFAULT_ABI_FOLDER_PATH;
     binFolderPath = binFolderPath || DEFAULT_BIN_FOLDER_PATH;
     super(abiFolderPath, binFolderPath);
-    this.mosaicAbiBinProvider = new AbiBinProvider(mosaicAbiFolderPath, mosaicBinFolderPath);
+    oThis.mosaicAbiBinProvider = new AbiBinProvider(mosaicAbiFolderPath, mosaicBinFolderPath);
   }
 
   getABI(contractName) {
@@ -34,7 +36,7 @@ class BtAbiBinProvider extends AbiBinProvider {
     if (!abi) {
       //We did not find abi in our location.
       //Lets get it from mosaicAbiBinProvider.
-      return mosaicAbiBinProvider.getABI(contractName);
+      return oThis.mosaicAbiBinProvider.getABI(contractName);
     }
 
     return abi;
@@ -52,7 +54,7 @@ class BtAbiBinProvider extends AbiBinProvider {
     if (!bin) {
       //We did not find abi in our location.
       //Lets get it from mosaicAbiBinProvider.
-      return mosaicAbiBinProvider.getBIN(contractName);
+      return oThis.mosaicAbiBinProvider.getBIN(contractName);
     }
     return bin;
   }
