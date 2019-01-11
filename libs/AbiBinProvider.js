@@ -16,11 +16,11 @@ DEFAULT_BIN_FOLDER_PATH = path.resolve(__dirname, '../contracts/bin/');
 
 class BtAbiBinProvider extends AbiBinProvider {
   constructor(abiFolderPath, binFolderPath, mosaicAbiFolderPath, mosaicBinFolderPath) {
-    const oThis = this;
-
     abiFolderPath = abiFolderPath || DEFAULT_ABI_FOLDER_PATH;
     binFolderPath = binFolderPath || DEFAULT_BIN_FOLDER_PATH;
     super(abiFolderPath, binFolderPath);
+
+    const oThis = this;
     oThis.mosaicAbiBinProvider = new AbiBinProvider(mosaicAbiFolderPath, mosaicBinFolderPath);
   }
 
