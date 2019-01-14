@@ -2,7 +2,7 @@
 
 const Web3 = require('web3');
 const AbiBinProvider = require('../libs/AbiBinProvider');
-const Mosaic = require('mosaic-tbd');
+const Mosaic = require('@openstfoundation/mosaic-tbd');
 const Contracts = Mosaic.Contracts;
 let abProvider = new AbiBinProvider();
 

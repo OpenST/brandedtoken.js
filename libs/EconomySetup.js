@@ -1,7 +1,7 @@
 'use strict';
 
 const Web3 = require('web3');
-const Mosaic = require('mosaic-tbd');
+const Mosaic = require('@openstfoundation/mosaic-tbd');
 const AbiBinProvider = require('../libs/AbiBinProvider');
 const BTHelper = require('../libs/helpers/BTHelper');
 const UBTHelper = require('../libs/helpers/UBTHelper');

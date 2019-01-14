@@ -5,7 +5,7 @@ const fs = require('fs'),
   path = require('path');
 //__NOT_FOR_WEB__END__
 
-const Mosaic = require('mosaic-tbd');
+const Mosaic = require('@openstfoundation/mosaic-tbd');
 const AbiBinProvider = Mosaic.AbiBinProvider;
 
 let DEFAULT_ABI_FOLDER_PATH, DEFAULT_BIN_FOLDER_PATH;

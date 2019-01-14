@@ -1,5 +1,5 @@
 {
-  "name": "branded-token.js",
+  "name": "@openstfoundation/branded-token.js",
   "version": "0.1.0",
   "description": "JS interaction layer to interact with branded-tokens and composer contracts.",
   "main": "index.js",
@@ -27,7 +27,7 @@
     "url": "https://github.com/OpenSTFoundation/branded-token.js/issues"
   },
   "dependencies": {
-    "mosaic-tbd": "https://github.com/OpenSTFoundation/mosaic-tbd.git"
+    "@openstfoundation/mosaic-tbd": "https://github.com/OpenSTFoundation/mosaic-tbd.git"
   },
   "devDependencies": {
     "lint-staged": "7.2.0",
