@@ -95,33 +95,13 @@ class UBTHelper {
   }
 
   deploy(_token, _symbol, _name, _decimals, _organization, txOptions, web3) {
+
     const oThis = this;
+
     web3 = web3 || oThis.web3;
     _decimals = _decimals || DEFAULT_DECIMALS;
 
-    const abiBinProvider = oThis.abiBinProvider;
-    const abi = abiBinProvider.getABI(ContractName);
-    const bin = abiBinProvider.getBIN(ContractName);
-
-    let defaultOptions = {
-      gas: '8000000'
-    };
-
-    if (txOptions) {
-      Object.assign(defaultOptions, txOptions);
-    }
-    txOptions = defaultOptions;
-
-    let args = [_token, _symbol, _name, _decimals, _organization];
-
-    const contract = new web3.eth.Contract(abi, null, txOptions);
-    let tx = contract.deploy(
-      {
-        data: bin,
-        arguments: args
-      },
-      txOptions
-    );
+    let tx = _deployRawTx(_token, _symbol, _name, _decimals, _organization, txOptions, web3);
 
     console.log(`* Deploying ${ContractName} Contract`);
     let txReceipt;
@@ -145,14 +125,16 @@ class UBTHelper {
       });
   }
 
-  setCoGateway(cogateway, txOptions, contractAddress, web3) {
+  _deployRawTx(_token, _symbol, _name, _decimals, _organization, txOptions, web3) {
+
     const oThis = this;
-    web3 = web3 || oThis.web3;
-    contractAddress = contractAddress || oThis.address;
+
+    const abiBinProvider = oThis.abiBinProvider;
+    const abi = abiBinProvider.getABI(ContractName);
+    const bin = abiBinProvider.getBIN(ContractName);
 
     let defaultOptions = {
-      gas: '60000',
-      gasPrice: '0x5B9ACA00'
+      gas: '8000000'
     };
 
     if (txOptions) {
@@ -160,10 +142,26 @@ class UBTHelper {
     }
     txOptions = defaultOptions;
 
-    const abiBinProvider = oThis.abiBinProvider;
-    const abi = abiBinProvider.getABI(ContractName);
-    const contract = new web3.eth.Contract(abi, contractAddress, txOptions);
-    let tx = contract.methods.setCoGateway(cogateway);
+    let args = [_token, _symbol, _name, _decimals, _organization];
+
+    const contract = new web3.eth.Contract(abi, null, txOptions);
+
+    return contract.deploy(
+      {
+        data: bin,
+        arguments: args
+      },
+      txOptions
+    );
+
+  }
+
+  setCoGateway(cogateway, txOptions, contractAddress, web3) {
+    const oThis = this;
+    web3 = web3 || oThis.web3;
+    contractAddress = contractAddress || oThis.address;
+
+    let tx = oThis._setCoGatewayRawTx(cogateway, txOptions, contractAddress, web3);
 
     console.log(`* setCoGateway on ${ContractName}`);
     return tx
@@ -178,6 +176,28 @@ class UBTHelper {
         console.log('\t !! Error !!', error, '\n\t !! ERROR !!\n');
         return Promise.reject(error);
       });
+  }
+
+  _setCoGatewayRawTx(cogateway, txOptions, contractAddress, web3) {
+
+    const oThis = this;
+
+    let defaultOptions = {
+      gas: '60000',
+      gasPrice: '0x5B9ACA00'
+    };
+
+    if (txOptions) {
+      Object.assign(defaultOptions, txOptions);
+    }
+    txOptions = defaultOptions;
+
+    const abiBinProvider = oThis.abiBinProvider;
+    const abi = abiBinProvider.getABI(ContractName);
+    const contract = new web3.eth.Contract(abi, contractAddress, txOptions);
+
+    return contract.methods.setCoGateway(cogateway);
+
   }
 
   static get DEFAULT_DECIMALS() {

@@ -124,29 +124,7 @@ class BTHelper {
     decimals = decimals || DEFAULT_DECIMALS;
     conversionRateDecimals = conversionRateDecimals || DEFAULT_DECIMALS;
 
-    const abiBinProvider = oThis.abiBinProvider;
-    const abi = abiBinProvider.getABI(ContractName);
-    const bin = abiBinProvider.getBIN(ContractName);
-
-    let defaultOptions = {
-      gas: '8000000'
-    };
-
-    if (txOptions) {
-      Object.assign(defaultOptions, txOptions);
-    }
-    txOptions = defaultOptions;
-
-    let args = [valueToken, symbol, name, decimals, conversionRate, conversionRateDecimals, organization];
-
-    const contract = new web3.eth.Contract(abi, null, txOptions);
-    let tx = contract.deploy(
-      {
-        data: bin,
-        arguments: args
-      },
-      txOptions
-    );
+    let tx = oThis._deployRawTx(valueToken, symbol, name, decimals, conversionRate, conversionRateDecimals, organization, txOptions, web3);
 
     console.log(`* Deploying ${ContractName} Contract`);
     let txReceipt;
@@ -168,6 +146,37 @@ class BTHelper {
         console.log(`\t - ${ContractName} Contract Address:`, oThis.address);
         return txReceipt;
       });
+  }
+
+  _deployRawTx(valueToken, symbol, name, decimals, conversionRate, conversionRateDecimals, organization, txOptions, web3) {
+
+    const oThis = this;
+
+    const abiBinProvider = oThis.abiBinProvider;
+    const abi = abiBinProvider.getABI(ContractName);
+    const bin = abiBinProvider.getBIN(ContractName);
+
+    let defaultOptions = {
+      gas: '8000000'
+    };
+
+    if (txOptions) {
+      Object.assign(defaultOptions, txOptions);
+    }
+    txOptions = defaultOptions;
+
+    let args = [valueToken, symbol, name, decimals, conversionRate, conversionRateDecimals, organization];
+
+    const contract = new web3.eth.Contract(abi, null, txOptions);
+
+    return contract.deploy(
+      {
+        data: bin,
+        arguments: args
+      },
+      txOptions
+    );
+
   }
 
   setGateway(gateway, organizationWorker, txOptions, contractAddress, web3) {
@@ -192,6 +201,27 @@ class BTHelper {
     web3 = web3 || oThis.web3;
     contractAddress = contractAddress || oThis.address;
 
+    let tx = oThis._liftRestrictionRawTx(addresses, organizationWorker, txOptions, contractAddress, web3);
+
+    console.log(`* liftRestriction for [${addresses.join(',')}] on ${ContractName}`);
+    return tx
+      .send(txOptions)
+      .on('transactionHash', function(transactionHash) {
+        console.log('\t - transaction hash:', transactionHash);
+      })
+      .on('receipt', function(receipt) {
+        console.log('\t - Receipt:\n\x1b[2m', JSON.stringify(receipt), '\x1b[0m\n');
+      })
+      .on('error', function(error) {
+        console.log('\t !! Error !!', error, '\n\t !! ERROR !!\n');
+        return Promise.reject(error);
+      });
+  }
+
+  _liftRestrictionRawTx(addresses, organizationWorker, txOptions, contractAddress, web3) {
+
+    const oThis = this;
+
     let defaultOptions = {
       from: organizationWorker,
       gas: '100000'
@@ -209,21 +239,9 @@ class BTHelper {
     const abiBinProvider = oThis.abiBinProvider;
     const abi = abiBinProvider.getABI(ContractName);
     const contract = new web3.eth.Contract(abi, contractAddress, txOptions);
-    let tx = contract.methods.liftRestriction(addresses);
 
-    console.log(`* liftRestriction for [${addresses.join(',')}] on ${ContractName}`);
-    return tx
-      .send(txOptions)
-      .on('transactionHash', function(transactionHash) {
-        console.log('\t - transaction hash:', transactionHash);
-      })
-      .on('receipt', function(receipt) {
-        console.log('\t - Receipt:\n\x1b[2m', JSON.stringify(receipt), '\x1b[0m\n');
-      })
-      .on('error', function(error) {
-        console.log('\t !! Error !!', error, '\n\t !! ERROR !!\n');
-        return Promise.reject(error);
-      });
+    return contract.methods.liftRestriction(addresses);
+
   }
 
   static get DEFAULT_DECIMALS() {

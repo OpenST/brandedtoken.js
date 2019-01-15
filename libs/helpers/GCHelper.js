@@ -73,32 +73,11 @@ class GCHelper {
   }
 
   deploy(owner, valueToken, brandedToken, txOptions, web3) {
+
     const oThis = this;
     web3 = web3 || oThis.web3;
 
-    const abiBinProvider = oThis.abiBinProvider;
-    const abi = abiBinProvider.getABI(ContractName);
-    const bin = abiBinProvider.getBIN(ContractName);
-
-    let defaultOptions = {
-      gas: '8000000'
-    };
-
-    if (txOptions) {
-      Object.assign(defaultOptions, txOptions);
-    }
-    txOptions = defaultOptions;
-
-    let args = [owner, valueToken, brandedToken];
-
-    const contract = new web3.eth.Contract(abi, null, txOptions);
-    let tx = contract.deploy(
-      {
-        data: bin,
-        arguments: args
-      },
-      txOptions
-    );
+    let tx = oThis._deployRawTx(owner, valueToken, brandedToken, txOptions, web3);
 
     console.log(`* Deploying ${ContractName} Contract`);
     let txReceipt;
@@ -120,6 +99,37 @@ class GCHelper {
         console.log(`\t - ${ContractName} Contract Address:`, oThis.address);
         return txReceipt;
       });
+  }
+
+  _deployRawTx(owner, valueToken, brandedToken, txOptions, web3) {
+
+    const oThis = this;
+
+    const abiBinProvider = oThis.abiBinProvider;
+    const abi = abiBinProvider.getABI(ContractName);
+    const bin = abiBinProvider.getBIN(ContractName);
+
+    let defaultOptions = {
+      gas: '8000000'
+    };
+
+    if (txOptions) {
+      Object.assign(defaultOptions, txOptions);
+    }
+    txOptions = defaultOptions;
+
+    let args = [owner, valueToken, brandedToken];
+
+    const contract = new web3.eth.Contract(abi, null, txOptions);
+
+    return contract.deploy(
+      {
+        data: bin,
+        arguments: args
+      },
+      txOptions
+    );
+
   }
 
   static get DEFAULT_DECIMALS() {
