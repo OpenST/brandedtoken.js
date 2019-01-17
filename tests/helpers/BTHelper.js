@@ -36,8 +36,7 @@ let validateDeploymentReceipt = (receipt) => {
   return receipt;
 };
 
-const fName = 'BTHelper';
-const SimpleTokenAddress = '0x2c4e8f2d746113d0696ce89b35f0d8bf88e0aeca';
+const valueTokenTestAddress = '0x2c4e8f2d746113d0696ce89b35f0d8bf88e0aeca';
 
 describe('tests/helpers/BTHelper', function() {
   let deployParams = {
@@ -49,7 +48,7 @@ describe('tests/helpers/BTHelper', function() {
 
   before(function() {
     this.timeout(3 * 60000);
-    //This hook could take long time.
+    // This hook could take long time.
     return web3WalletHelper.init(web3).then(function(_out) {
       if (!caOrganization) {
         console.log('* Setting up Organization');
@@ -71,7 +70,7 @@ describe('tests/helpers/BTHelper', function() {
     it('should deploy new BrandedToken contract', function() {
       this.timeout(60000);
       return helper
-        .deploy(SimpleTokenAddress, 'TBT', 'Test', 10, 1, 0, caOrganization, deployParams)
+        .deploy(valueTokenTestAddress, 'TBT', 'Test', 10, 1, 0, caOrganization, deployParams)
         .then(validateDeploymentReceipt)
         .then((receipt) => {
           caBT = receipt.contractAddress;
@@ -84,7 +83,7 @@ describe('tests/helpers/BTHelper', function() {
     this.timeout(60000);
     const helperConfig = {
       deployer: config.deployerAddress,
-      valueToken: SimpleTokenAddress,
+      valueToken: valueTokenTestAddress,
       symbol: 'BT',
       name: 'MyBrandedToken',
       decimals: '18',
@@ -102,6 +101,7 @@ describe('tests/helpers/BTHelper', function() {
       .then(validateReceipt);
   });
 
+  // TODO Is this needed?
   // it('should lift restrictions from gateway and stakeVault addresses', function () {
   //   let gateway = "0xe23338a00852250653Ba00563C4A38f559c4E5d5";
   //   this.timeout(60000);
@@ -110,6 +110,7 @@ describe('tests/helpers/BTHelper', function() {
   // });
 });
 
+// TODO Refactor to common method
 // Go easy on RPC Client (Geth)
 (function() {
   let maxHttpScokets = 10;

@@ -1,10 +1,9 @@
 'use strict';
 
-const Web3 = require('web3');
 const Mosaic = require('@openstfoundation/mosaic-tbd');
-const AbiBinProvider = require('../libs/AbiBinProvider');
 const BTHelper = require('../libs/helpers/BTHelper');
 const UBTHelper = require('../libs/helpers/UBTHelper');
+const GCHelper = require('../libs/helpers/GCHelper');
 
 class EconomySetup extends Mosaic.ChainSetup {
   constructor(originWeb3, auxiliaryWeb3) {
@@ -71,6 +70,10 @@ class EconomySetup extends Mosaic.ChainSetup {
 
   static get UtilityBrandedTokenHelper() {
     return UBTHelper;
+  }
+
+  static get GatewayComposerHelper() {
+    return GCHelper;
   }
 }
 

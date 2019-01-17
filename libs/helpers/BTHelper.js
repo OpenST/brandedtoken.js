@@ -1,7 +1,5 @@
 'use strict';
 
-const Web3 = require('web3');
-const BN = require('bn.js');
 const AbiBinProvider = require('../../libs/AbiBinProvider');
 const Contracts = require('../../libs/Contracts');
 
@@ -9,6 +7,7 @@ const ContractName = 'BrandedToken';
 const DEFAULT_DECIMALS = 18;
 const DEFAULT_CONVERSION_RATE_DECIMALS = 5;
 
+// TODO Documentation
 class BTHelper {
   constructor(web3, address) {
     const oThis = this;
@@ -141,8 +140,8 @@ class BTHelper {
         txReceipt = receipt;
         console.log('\t - Receipt:\n\x1b[2m', JSON.stringify(receipt), '\x1b[0m\n');
       })
-      .then(function(instace) {
-        oThis.address = instace.options.address;
+      .then(function(instance) {
+        oThis.address = instance.options.address;
         console.log(`\t - ${ContractName} Contract Address:`, oThis.address);
         return txReceipt;
       });

@@ -1,12 +1,11 @@
 'use strict';
 
-const Web3 = require('web3');
-const BN = require('bn.js');
 const AbiBinProvider = require('../../libs/AbiBinProvider');
 
 const ContractName = 'UtilityBrandedToken';
 const DEFAULT_DECIMALS = 18;
 
+// TODO Documentation
 class UBTHelper {
   constructor(web3, address) {
     const oThis = this;
@@ -16,16 +15,16 @@ class UBTHelper {
   }
 
   /*
-  //Supported Configurations for setup
-  {
-    deployer: config.deployerAddress,
-    token: brandedTokenContractAddress,
-    symbol: "BT",
-    name: "MyBrandedToken",
-    decimals: "18",
-    organization: '0x...'
-  }
-  All configurations are mandatory.
+    Supported Configurations for setup
+    {
+      deployer: config.deployerAddress,
+      token: brandedTokenContractAddress,
+      symbol: "BT",
+      name: "MyBrandedToken",
+      decimals: "18",
+      organization: '0x...'
+    }
+    All configurations are mandatory.
 */
 
   setup(config, txOptions, web3) {
