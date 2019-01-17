@@ -36,8 +36,7 @@ let validateDeploymentReceipt = (receipt) => {
   return receipt;
 };
 
-const fName = 'UBTHelper';
-const SomeValidAddress = '0x2c4e8f2d746113d0696ce89b35f0d8bf88e0aeca';
+const valueTokenTestAddress = '0x2c4e8f2d746113d0696ce89b35f0d8bf88e0aeca';
 
 describe('tests/helpers/UBTHelper', function() {
   let deployParams = {
@@ -70,7 +69,7 @@ describe('tests/helpers/UBTHelper', function() {
     it('should deploy new UtilityBrandedToken contract', function() {
       this.timeout(60000);
       return helper
-        .deploy(SomeValidAddress, 'TBT', 'Test', 10, caOrganization, deployParams)
+        .deploy(valueTokenTestAddress, 'TBT', 'Test', 10, caOrganization, deployParams)
         .then(validateDeploymentReceipt)
         .then((receipt) => {
           caUBT = receipt.contractAddress;
@@ -78,12 +77,12 @@ describe('tests/helpers/UBTHelper', function() {
     });
   }
 
-  //Test Setup
+  // Test Setup
   it('should setup UtilityBrandedToken', function() {
     this.timeout(60000);
     const ubtConfig = {
       deployer: config.deployerAddress,
-      token: SomeValidAddress,
+      token: valueTokenTestAddress,
       symbol: 'BT',
       name: 'MyBrandedToken',
       decimals: '18',
