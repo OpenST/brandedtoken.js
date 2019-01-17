@@ -8,13 +8,14 @@ const chai = require('chai'),
 const Setup = Package.EconomySetup,
   OrganizationHelper = Setup.OrganizationHelper,
   UBTHelper = Setup.UtilityBrandedTokenHelper,
-  assert = chai.assert;
-
-const config = require('../../tests/utils/configReader'),
-  Web3WalletHelper = require('../../tests/utils/Web3WalletHelper');
+  assert = chai.assert,
+  config = require('../../tests/utils/configReader'),
+  Web3WalletHelper = require('../../tests/utils/Web3WalletHelper'),
+  Contracts = require('../../libs/Contracts');
 
 const web3 = new Web3(config.gethRpcEndPoint);
-let web3WalletHelper = new Web3WalletHelper(web3);
+let web3WalletHelper = new Web3WalletHelper(web3),
+  worker;
 
 //Contract Address. TBD: Do not forget to set caUBT = null below.
 //ca stands for contract address.
@@ -52,10 +53,15 @@ describe('tests/helpers/UBTHelper', function() {
     return web3WalletHelper.init(web3).then(function(_out) {
       if (!caOrganization) {
         console.log('* Setting up Organization');
+        const wallets = web3WalletHelper.web3Object.eth.accounts.wallet;
+        worker = wallets[1].address;
+
         let orgHelper = new OrganizationHelper(web3, caOrganization);
+
         const orgConfig = {
           deployer: config.deployerAddress,
-          owner: config.deployerAddress
+          owner: config.deployerAddress,
+          workers: worker
         };
         return orgHelper.setup(orgConfig).then(function() {
           caOrganization = orgHelper.address;
@@ -89,6 +95,51 @@ describe('tests/helpers/UBTHelper', function() {
       organization: caOrganization
     };
     return helper.setup(ubtConfig, deployParams);
+  });
+
+  it('Should register internal actor', async function() {
+    this.timeout(60000);
+    const ubtConfig = {
+      deployer: config.deployerAddress,
+      token: valueTokenTestAddress,
+      symbol: 'BT',
+      name: 'MyBrandedToken',
+      decimals: '18',
+      organization: caOrganization
+    };
+    let wallets = web3WalletHelper.web3Object.eth.accounts.wallet;
+    let options = {
+      from: worker,
+      gasPrice: config.gasPrice,
+      gas: '60000'
+    };
+
+    let contractInstance = new Contracts(web3, web3);
+    const ubtInstance = contractInstance.UtilityBrandedToken(caUBT, options);
+    let internalActors = [wallets[3].address];
+
+    let tx = ubtInstance.methods.registerInternalActor(internalActors);
+
+    let txReceipt;
+    console.log(`* registerInternalActor on UtilityBrandedToken`);
+
+    let response = await tx
+      .send(options)
+      .on('transactionHash', function(transaction) {
+        console.log('\t - transaction hash:', transaction);
+      })
+      .on('receipt', function(receipt) {
+        console.log('test test 3');
+        txReceipt = receipt;
+        console.log('\t - Receipt:\n\x1b[2m', JSON.stringify(txReceipt), '\x1b[0m\n');
+      })
+      .on('error', function(error) {
+        console.log('\t !! Error !!', error, '\n\t !! ERROR !!\n');
+        return Promise.reject(error);
+      });
+
+    // Verifying registered internal actor.
+    assert.strictEqual(internalActors[0], response.events.InternalActorRegistered.returnValues['_actor']);
   });
 });
 
