@@ -100,7 +100,7 @@ class UBTHelper {
     web3 = web3 || oThis.web3;
     _decimals = _decimals || DEFAULT_DECIMALS;
 
-    let tx = _deployRawTx(_token, _symbol, _name, _decimals, _organization, txOptions, web3);
+    let tx = oThis._deployRawTx(_token, _symbol, _name, _decimals, _organization, txOptions, web3);
 
     console.log(`* Deploying ${ContractName} Contract`);
     let txReceipt;
