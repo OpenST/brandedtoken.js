@@ -179,6 +179,44 @@ class UBTHelper {
       });
   }
 
+  registerInternalActor(internalActors, txOptions, contractAddress, web3) {
+    const oThis = this;
+    web3 = web3 || oThis.web3;
+    contractAddress = contractAddress || oThis.address;
+
+    let defaultOptions = {
+      gas: '60000',
+      gasPrice: '0x5B9ACA00'
+    };
+
+    if (txOptions) {
+      Object.assign(defaultOptions, txOptions);
+    }
+    txOptions = defaultOptions;
+
+    const abiBinProvider = oThis.abiBinProvider;
+    const abi = abiBinProvider.getABI(ContractName);
+    const contract = new web3.eth.Contract(abi, contractAddress, txOptions);
+    let tx = contract.methods.registerInternalActor(internalActors);
+    let txReceipt;
+    console.log(`* registerInternalActor on ${ContractName}`);
+
+    return tx
+      .send(txOptions)
+      .on('transactionHash', function(transaction) {
+        console.log('\t - transaction hash:', transaction);
+      })
+      .on('receipt', function(receipt) {
+        console.log('test test 3');
+        txReceipt = receipt;
+        console.log('\t - Receipt:\n\x1b[2m', JSON.stringify(txReceipt), '\x1b[0m\n');
+      })
+      .on('error', function(error) {
+        console.log('\t !! Error !!', error, '\n\t !! ERROR !!\n');
+        return Promise.reject(error);
+      });
+  }
+
   static get DEFAULT_DECIMALS() {
     return DEFAULT_DECIMALS;
   }

@@ -9,7 +9,7 @@ const Setup = Package.EconomySetup,
   OrganizationHelper = Setup.OrganizationHelper,
   UBTHelper = Setup.UtilityBrandedTokenHelper,
   assert = chai.assert;
-
+const contracts = require('../../libs/Contracts');
 const config = require('../../tests/utils/configReader'),
   Web3WalletHelper = require('../../tests/utils/Web3WalletHelper');
 
@@ -89,6 +89,68 @@ describe('tests/helpers/UBTHelper', function() {
       organization: caOrganization
     };
     return helper.setup(ubtConfig, deployParams);
+  });
+
+  // it('should register internal actors', async function () {
+  //   this.timeout(60000);
+  //   const ubtConfig = {
+  //     deployer: config.deployerAddress,
+  //     token: valueTokenTestAddress,
+  //     symbol: 'BT',
+  //     name: 'MyBrandedToken',
+  //     decimals: '18',
+  //     organization: caOrganization
+  //   };
+  //   let wallets = web3WalletHelper.web3Object.eth.accounts.wallet;
+  //   let params = {
+  //     from: wallets[0].address,
+  //     gasPrice: config.gasPrice
+  //   };
+  //   let response = await helper.registerInternalActor([wallets[1].address], params, caUBT, web3);
+  //
+  //   assert.strictEqual(wallets[1].address, response.events.InternalActorRegistered.returnValues['_actor']);
+  //
+  // });
+
+  it('should register internal actors', async function() {
+    this.timeout(60000);
+    const ubtConfig = {
+      deployer: config.deployerAddress,
+      token: valueTokenTestAddress,
+      symbol: 'BT',
+      name: 'MyBrandedToken',
+      decimals: '18',
+      organization: caOrganization
+    };
+    let wallets = web3WalletHelper.web3Object.eth.accounts.wallet;
+    let params = {
+      from: wallets[0].address,
+      gasPrice: config.gasPrice
+    };
+
+    let ubtContract = contracts.getUtilityBrandedToken(web3, caUBT, params);
+    // let response = await helper.registerInternalActor([wallets[1].address], params, caUBT, web3);
+    let tx = ubtContract.methods.registerInternalActor(internalActors);
+
+    let txReceipt;
+    console.log(`* registerInternalActor on ${ContractName}`);
+
+    await tx
+      .send(params)
+      .on('transactionHash', function(transaction) {
+        console.log('\t - transaction hash:', transaction);
+      })
+      .on('receipt', function(receipt) {
+        console.log('test test 3');
+        txReceipt = receipt;
+        console.log('\t - Receipt:\n\x1b[2m', JSON.stringify(txReceipt), '\x1b[0m\n');
+      })
+      .on('error', function(error) {
+        console.log('\t !! Error !!', error, '\n\t !! ERROR !!\n');
+        return Promise.reject(error);
+      });
+
+    // assert.strictEqual(wallets[1].address, response.events.InternalActorRegistered.returnValues['_actor']);
   });
 });
 

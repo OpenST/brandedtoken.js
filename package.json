@@ -27,7 +27,8 @@
     "url": "https://github.com/OpenSTFoundation/branded-token.js/issues"
   },
   "dependencies": {
-    "@openstfoundation/mosaic-tbd": "https://github.com/OpenSTFoundation/mosaic-tbd.git"
+    "@openstfoundation/mosaic-tbd": "https://github.com/OpenSTFoundation/mosaic-tbd.git",
+    "@openstfoundation/openst.js": "^0.9.4"
   },
   "devDependencies": {
     "lint-staged": "7.2.0",
