@@ -8,13 +8,14 @@ const chai = require('chai'),
 const Setup = Package.EconomySetup,
   OrganizationHelper = Setup.OrganizationHelper,
   UBTHelper = Setup.UtilityBrandedTokenHelper,
-  assert = chai.assert;
-const contracts = require('../../libs/Contracts');
-const config = require('../../tests/utils/configReader'),
-  Web3WalletHelper = require('../../tests/utils/Web3WalletHelper');
+  assert = chai.assert,
+  config = require('../../tests/utils/configReader'),
+  Web3WalletHelper = require('../../tests/utils/Web3WalletHelper'),
+  Contracts = require('../../libs/Contracts');
 
 const web3 = new Web3(config.gethRpcEndPoint);
-let web3WalletHelper = new Web3WalletHelper(web3);
+let web3WalletHelper = new Web3WalletHelper(web3),
+  worker;
 
 //Contract Address. TBD: Do not forget to set caUBT = null below.
 //ca stands for contract address.
@@ -52,10 +53,15 @@ describe('tests/helpers/UBTHelper', function() {
     return web3WalletHelper.init(web3).then(function(_out) {
       if (!caOrganization) {
         console.log('* Setting up Organization');
+        const wallets = web3WalletHelper.web3Object.eth.accounts.wallet;
+        worker = wallets[1].address;
+
         let orgHelper = new OrganizationHelper(web3, caOrganization);
+
         const orgConfig = {
           deployer: config.deployerAddress,
-          owner: config.deployerAddress
+          owner: config.deployerAddress,
+          workers: worker
         };
         return orgHelper.setup(orgConfig).then(function() {
           caOrganization = orgHelper.address;
@@ -91,27 +97,6 @@ describe('tests/helpers/UBTHelper', function() {
     return helper.setup(ubtConfig, deployParams);
   });
 
-  // it('should register internal actors', async function () {
-  //   this.timeout(60000);
-  //   const ubtConfig = {
-  //     deployer: config.deployerAddress,
-  //     token: valueTokenTestAddress,
-  //     symbol: 'BT',
-  //     name: 'MyBrandedToken',
-  //     decimals: '18',
-  //     organization: caOrganization
-  //   };
-  //   let wallets = web3WalletHelper.web3Object.eth.accounts.wallet;
-  //   let params = {
-  //     from: wallets[0].address,
-  //     gasPrice: config.gasPrice
-  //   };
-  //   let response = await helper.registerInternalActor([wallets[1].address], params, caUBT, web3);
-  //
-  //   assert.strictEqual(wallets[1].address, response.events.InternalActorRegistered.returnValues['_actor']);
-  //
-  // });
-
   it('should register internal actors', async function() {
     this.timeout(60000);
     const ubtConfig = {
@@ -123,20 +108,23 @@ describe('tests/helpers/UBTHelper', function() {
       organization: caOrganization
     };
     let wallets = web3WalletHelper.web3Object.eth.accounts.wallet;
-    let params = {
-      from: wallets[0].address,
-      gasPrice: config.gasPrice
+    let options = {
+      from: worker,
+      gasPrice: config.gasPrice,
+      gas: '60000'
     };
 
-    let ubtContract = contracts.getUtilityBrandedToken(web3, caUBT, params);
-    // let response = await helper.registerInternalActor([wallets[1].address], params, caUBT, web3);
-    let tx = ubtContract.methods.registerInternalActor(internalActors);
+    let contractInstance = new Contracts(web3, web3);
+    const ubtInstance = contractInstance.UtilityBrandedToken(caUBT, options);
+    let internalActors = [wallets[3].address];
+
+    let tx = ubtInstance.methods.registerInternalActor(internalActors);
 
     let txReceipt;
-    console.log(`* registerInternalActor on ${ContractName}`);
+    console.log(`* registerInternalActor on UtilityBrandedToken`);
 
-    await tx
-      .send(params)
+    let response = await tx
+      .send(options)
       .on('transactionHash', function(transaction) {
         console.log('\t - transaction hash:', transaction);
       })
@@ -150,7 +138,8 @@ describe('tests/helpers/UBTHelper', function() {
         return Promise.reject(error);
       });
 
-    // assert.strictEqual(wallets[1].address, response.events.InternalActorRegistered.returnValues['_actor']);
+    // Verifying registered internal actor.
+    assert.strictEqual(internalActors[0], response.events.InternalActorRegistered.returnValues['_actor']);
   });
 });
 
