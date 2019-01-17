@@ -7,7 +7,9 @@ const Contracts = Mosaic.Contracts;
 let abProvider = new AbiBinProvider();
 
 class BTContracts extends Contracts {
+
   constructor(originWeb3, auxiliaryWeb3) {
+    super(originWeb3, auxiliaryWeb3);
     const oThis = this;
 
     oThis.originWeb3 = originWeb3;
@@ -17,19 +19,19 @@ class BTContracts extends Contracts {
   BrandedToken(address, options) {
     const oThis = this;
     let web3 = oThis.originWeb3;
-    return Contracts.getBrandedToken(web3, address, options);
+    return BTContracts.getBrandedToken(web3, address, options);
   }
 
-  GatewayComposer() {
+  GatewayComposer(address, options) {
     const oThis = this;
     let web3 = oThis.originWeb3;
-    return Contracts.getGatewayComposer(web3, address, options);
+    return BTContracts.getGatewayComposer(web3, address, options);
   }
 
-  UtilityBrandedToken() {
+  UtilityBrandedToken(address, options) {
     const oThis = this;
     let web3 = oThis.auxiliaryWeb3;
-    return Contracts.getUtilityBrandedToken(web3, address, options);
+    return BTContracts.getUtilityBrandedToken(web3, address, options);
   }
 
   static getBrandedToken(web3, address, options) {
