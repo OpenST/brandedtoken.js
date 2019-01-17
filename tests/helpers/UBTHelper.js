@@ -97,7 +97,7 @@ describe('tests/helpers/UBTHelper', function() {
     return helper.setup(ubtConfig, deployParams);
   });
 
-  it('should register internal actors', async function() {
+  it('Should register internal actor', async function() {
     this.timeout(60000);
     const ubtConfig = {
       deployer: config.deployerAddress,
