@@ -1,14 +1,20 @@
 'use strict';
 
-const AbiBinProvider = require('../../libs/AbiBinProvider');
-const Contracts = require('../../libs/Contracts');
+const AbiBinProvider = require('../../AbiBinProvider');
+const Contracts = require('../../Contracts');
 
 const ContractName = 'BrandedToken';
 const DEFAULT_DECIMALS = 18;
 const DEFAULT_CONVERSION_RATE_DECIMALS = 5;
 
-// TODO Documentation
+/**
+ *  BTHelper has setup and deploy related tasks related with BT contract.
+ */
 class BTHelper {
+  /**
+   * @param web3 - web3 instance object
+   * @param address - BrandedToken contract address
+   */
   constructor(web3, address) {
     const oThis = this;
     oThis.web3 = web3;
@@ -16,21 +22,22 @@ class BTHelper {
     oThis.abiBinProvider = new AbiBinProvider();
   }
 
-  /*
-  //Supported Configurations for setup
-  {
-    deployer: config.deployerAddress,
-    valueToken: config.simpleTokenContractAddress,
-    symbol: "BT"
-    name: "MyBrandedToken"
-    decimals: "18"
-    conversionRate: 
-    conversionRateDecimals: 
-    organization: 
-  }
-  All configurations are mandatory.
-*/
-
+  /**
+   * @param config - Supported configigurations
+   *                  {
+   *                    deployer: config.deployerAddress,
+   *                    valueToken: config.simpleTokenContractAddress,
+   *                    symbol: "BT"
+   *                    name: "MyBrandedToken"
+   *                    decimals: "18"
+   *                    conversionRate:
+   *                    conversionRateDecimals:
+   *                    organization:
+   *                  }
+   * @param txOptions - More options for flexibility.
+   * @param web3 - web3 object.
+   * @returns {Promise} - Promise object.
+   */
   setup(config, txOptions, web3) {
     const oThis = this;
     web3 = web3 || oThis.web3;
@@ -59,7 +66,6 @@ class BTHelper {
     conversionRateDecimals = config.conversionRateDecimals;
     organization = config.organization;
 
-    //1. Deploy the Contract
     let promiseChain = oThis.deploy(
       valueToken,
       symbol,
@@ -74,6 +80,10 @@ class BTHelper {
     return promiseChain;
   }
 
+  /**
+   * @param config - configuration parameters.
+   * @returns {boolean} - True on successful validation.
+   */
   static validateSetupConfig(config) {
     console.log(`* Validating ${ContractName} Setup Config.`);
     if (!config) {
@@ -84,32 +94,26 @@ class BTHelper {
       throw new Error('Mandatory configuration "deployer" missing. Set config.deployer address');
     }
 
-    //valueToken
     if (!config.valueToken) {
       throw new Error('Mandatory configuration "valueToken" missing. Set config.valueToken address');
     }
 
-    //symbol
     if (!config.symbol) {
       throw new Error('Mandatory configuration "symbol" missing. Set config.symbol address');
     }
 
-    //symbol
     if (!config.name) {
       throw new Error('Mandatory configuration "name" missing. Set config.name address');
     }
 
-    //conversionRate
     if (!config.conversionRate) {
       throw new Error('Mandatory configuration "conversionRate" missing. Set config.conversionRate address');
     }
 
-    //decimals
     if (!config.decimals) {
       config.decimals = DEFAULT_DECIMALS;
     }
 
-    //conversionRateDecimals
     if (!config.decimals) {
       config.decimals = DEFAULT_CONVERSION_RATE_DECIMALS;
     }
@@ -117,13 +121,39 @@ class BTHelper {
     return true;
   }
 
+  /**
+   * @param valueToken - ValueToken address on value chain. e.g. OST
+   * @param symbol - The value to which tokenSymbol, defined in EIP20Token,
+   *                is set.
+   * @param name - The value to which tokenName, defined in EIP20Token,
+   *              is set.
+   * @param decimals - The value to which tokenDecimals, defined in EIP20Token,
+   *                  is set.
+   * @param conversionRate - The value to which conversionRate is set.
+   * @param conversionRateDecimals - The value to which
+   *                                conversionRateDecimals is set.
+   * @param organization - Organization contract address.
+   * @param txOptions - transaction options
+   * @param web3 - Web3 object.
+   * @returns {PromiseLike<T> | Promise<T>} - Promise object.
+   */
   deploy(valueToken, symbol, name, decimals, conversionRate, conversionRateDecimals, organization, txOptions, web3) {
     const oThis = this;
     web3 = web3 || oThis.web3;
     decimals = decimals || DEFAULT_DECIMALS;
     conversionRateDecimals = conversionRateDecimals || DEFAULT_DECIMALS;
 
-    let tx = oThis._deployRawTx(valueToken, symbol, name, decimals, conversionRate, conversionRateDecimals, organization, txOptions, web3);
+    let tx = oThis._deployRawTx(
+      valueToken,
+      symbol,
+      name,
+      decimals,
+      conversionRate,
+      conversionRateDecimals,
+      organization,
+      txOptions,
+      web3
+    );
 
     console.log(`* Deploying ${ContractName} Contract`);
     let txReceipt;
@@ -147,8 +177,34 @@ class BTHelper {
       });
   }
 
-  _deployRawTx(valueToken, symbol, name, decimals, conversionRate, conversionRateDecimals, organization, txOptions, web3) {
-
+  /**
+   * @param valueToken - The value to which valueToken is set.
+   * @param symbol - The value to which tokenSymbol, defined in EIP20Token,
+   *                is set.
+   * @param name - The value to which tokenName, defined in EIP20Token,
+   *              is set.
+   * @param decimals - The value to which tokenDecimals, defined in EIP20Token,
+   *                  is set.
+   * @param conversionRate - The value to which conversionRate is set.
+   * @param conversionRateDecimals - The value to which
+   *                                conversionRateDecimals is set.
+   * @param organization - Organization contract address.
+   * @param txOptions - transaction options for flexibility.
+   * @param web3 - Web3 object.
+   * @returns {PromiseLike<T>|Promise<T>|*} - Promise obhect
+   * @private
+   */
+  _deployRawTx(
+    valueToken,
+    symbol,
+    name,
+    decimals,
+    conversionRate,
+    conversionRateDecimals,
+    organization,
+    txOptions,
+    web3
+  ) {
     const oThis = this;
 
     const abiBinProvider = oThis.abiBinProvider;
@@ -175,9 +231,16 @@ class BTHelper {
       },
       txOptions
     );
-
   }
 
+  /**
+   * @param gateway - Gateway contract address.
+   * @param organizationWorker - Organization worker address.
+   * @param txOptions - Transaction options.
+   * @param contractAddress - Branded Token contract address.
+   * @param web3 - Web3 object
+   * @returns {PromiseLike<T> | Promise<T>} - Promise object.
+   */
   setGateway(gateway, organizationWorker, txOptions, contractAddress, web3) {
     const oThis = this;
     web3 = web3 || oThis.web3;
@@ -195,6 +258,13 @@ class BTHelper {
       });
   }
 
+  /**
+   * @param addresses - Addresses to be unrestricted.
+   * @param organizationWorker - Organization worker address.
+   * @param txOptions - Transaction options.
+   * @param contractAddress - Branded Token contract address.
+   * @param web3 - Web3 object.
+   */
   liftRestriction(addresses, organizationWorker, txOptions, contractAddress, web3) {
     const oThis = this;
     web3 = web3 || oThis.web3;
@@ -217,8 +287,15 @@ class BTHelper {
       });
   }
 
+  /**
+   * @param addresses - Addresses to be unrestricted.
+   * @param organizationWorker - Organization worker address.
+   * @param txOptions - Transaction options.
+   * @param contractAddress - Branded token contract address.
+   * @param web3 - Web3 object.
+   * @private
+   */
   _liftRestrictionRawTx(addresses, organizationWorker, txOptions, contractAddress, web3) {
-
     const oThis = this;
 
     let defaultOptions = {
@@ -240,7 +317,6 @@ class BTHelper {
     const contract = new web3.eth.Contract(abi, contractAddress, txOptions);
 
     return contract.methods.liftRestriction(addresses);
-
   }
 
   static get DEFAULT_DECIMALS() {

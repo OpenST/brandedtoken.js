@@ -1,9 +1,9 @@
 'use strict';
 
 const Mosaic = require('@openstfoundation/mosaic-tbd');
-const BTHelper = require('../libs/helpers/BTHelper');
-const UBTHelper = require('../libs/helpers/UBTHelper');
-const GCHelper = require('../libs/helpers/GCHelper');
+const BTHelper = require('./helpers/setup/BTHelper');
+const UBTHelper = require('./helpers/setup/UBTHelper');
+const GCHelper = require('./helpers/setup/GCHelper');
 
 class EconomySetup extends Mosaic.ChainSetup {
   constructor(originWeb3, auxiliaryWeb3) {
