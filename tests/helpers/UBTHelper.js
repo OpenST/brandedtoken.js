@@ -129,7 +129,6 @@ describe('tests/helpers/UBTHelper', function() {
         console.log('\t - transaction hash:', transaction);
       })
       .on('receipt', function(receipt) {
-        console.log('test test 3');
         txReceipt = receipt;
         console.log('\t - Receipt:\n\x1b[2m', JSON.stringify(txReceipt), '\x1b[0m\n');
       })
