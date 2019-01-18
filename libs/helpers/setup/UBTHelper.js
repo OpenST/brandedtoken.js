@@ -17,22 +17,18 @@ class UBTHelper {
     oThis.abiBinProvider = new AbiBinProvider();
   }
 
-  /*
-    Supported Configurations for setup
-    {
-      deployer: config.deployerAddress,
-      token: brandedTokenContractAddress,
-      symbol: "BT",
-      name: "MyBrandedToken",
-      decimals: "18",
-      organization: '0x...'
-    }
-    All configurations are mandatory.
-*/
-
   /**
    * Does setup of UtilityBrandedToken contract.
+   *
    * @param config - Configuration object.
+   *        {
+   *          deployer: config.deployerAddress,
+   *          token: brandedTokenContractAddress,
+   *          symbol: "BT",
+   *          name: "MyBrandedToken",
+   *          decimals: "18",
+   *          organization: '0x...'
+   *        }
    * @param txOptions - Transaction object.
    * @param web3 - Web3 object.
    * @returns {Promise} - Promise object.

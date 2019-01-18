@@ -6,8 +6,12 @@ const Mosaic = require('@openstfoundation/mosaic-tbd');
 const Contracts = Mosaic.Contracts;
 let abProvider = new AbiBinProvider();
 
+/**
+ * The class exposes instance of different contracts. Dappy can use the
+ * instances to call contract methods. This gives Dappy flexibility in calling
+ * contract methods based on his use case.
+ */
 class BTContracts extends Contracts {
-
   constructor(originWeb3, auxiliaryWeb3) {
     super(originWeb3, auxiliaryWeb3);
     const oThis = this;

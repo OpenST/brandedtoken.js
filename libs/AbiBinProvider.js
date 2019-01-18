@@ -14,6 +14,10 @@ DEFAULT_ABI_FOLDER_PATH = path.resolve(__dirname, '../contracts/abi/');
 DEFAULT_BIN_FOLDER_PATH = path.resolve(__dirname, '../contracts/bin/');
 //__NOT_FOR_WEB__END__
 
+/**
+ * The class provides getter to get ABIs and BINs for different contracts.
+ * ABI and BIN files sit in contracts/abi, contracts/bin folder.
+ */
 class BtAbiBinProvider extends AbiBinProvider {
   constructor(abiFolderPath, binFolderPath, mosaicAbiFolderPath, mosaicBinFolderPath) {
     abiFolderPath = abiFolderPath || DEFAULT_ABI_FOLDER_PATH;
@@ -24,6 +28,11 @@ class BtAbiBinProvider extends AbiBinProvider {
     oThis.mosaicAbiBinProvider = new AbiBinProvider(mosaicAbiFolderPath, mosaicBinFolderPath);
   }
 
+  /**
+   * Getter to get ABI for a contract.
+   * @param contractName Name of the contract.
+   * @returns {String} ABI JSON string.
+   */
   getABI(contractName) {
     const oThis = this;
     let abi = null;
@@ -42,6 +51,11 @@ class BtAbiBinProvider extends AbiBinProvider {
     return abi;
   }
 
+  /**
+   * Getter to get BIN for a contract.
+   * @param contractName Name of the contract.
+   * @returns {String} Binary string.
+   */
   getBIN(contractName) {
     const oThis = this;
     let bin = null;
