@@ -27,7 +27,7 @@ class GCHelper {
    *                  "valueToken": config.simpleTokenContractAddress,
    *                  "brandedToken": config.brandedTokenContractAddress,
    *                  }
-   * @param txOptions - Transaction options.
+   * @param txOptions - Tx options.
    * @param web3 - Web3 object.
    * @returns {Promise} - Promise object.
    */
