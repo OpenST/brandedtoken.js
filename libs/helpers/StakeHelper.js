@@ -245,12 +245,12 @@ class StakeHelper {
    * @returns {String} - Hash unique for each stake request.
    * @private
    */
-  _getStakeRequestHashForStaker(staker, originWeb3, txOptions){
+  _getStakeRequestHashForStakerRawTx(staker, originWeb3, txOptions){
     const oThis = this;
 
     const web3 = originWeb3 || oThis.web3;
     const abi = abiBinProvider.getABI(gatewayComposerContractName);
-    const contract = new web3.eth.Contract(abi, oThis.gatewayComposer, txOptions);
+    const contract = new web3.eth.Contract(abi, oThis.brandedTokenContractName, txOptions);
 
     console.log("Fetching stake request hash for staker");
     return contract.methods.stakeRequestHashes(staker).call();
@@ -264,12 +264,12 @@ class StakeHelper {
    * @returns {Object} - Includes information related with requested stake.
    * @private
    */
-  _getStakeRequest(stakeRequestHash, originWeb3, txOptions){
+  _getStakeRequestRawTx(stakeRequestHash, originWeb3, txOptions){
     const oThis = this;
 
     const web3 = originWeb3 || oThis.web3;
     const abi = abiBinProvider.getABI(gatewayComposerContractName);
-    const contract = new web3.eth.Contract(abi, oThis.gatewayComposer, txOptions);
+    const contract = new web3.eth.Contract(abi, oThis.brandedTokenContractName, txOptions);
 
     console.log("Fetching stake request hash for staker");
     return contract.methods.stakeRequestHashes(stakeRequestHash).call();
