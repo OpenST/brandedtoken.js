@@ -136,6 +136,7 @@ class StakeHelper {
   /**
    * Facilitator performs accept stake request.
    * Note: Add KYC worker account/private key in web3 wallet before calling acceptStakeRequest.
+   *
    * @param stakeRequestHash - Stake request hash unique for each stake.
    * @param staker - Staker address. Staker can be GatewayComposer.
    * @param stakeAmountInWei - Stake amount in wei.
@@ -240,6 +241,7 @@ class StakeHelper {
 
   /**
    * Signs using EIP712 signer and returns signed data.
+   *
    * @param stakeRequestObject Supports below format:
    *        {
    *          staker: "staker address",
@@ -355,6 +357,7 @@ class StakeHelper {
 
   /**
    * Returns stakeRequestHash for staker address.
+   *
    * @param staker Staker address.
    * @param originWeb3 Origin chain web3 object.
    * @param txOptions Tx options.
@@ -374,7 +377,8 @@ class StakeHelper {
   }
 
   /**
-   * Returns Returns StakeRequest for a given StakeRequestHash.
+   * Returns StakeRequest for a given StakeRequestHash.
+   *
    * @param stakeRequestHash - Hash of the requests done by the staker.
    * @param originWeb3 - Origin chain web3 object.
    * @param txOptions - Tx options.
