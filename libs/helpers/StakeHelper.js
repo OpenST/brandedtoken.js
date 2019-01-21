@@ -5,6 +5,9 @@ const index = require('../../index'),
   gatewayComposerContractName = 'GatewayComposer',
   brandedTokenContractName = 'BrandedToken';
 
+const Mosaic = require('@openstfoundation/mosaic-tbd'),
+  TypedDataClass = Mosaic.Utils.EIP712TypedData;
+
 /**
  * Performs BrandedToken staking through GatewayComposer.
  */
@@ -13,15 +16,15 @@ class StakeHelper {
    * StakeHelper constructor object.
    *
    * @param originWeb3 Origin chain web3 address.
-   * @param brandedTokenAddress Branded Token contract address.
-   * @param gatewayComposerAddress Gateway composer contract address.
+   * @param brandedToken Branded Token contract address.
+   * @param gatewayComposer Gateway composer contract address.
    * @param txOptions - Tx options.
    */
-  constructor(originWeb3, brandedTokenAddress, gatewayComposerAddress, txOptions) {
+  constructor(originWeb3, brandedToken, gatewayComposer, txOptions) {
     const oThis = this;
     oThis.originWeb3 = originWeb3;
-    oThis.gatewayComposer = gatewayComposerAddress;
-    oThis.brandedToken = brandedTokenAddress;
+    oThis.gatewayComposer = gatewayComposer;
+    oThis.brandedToken = brandedToken;
     oThis.abiBinProvider = new AbiBinProvider();
   }
 
@@ -133,16 +136,26 @@ class StakeHelper {
   /**
    * Facilitator performs accept stake request.
    *
+   * @param staker - staker address. Staker can be GatewayComposer.
+   * @param stakeAmountInWei - Stake amount in wei.
+   * @param nonce - BrandedToken StakeRequest nonce.
    * @param facilitator - Facilitator address.
+   * @param facilitatorPrivateKey - Facilitator private key.
    * @param stakeRequestHash - Stake request hash.
-   * @param r - R of the signature.
-   * @param s - S of the signature.
-   * @param v - V of the signature.
    * @param originWeb3 - Origin chain web3 object.
    * @param txOptions - Transaction options.
-   * @returns {PromiseLike<T> | Promise<T>} - Promise object
+   * @returns {txObject} - Tx object
    */
-  acceptStakeRequest(facilitator, stakeRequestHash, r, s, v, originWeb3, txOptions) {
+  acceptStakeRequest(
+    staker,
+    stakeAmountInWei,
+    nonce,
+    facilitator,
+    facilitatorPrivateKey,
+    stakeRequestHash,
+    originWeb3,
+    txOptions
+  ) {
     const oThis = this;
     const txObject = oThis._acceptStakeRequestRawTx(facilitator, stakeRequestHash, r, s, v, originWeb3, txOptions);
 
@@ -159,28 +172,39 @@ class StakeHelper {
       .on('receipt', function(receipt) {
         txReceipt = receipt;
         console.log('\t - Receipt:\n\x1b[2m', JSON.stringify(receipt), '\x1b[0m\n');
-      })
-      .then(function(instance) {
-        oThis.address = instance.options.address;
-        console.log(`\t - ${ContractName} Contract Address:`, oThis.address);
-        return txReceipt;
       });
   }
 
   /**
    * Facilitator performs accept stake request.
    *
+   * @param stakeRequestHash - Stake request hash unique for a stake request.
+   * @param staker - staker address. Staker can be GatewayComposer.
+   * @param stakeAmountInWei - Stake amount in wei.
+   * @param nonce - BrandedToken StakeRequest nonce.
    * @param facilitator - Facilitator address.
-   * @param stakeRequestHash - Stake request hash.
-   * @param r - R of the signature.
-   * @param s - S of the signature.
-   * @param v - V of the signature.
+   * @param facilitatorPrivateKey - Facilitator private key.
    * @param originWeb3 - Origin chain web3 object.
    * @param txOptions - Transaction options.
-   * @returns {PromiseLike<T> | Promise<T>} - Promise object
+   * @returns {txObject} - Tx object
    */
-  _acceptStakeRequestRawTx(facilitator, stakeRequestHash, r, s, v, originWeb3, txOptions) {
+  _acceptStakeRequestRawTx(
+    stakeRequestHash,
+    staker,
+    stakeAmountInWei,
+    nonce,
+    facilitator,
+    facilitatorPrivateKey,
+    originWeb3,
+    txOptions
+  ) {
     const oThis = this;
+
+    const stakeRequestObject = {
+      staker: staker,
+      stake: stakeAmountInWei,
+      nonce: nonce
+    };
 
     const web3 = originWeb3 || oThis.originWeb3;
     const abiBinProvider = oThis.abiBinProvider;
@@ -188,7 +212,7 @@ class StakeHelper {
 
     let defaultOptions = {
       from: facilitator,
-      to: oThis.gatewayComposerAddress,
+      to: oThis.gatewayComposer,
       gas: '8000000'
     };
 
@@ -197,12 +221,65 @@ class StakeHelper {
     }
     txOptions = defaultOptions;
 
-    const Contract = new web3.eth.Contract(abi, oThis.gatewayComposerAddress, txOptions);
+    const Contract = new web3.eth.Contract(abi, oThis.gatewayComposer, txOptions);
 
+    const signature = oThis._getEIP712SignedData(stakeRequestObject, oThis.brandedToken, facilitatorPrivateKey);
     console.log('_acceptStakeRequestRawTx: Returning txObject.');
-    const txObject = Contract.methods.acceptStakeRequest(stakeRequestHash, r, s, v);
+    const txObject = Contract.methods.acceptStakeRequest(stakeRequestHash, signature.r, signature.s, signature.v);
 
     return txObject;
+  }
+
+  /**
+   * Signs using EIP712 signer and returns signed data.
+   * @param stakeRequestObject Supports below format:
+   *        {
+   *          staker: "staker address",
+   *          stakeAmountInWei: "stake Amount in wei",
+   *          nonce: BT contract nonce.
+   *        }
+   * @param brandedToken BrandedToken contract address.
+   * @param facilitatorPrivateKey Facilitator private key.
+   * @returns {Object} Signature format:
+   *                  {
+   *                    messageHash: signHash,
+   *                    v: vrs[0],
+   *                    r: vrs[1],
+   *                    s: vrs[2],
+   *                    signature: signature
+   *                  }
+   * @private
+   */
+  _getEIP712SignedData(stakeRequestObject, brandedToken, facilitatorPrivateKey) {
+    const typedDataInput = {
+      types: {
+        EIP712Domain: [{ name: 'verifyingContract', type: brandedToken }],
+        StakeRequest: [
+          { name: 'staker', type: 'address' },
+          { name: 'stake', type: 'uint256' },
+          { name: 'nonce', type: 'uint256' }
+        ]
+      },
+      primaryType: 'StakeRequest',
+      domain: {
+        verifyingContract: brandedToken
+      },
+      message: {
+        staker: stakeRequestObject.staker,
+        stake: stakeRequestObject.stakeAmountInWei,
+        nonce: stakeRequestObject.nonce
+      }
+    };
+
+    let typedDataInstance = TypedDataClass.fromObject(typedDataInput);
+
+    if (typedDataInstance.validateData(TypedDataInput) === true) {
+      const account = web3.eth.accounts.privateKeyToAccount(facilitatorPrivateKey);
+      const signature = account.signEIP712TypedData(typedDataInstance);
+      return signature;
+    } else {
+      throw new Error('TypedData is invalid');
+    }
   }
 
   /**
