@@ -12,9 +12,9 @@ class StakeHelper {
   /**
    * StakeHelper constructor object.
    *
-   * @param originWeb3 - Origin chain web3 address.
-   * @param brandedTokenAddress - Branded Token contract address.
-   * @param gatewayComposerAddress - Gateway composer contract address.
+   * @param originWeb3 Origin chain web3 address.
+   * @param brandedTokenAddress Branded Token contract address.
+   * @param gatewayComposerAddress Gateway composer contract address.
    */
   constructor(originWeb3, brandedTokenAddress, gatewayComposerAddress) {
     const oThis = this;
@@ -32,10 +32,10 @@ class StakeHelper {
   /**
    * Returns the amount of branded tokens equivalent to a given amount of value tokens.
    *
-   * @param vtAmountInWei - ValueToken amount to convert.
-   * @param brandedTokenContractAddress - BrandedToken contract address.
-   * @param originWeb3 - Origin chain web3 address.
-   * @param txOptions - Tx options.
+   * @param vtAmountInWei ValueToken amount to convert.
+   * @param brandedTokenContractAddress BrandedToken contract address.
+   * @param originWeb3 Origin chain web3 address.
+   * @param txOptions Tx options.
    */
   convertToBTToken(vtAmountInWei, brandedTokenContractAddress, originWeb3, txOptions) {
     const oThis = this;
@@ -74,17 +74,17 @@ class StakeHelper {
    * Performs request stake on GatewayComposer.
    *
    * @param owner - Owner of GatewayComposer contract.
-   * @param stakeVTAmountInWei - ValueToken amount which is staked.
-   * @param mintBTAmountInWei - Amount of BT amount which will be minted.
-   * @param gatewayAddress - Gateway contract address.
-   * @param beneficiary - The address in the auxiliary chain where the utility
+   * @param stakeVTAmountInWei ValueToken amount which is staked.
+   * @param mintBTAmountInWei Amount of BT amount which will be minted.
+   * @param gatewayAddress Gateway contract address.
+   * @param beneficiary The address in the auxiliary chain where the utility
    *                     tokens will be minted.
-   * @param gasPrice - Gas price that staker is ready to pay to get the stake
+   * @param gasPrice Gas price that staker is ready to pay to get the stake
    *                  and mint process done.
-   * @param gasLimit - Gas limit that staker is ready to pay.
-   * @param nonce -  Nonce of the staker address.
-   * @param originWeb3 - Origin chain web3 object.
-   * @param txOptions - Tx options.
+   * @param gasLimit Gas limit that staker is ready to pay.
+   * @param nonce Nonce of the staker address.
+   * @param originWeb3 Origin chain web3 object.
+   * @param txOptions Tx options.
    */
   requestStake(
     owner,
@@ -132,18 +132,18 @@ class StakeHelper {
   /**
    * Performs request stake on GatewayComposer.
    *
-   * @param owner - Owner of GatewayComposer contract.
-   * @param stakeVTAmountInWei - ValueToken amount which is staked.
-   * @param mintBTAmountInWei - Amount of BT amount which will be minted.
-   * @param gatewayAddress - Gateway contract address.
-   * @param beneficiary - The address in the auxiliary chain where the utility
+   * @param owner Owner of GatewayComposer contract.
+   * @param stakeVTAmountInWei ValueToken amount which is staked.
+   * @param mintBTAmountInWei Amount of BT amount which will be minted.
+   * @param gatewayAddress Gateway contract address.
+   * @param beneficiary The address in the auxiliary chain where the utility
    *                     tokens will be minted.
-   * @param gasPrice - Gas price that staker is ready to pay to get the stake
+   * @param gasPrice Gas price that staker is ready to pay to get the stake
    *                  and mint process done.
-   * @param gasLimit - Gas limit that staker is ready to pay.
-   * @param nonce -  Nonce of the staker address.
-   * @param originWeb3 - Origin chain web3 object.
-   * @param txOptions - Tx options.
+   * @param gasLimit Gas limit that staker is ready to pay.
+   * @param nonce Nonce of the staker address.
+   * @param originWeb3 Origin chain web3 object.
+   * @param txOptions Tx options.
    * @private
    */
   _requestStakeRawTx(

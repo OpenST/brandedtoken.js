@@ -23,7 +23,6 @@ const web3 = new Web3(config.gethRpcEndPoint),
 let worker,
   caOrganization = null,
   caMockToken,
-  caBT,
   caGC,
   wallets;
 
@@ -98,7 +97,7 @@ describe('StakeHelper', async function() {
     };
     let gcHelper = new GCHelper(web3, caGC),
       gatewayComposer = await gcHelper.setup(gcHelperConfig, gcDeployParams);
-    let gcAddress = gatewayComposer.contractAddress;
+    let gatewayComposerAddress = gatewayComposer.contractAddress;
 
     const txOptions = {
       from: owner,
@@ -107,7 +106,7 @@ describe('StakeHelper', async function() {
 
     let mockTokenAbi = abiBinProvider.getABI('MockToken');
     let mockContract = new web3.eth.Contract(mockTokenAbi, caMockToken, txOptions);
-    const txMockApprove = mockContract.methods.approve(gcAddress, 1000);
+    const txMockApprove = mockContract.methods.approve(gatewayComposerAddress, 1000);
 
     await txMockApprove.send(txOptions);
 
@@ -115,15 +114,15 @@ describe('StakeHelper', async function() {
       gasPrice = '8000000',
       gasLimit = '100',
       beneficiary = wallets[2].address,
-      stakeHelper = new StakeHelper(web3, btAddress, gcAddress),
-      txBTToken = await stakeHelper.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
+      stakeHelper = new StakeHelper(web3, btAddress, gatewayComposerAddress),
+      txBrandedToken = await stakeHelper.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
       stakerNonce = 1;
 
     await stakeHelper.requestStake(
       owner,
       valueTokenInWei,
-      txBTToken,
-      gcAddress,
+      txBrandedToken,
+      gatewayComposerAddress,
       gasPrice,
       gasLimit,
       beneficiary,
@@ -132,10 +131,10 @@ describe('StakeHelper', async function() {
       txOptions
     );
 
-    const requestHash = await stakeHelper._getStakeRequestHashForStakerRawTx(gcAddress, web3, txOptions);
+    const requestHash = await stakeHelper._getStakeRequestHashForStakerRawTx(gatewayComposerAddress, web3, txOptions);
 
     const stakeStruct = await stakeHelper._getStakeRequestRawTx(requestHash, web3, txOptions);
 
-    assert.strictEqual(gcAddress, stakeStruct.staker, 'Incorrect staker address');
+    assert.strictEqual(gatewayComposerAddress, stakeStruct.staker, 'Incorrect staker address');
   });
 });
