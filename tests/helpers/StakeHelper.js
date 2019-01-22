@@ -3,7 +3,8 @@
 // Load external packages
 const chai = require('chai'),
   Web3 = require('web3'),
-  Package = require('../../index');
+  Package = require('../../index'),
+  Mosaic = require('@openstfoundation/mosaic-tbd');
 
 const Setup = Package.EconomySetup,
   OrganizationHelper = Setup.OrganizationHelper,
@@ -14,7 +15,6 @@ const Setup = Package.EconomySetup,
   MockContractsDeployer = require('../utils/MockContractsDeployer'),
   abiBinProvider = MockContractsDeployer.abiBinProvider(),
   BTHelper = Package.EconomySetup.BrandedTokenHelper,
-  GatewayHelper = Package.EconomySetup.GatewayHelper,
   GCHelper = Setup.GatewayComposerHelper;
 
 const web3 = new Web3(config.gethRpcEndPoint),
@@ -31,7 +31,7 @@ let worker,
   facilitator,
   beneficiary,
   stakeStruct,
-  stakeHelper,
+  stakeHelperInstance,
   caBT,
   deployer;
 
@@ -126,12 +126,12 @@ describe('StakeHelper', async function() {
     await txMockApprove.send(txOptions);
     await deployer.deployMockGatewayPass();
 
-    stakeHelper = new StakeHelper(web3, btAddress, gatewayComposerAddress);
-    const txBrandedToken = await stakeHelper.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
+    stakeHelperInstance = new StakeHelper(web3, btAddress, gatewayComposerAddress);
+    const txBrandedToken = await stakeHelperInstance.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
       stakerNonce = 1,
       caGateway = deployer.addresses.MockGatewayPass;
 
-    await stakeHelper.requestStake(
+    await stakeHelperInstance.requestStake(
       owner,
       valueTokenInWei,
       txBrandedToken,
@@ -144,30 +144,40 @@ describe('StakeHelper', async function() {
       txOptions
     );
 
-    stakeRequestHash = await stakeHelper._getStakeRequestHashForStakerRawTx(gatewayComposerAddress, web3, txOptions);
+    stakeRequestHash = await stakeHelperInstance._getStakeRequestHashForStakerRawTx(
+      gatewayComposerAddress,
+      web3,
+      txOptions
+    );
 
-    stakeStruct = await stakeHelper._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
+    stakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
 
     assert.strictEqual(gatewayComposerAddress, stakeStruct.staker, 'Incorrect staker address');
   });
 
   it('Should perform acceptStakeRequest successfully', async function() {
-    this.timeout(60000);
+    this.timeout(2 * 60000);
 
+    const hashLockInstance = Mosaic.Helpers.StakeHelper.createSecretHashLock();
     // AcceptStakeRequest Testing
-    await stakeHelper.acceptStakeRequest(
+    await stakeHelperInstance.acceptStakeRequest(
       stakeRequestHash,
       gatewayComposerAddress,
       valueTokenInWei,
       stakeStruct.nonce,
       facilitator,
       worker,
+      hashLockInstance.hashLock,
       web3,
       txOptions
     );
 
-    stakeRequestHash = await stakeHelper._getStakeRequestHashForStakerRawTx(gatewayComposerAddress, web3, txOptions);
-    stakeStruct = await stakeHelper._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
+    stakeRequestHash = await stakeHelperInstance._getStakeRequestHashForStakerRawTx(
+      gatewayComposerAddress,
+      web3,
+      txOptions
+    );
+    stakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
     console.log('stakeRequestHash:', stakeRequestHash, 'stakeStruct:', stakeStruct);
     assert.strictEqual(stakeRequestHash, null, 'BT.StakeRequestHash should be deleted for staker');
     assert.strictEqual(stakeStruct.stake, 0, 'BT.StakeRequest struct should be deleted for input stakeRequestHash.');
