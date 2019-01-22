@@ -77,7 +77,7 @@ class StakeHelper {
   /**
    * Performs request stake on GatewayComposer.
    *
-   * @param owner - Owner of GatewayComposer contract.
+   * @param owner Owner of GatewayComposer contract.
    * @param stakeVTAmountInWei ValueToken amount which is staked.
    * @param mintBTAmountInWei Amount of BT amount which will be minted.
    * @param gatewayAddress Gateway contract address.
@@ -137,14 +137,15 @@ class StakeHelper {
    * Facilitator performs accept stake request.
    * Note: Add KYC worker account/private key in web3 wallet before calling acceptStakeRequest.
    *
-   * @param stakeRequestHash - Stake request hash unique for each stake.
-   * @param staker - Staker address. Staker can be GatewayComposer.
-   * @param stakeAmountInWei - Stake amount in wei.
-   * @param nonce - BrandedToken StakeRequest nonce.
-   * @param facilitator - Facilitator address.
-   * @param workerAddress - KYC worker address.
-   * @param originWeb3 - Origin chain web3 object.
-   * @param txOptions - Tx options.
+   * @param stakeRequestHash Stake request hash unique for each stake.
+   * @param staker Staker address. Staker can be GatewayComposer.
+   * @param stakeAmountInWei Stake amount in wei.
+   * @param nonce BrandedToken StakeRequest nonce.
+   * @param facilitator Facilitator address.
+   * @param workerAddress KYC worker address.
+   * @param hashLock HashLock of facilitator.
+   * @param originWeb3 Origin chain web3 object.
+   * @param txOptions Tx options.
    */
   acceptStakeRequest(
     stakeRequestHash,
@@ -153,6 +154,7 @@ class StakeHelper {
     nonce,
     facilitator,
     workerAddress,
+    hashLock,
     originWeb3,
     txOptions
   ) {
@@ -164,6 +166,7 @@ class StakeHelper {
       nonce,
       facilitator,
       workerAddress,
+      hashLock,
       originWeb3,
       txOptions
     );
@@ -186,16 +189,18 @@ class StakeHelper {
 
   /**
    * Facilitator performs accept stake request.
+   * Note: Add KYC worker account/private key in web3 wallet before calling acceptStakeRequest.
    *
-   * @param stakeRequestHash - Stake request hash unique for a stake request.
-   * @param staker - staker address. Staker can be GatewayComposer.
-   * @param stakeAmountInWei - Stake amount in wei.
-   * @param nonce - BrandedToken StakeRequest nonce.
-   * @param facilitator - Facilitator address.
-   * @param workerAddress - KYC worker address.
-   * @param originWeb3 - Origin chain web3 object.
-   * @param txOptions - Transaction options.
-   * @returns {txObject} - Tx object
+   * @param stakeRequestHash Stake request hash unique for a stake request.
+   * @param staker Staker address. Staker can be GatewayComposer.
+   * @param stakeAmountInWei Stake amount in wei.
+   * @param nonce BrandedToken StakeRequest nonce.
+   * @param facilitator Facilitator address.
+   * @param workerAddress KYC worker address.
+   * @param hashLock HashLock of facilitator.
+   * @param originWeb3 Origin chain web3 object.
+   * @param txOptions Transaction options.
+   * @returns {txObject} Tx object
    */
   _acceptStakeRequestRawTx(
     stakeRequestHash,
@@ -204,6 +209,7 @@ class StakeHelper {
     nonce,
     facilitator,
     workerAddress,
+    hashLock,
     originWeb3,
     txOptions
   ) {
@@ -217,7 +223,7 @@ class StakeHelper {
 
     const web3 = originWeb3 || oThis.originWeb3;
     const abiBinProvider = oThis.abiBinProvider;
-    const abi = abiBinProvider.getABI(ContractName);
+    const abi = abiBinProvider.getABI(gatewayComposerContractName);
 
     let defaultOptions = {
       from: facilitator,
@@ -234,7 +240,13 @@ class StakeHelper {
 
     const signature = oThis._getEIP712SignedData(stakeRequestObject, oThis.brandedToken, workerAddress, web3);
     console.log('_acceptStakeRequestRawTx: Returning txObject.');
-    const txObject = Contract.methods.acceptStakeRequest(stakeRequestHash, signature.r, signature.s, signature.v);
+    const txObject = Contract.methods.acceptStakeRequest(
+      stakeRequestHash,
+      signature.r,
+      signature.s,
+      signature.v,
+      hashLock
+    );
 
     return txObject;
   }
@@ -249,7 +261,7 @@ class StakeHelper {
    *          nonce: BT contract nonce.
    *        }
    * @param brandedToken BrandedToken contract address.
-   * @param workerAccount Worker address.
+   * @param workerAddress Worker address.
    * @returns {Object} Signature format:
    *                  {
    *                    messageHash: signHash,
@@ -263,7 +275,7 @@ class StakeHelper {
   _getEIP712SignedData(stakeRequestObject, brandedToken, workerAddress, originWeb3) {
     const typedDataInput = {
       types: {
-        EIP712Domain: [{ name: 'verifyingContract', type: brandedToken }],
+        EIP712Domain: [{ name: 'verifyingContract', type: 'address' }],
         StakeRequest: [
           { name: 'staker', type: 'address' },
           { name: 'stake', type: 'uint256' },
@@ -276,17 +288,17 @@ class StakeHelper {
       },
       message: {
         staker: stakeRequestObject.staker,
-        stake: stakeRequestObject.stakeAmountInWei,
+        stake: stakeRequestObject.stake,
         nonce: stakeRequestObject.nonce
       }
     };
 
     let typedDataInstance = TypedDataClass.fromObject(typedDataInput);
 
-    if (typedDataInstance.validateData(TypedDataInput) === true) {
-      // It fetched account object.
-      const workerAccount = originWeb3.eth.accounts.wallet[workerAddress];
-      const signature = workerAccount.signEIP712TypedData(typedDataInstance);
+    if (typedDataInstance.validate() === true) {
+      // It fetches account object from web3wallet.
+      const workerAccountInstance = originWeb3.eth.accounts.wallet[workerAddress];
+      const signature = workerAccountInstance.signEIP712TypedData(typedDataInstance);
       return signature;
     } else {
       throw new Error('TypedData is invalid');
@@ -379,9 +391,9 @@ class StakeHelper {
   /**
    * Returns StakeRequest for a given StakeRequestHash.
    *
-   * @param stakeRequestHash - Hash of the requests done by the staker.
-   * @param originWeb3 - Origin chain web3 object.
-   * @param txOptions - Tx options.
+   * @param stakeRequestHash Hash of the requests done by the staker.
+   * @param originWeb3 Origin chain web3 object.
+   * @param txOptions Tx options.
    * @returns {Object} Struct containing stake information.
    * @private
    */

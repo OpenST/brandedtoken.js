@@ -3,7 +3,8 @@
 // Load external packages
 const chai = require('chai'),
   Web3 = require('web3'),
-  Package = require('../../index');
+  Package = require('../../index'),
+  Mosaic = require('@openstfoundation/mosaic-tbd');
 
 const Setup = Package.EconomySetup,
   OrganizationHelper = Setup.OrganizationHelper,
@@ -24,7 +25,23 @@ let worker,
   caOrganization = null,
   caMockToken,
   caGC,
-  wallets;
+  wallets,
+  stakeRequestHash,
+  gatewayComposerAddress,
+  facilitator,
+  beneficiary,
+  stakeStruct,
+  stakeHelperInstance,
+  caBT,
+  deployer;
+
+const valueTokenInWei = 200,
+  gasPrice = '8000000',
+  gasLimit = '100',
+  txOptions = {
+    from: owner,
+    gas: '8000000'
+  };
 
 describe('StakeHelper', async function() {
   let deployParams = {
@@ -42,6 +59,8 @@ describe('StakeHelper', async function() {
           console.log('* Setting up Organization');
           wallets = web3WalletHelper.web3Object.eth.accounts.wallet;
           worker = wallets[1].address;
+          beneficiary = wallets[2].address;
+          facilitator = wallets[3].address;
           let orgHelper = new OrganizationHelper(web3, caOrganization);
           const orgConfig = {
             deployer: config.deployerAddress,
@@ -56,7 +75,7 @@ describe('StakeHelper', async function() {
       })
       .then(function() {
         if (!caMockToken) {
-          let deployer = new MockContractsDeployer(config.deployerAddress, web3);
+          deployer = new MockContractsDeployer(config.deployerAddress, web3);
           return deployer.deployMockToken().then(function() {
             caMockToken = deployer.addresses.MockToken;
             return caMockToken;
@@ -65,8 +84,8 @@ describe('StakeHelper', async function() {
       });
   });
 
-  it('Should perform stake request successfully', async function() {
-    this.timeout(60000);
+  it('Should perform requestStake successfully', async function() {
+    this.timeout(60000 * 2);
 
     const helperConfig = {
       deployer: config.deployerAddress,
@@ -79,7 +98,6 @@ describe('StakeHelper', async function() {
       organization: caOrganization
     };
 
-    let caBT;
     const btHelper = new BTHelper(web3, caBT);
     caBT = await btHelper.setup(helperConfig, deployParams);
     const btAddress = caBT.contractAddress;
@@ -95,34 +113,29 @@ describe('StakeHelper', async function() {
       from: config.deployerAddress,
       gasPrice: config.gasPrice
     };
+
     let gcHelper = new GCHelper(web3, caGC),
-      gatewayComposer = await gcHelper.setup(gcHelperConfig, gcDeployParams);
-    let gatewayComposerAddress = gatewayComposer.contractAddress;
+      gatewayComposerInstance = await gcHelper.setup(gcHelperConfig, gcDeployParams);
 
-    const txOptions = {
-      from: owner,
-      gas: '8000000'
-    };
+    gatewayComposerAddress = gatewayComposerInstance.contractAddress;
 
-    let mockTokenAbi = abiBinProvider.getABI('MockToken');
-    let mockContract = new web3.eth.Contract(mockTokenAbi, caMockToken, txOptions);
-    const txMockApprove = mockContract.methods.approve(gatewayComposerAddress, 1000);
+    const mockTokenAbi = abiBinProvider.getABI('MockToken'),
+      mockContract = new web3.eth.Contract(mockTokenAbi, caMockToken, txOptions),
+      txMockApprove = mockContract.methods.approve(gatewayComposerAddress, 1000);
 
     await txMockApprove.send(txOptions);
+    await deployer.deployMockGatewayPass();
 
-    const valueTokenInWei = 200,
-      gasPrice = '8000000',
-      gasLimit = '100',
-      beneficiary = wallets[2].address,
-      stakeHelper = new StakeHelper(web3, btAddress, gatewayComposerAddress),
-      txBrandedToken = await stakeHelper.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
-      stakerNonce = 1;
+    stakeHelperInstance = new StakeHelper(web3, btAddress, gatewayComposerAddress);
+    const txBrandedToken = await stakeHelperInstance.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
+      stakerNonce = 1,
+      caGateway = deployer.addresses.MockGatewayPass;
 
-    await stakeHelper.requestStake(
+    await stakeHelperInstance.requestStake(
       owner,
       valueTokenInWei,
       txBrandedToken,
-      gatewayComposerAddress,
+      caGateway,
       gasPrice,
       gasLimit,
       beneficiary,
@@ -131,10 +144,51 @@ describe('StakeHelper', async function() {
       txOptions
     );
 
-    const requestHash = await stakeHelper._getStakeRequestHashForStakerRawTx(gatewayComposerAddress, web3, txOptions);
+    stakeRequestHash = await stakeHelperInstance._getStakeRequestHashForStakerRawTx(
+      gatewayComposerAddress,
+      web3,
+      txOptions
+    );
 
-    const stakeStruct = await stakeHelper._getStakeRequestRawTx(requestHash, web3, txOptions);
+    stakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
 
     assert.strictEqual(gatewayComposerAddress, stakeStruct.staker, 'Incorrect staker address');
   });
+
+  it('Should perform acceptStakeRequest successfully', async function() {
+    this.timeout(2 * 60000);
+
+    const hashLockInstance = Mosaic.Helpers.StakeHelper.createSecretHashLock();
+    // AcceptStakeRequest Testing
+    await stakeHelperInstance.acceptStakeRequest(
+      stakeRequestHash,
+      gatewayComposerAddress,
+      valueTokenInWei,
+      stakeStruct.nonce,
+      facilitator,
+      worker,
+      hashLockInstance.hashLock,
+      web3,
+      txOptions
+    );
+
+    stakeRequestHash = await stakeHelperInstance._getStakeRequestHashForStakerRawTx(
+      gatewayComposerAddress,
+      web3,
+      txOptions
+    );
+    stakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
+    console.log('stakeRequestHash:', stakeRequestHash, 'stakeStruct:', stakeStruct);
+    assert.strictEqual(stakeRequestHash, null, 'BT.StakeRequestHash should be deleted for staker');
+    assert.strictEqual(stakeStruct.stake, 0, 'BT.StakeRequest struct should be deleted for input stakeRequestHash.');
+  });
 });
+
+// Go easy on RPC Client (Geth)
+(function() {
+  let maxHttpScokets = 10;
+  let httpModule = require('http');
+  httpModule.globalAgent.keepAlive = true;
+  httpModule.globalAgent.keepAliveMsecs = 30 * 60 * 1000;
+  httpModule.globalAgent.maxSockets = maxHttpScokets;
+})();
