@@ -27,6 +27,11 @@ class MockContractsDeployer {
     return oThis.deploy('MockToken', web3, txOptions);
   }
 
+  deployMockGatewayPass(web3, txOptions) {
+    const oThis = this;
+    return oThis.deploy('MockGatewayPass', web3, txOptions);
+  }
+
   deploy(contractName, web3, txOptions) {
     const oThis = this;
     web3 = web3 || oThis.web3;
@@ -70,9 +75,9 @@ class MockContractsDeployer {
         txReceipt = receipt;
         console.log('\t - Receipt:\n\x1b[2m', JSON.stringify(receipt), '\x1b[0m\n');
       })
-      .then(function(instace) {
-        oThis.addresses[contractName] = instace.options.address;
-        console.log(`\t - ${contractName} Contract Address:`, oThis.address);
+      .then(function(instance) {
+        oThis.addresses[contractName] = instance.options.address;
+        console.log(`\t - ${contractName} Contract Address:`, instance.options.address);
         return txReceipt;
       });
   }

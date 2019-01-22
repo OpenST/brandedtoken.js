@@ -218,7 +218,7 @@ class StakeHelper {
 
     const web3 = originWeb3 || oThis.originWeb3;
     const abiBinProvider = oThis.abiBinProvider;
-    const abi = abiBinProvider.getABI(ContractName);
+    const abi = abiBinProvider.getABI(gatewayComposerContractName);
 
     let defaultOptions = {
       from: facilitator,

@@ -32,7 +32,8 @@ let worker,
   beneficiary,
   stakeStruct,
   stakeHelper,
-  caBT;
+  caBT,
+  deployer;
 
 const valueTokenInWei = 200,
   gasPrice = '8000000',
@@ -74,7 +75,7 @@ describe('StakeHelper', async function() {
       })
       .then(function() {
         if (!caMockToken) {
-          let deployer = new MockContractsDeployer(config.deployerAddress, web3);
+          deployer = new MockContractsDeployer(config.deployerAddress, web3);
           return deployer.deployMockToken().then(function() {
             caMockToken = deployer.addresses.MockToken;
             return caMockToken;
@@ -114,7 +115,6 @@ describe('StakeHelper', async function() {
     };
 
     let gcHelper = new GCHelper(web3, caGC),
-      gatewayAddress = wallets[4].address, // TODO with actual gateway deployment
       gatewayComposerInstance = await gcHelper.setup(gcHelperConfig, gcDeployParams);
 
     gatewayComposerAddress = gatewayComposerInstance.contractAddress;
@@ -124,17 +124,18 @@ describe('StakeHelper', async function() {
       txMockApprove = mockContract.methods.approve(gatewayComposerAddress, 1000);
 
     await txMockApprove.send(txOptions);
+    await deployer.deployMockGatewayPass();
 
     stakeHelper = new StakeHelper(web3, btAddress, gatewayComposerAddress);
-
     const txBrandedToken = await stakeHelper.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
-      stakerNonce = 1;
+      stakerNonce = 1,
+      caGateway = deployer.addresses.MockGatewayPass;
 
     await stakeHelper.requestStake(
       owner,
       valueTokenInWei,
       txBrandedToken,
-      gatewayAddress,
+      caGateway,
       gasPrice,
       gasLimit,
       beneficiary,
@@ -150,26 +151,27 @@ describe('StakeHelper', async function() {
     assert.strictEqual(gatewayComposerAddress, stakeStruct.staker, 'Incorrect staker address');
   });
 
-  // it('Should perform acceptStakeRequest successfully', async function() {
-  //   this.timeout(60000);
-  //
-  //   // AcceptStakeRequest Testing
-  //   await stakeHelper.acceptStakeRequest(stakeRequestHash,
-  //     gatewayComposerAddress,
-  //     valueTokenInWei,
-  //     stakeStruct.nonce,
-  //     facilitator,
-  //     worker,
-  //     web3,
-  //     txOptions
-  //   );
-  //
-  //   stakeRequestHash = await stakeHelper._getStakeRequestHashForStakerRawTx(gatewayComposerAddress, web3, txOptions);
-  //   stakeStruct = await stakeHelper._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
-  //
-  //   assert.strictEqual(stakeRequestHash, null, 'BT.StakeRequestHash should be deleted for staker');
-  //   assert.strictEqual(stakeStruct.stake, 0, 'BT.StakeRequest struct should be deleted for input stakeRequestHash.');
-  // });
+  it('Should perform acceptStakeRequest successfully', async function() {
+    this.timeout(60000);
+
+    // AcceptStakeRequest Testing
+    await stakeHelper.acceptStakeRequest(
+      stakeRequestHash,
+      gatewayComposerAddress,
+      valueTokenInWei,
+      stakeStruct.nonce,
+      facilitator,
+      worker,
+      web3,
+      txOptions
+    );
+
+    stakeRequestHash = await stakeHelper._getStakeRequestHashForStakerRawTx(gatewayComposerAddress, web3, txOptions);
+    stakeStruct = await stakeHelper._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
+    console.log('stakeRequestHash:', stakeRequestHash, 'stakeStruct:', stakeStruct);
+    assert.strictEqual(stakeRequestHash, null, 'BT.StakeRequestHash should be deleted for staker');
+    assert.strictEqual(stakeStruct.stake, 0, 'BT.StakeRequest struct should be deleted for input stakeRequestHash.');
+  });
 });
 
 // Go easy on RPC Client (Geth)
