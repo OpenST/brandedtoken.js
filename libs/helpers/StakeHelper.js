@@ -220,7 +220,7 @@ class StakeHelper {
       stake: stakeAmountInWei,
       nonce: nonce
     };
-
+    console.log('stakeRequestObject:', stakeRequestObject);
     const web3 = originWeb3 || oThis.originWeb3;
     const abiBinProvider = oThis.abiBinProvider;
     const abi = abiBinProvider.getABI(gatewayComposerContractName);
@@ -239,6 +239,7 @@ class StakeHelper {
     const Contract = new web3.eth.Contract(abi, oThis.gatewayComposer, txOptions);
 
     const signature = oThis._getEIP712SignedData(stakeRequestObject, oThis.brandedToken, workerAddress, web3);
+    console.log('signature:', signature);
     console.log('_acceptStakeRequestRawTx: Returning txObject.');
     const txObject = Contract.methods.acceptStakeRequest(
       stakeRequestHash,

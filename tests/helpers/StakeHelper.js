@@ -35,7 +35,7 @@ let worker,
   caBT,
   deployer;
 
-const valueTokenInWei = 200,
+const valueTokenInWei = '200',
   gasPrice = '8000000',
   gasLimit = '100',
   txOptions = {
