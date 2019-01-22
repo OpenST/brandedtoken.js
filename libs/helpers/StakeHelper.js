@@ -186,9 +186,10 @@ class StakeHelper {
 
   /**
    * Facilitator performs accept stake request.
+   * Note: Add KYC worker account/private key in web3 wallet before calling acceptStakeRequest.
    *
    * @param stakeRequestHash - Stake request hash unique for a stake request.
-   * @param staker - staker address. Staker can be GatewayComposer.
+   * @param staker - Staker address. Staker can be GatewayComposer.
    * @param stakeAmountInWei - Stake amount in wei.
    * @param nonce - BrandedToken StakeRequest nonce.
    * @param facilitator - Facilitator address.
@@ -249,7 +250,7 @@ class StakeHelper {
    *          nonce: BT contract nonce.
    *        }
    * @param brandedToken BrandedToken contract address.
-   * @param workerAccount Worker address.
+   * @param workerAddress Worker address.
    * @returns {Object} Signature format:
    *                  {
    *                    messageHash: signHash,
@@ -283,10 +284,10 @@ class StakeHelper {
 
     let typedDataInstance = TypedDataClass.fromObject(typedDataInput);
 
-    if (typedDataInstance.validateData(TypedDataInput) === true) {
-      // It fetched account object.
-      const workerAccount = originWeb3.eth.accounts.wallet[workerAddress];
-      const signature = workerAccount.signEIP712TypedData(typedDataInstance);
+    if (typedDataInstance.validateData(typedDataInput) === true) {
+      // It fetches account object from web3wallet.
+      const workerAccountInstance = originWeb3.eth.accounts.wallet[workerAddress];
+      const signature = workerAccountInstance.signEIP712TypedData(typedDataInstance);
       return signature;
     } else {
       throw new Error('TypedData is invalid');
