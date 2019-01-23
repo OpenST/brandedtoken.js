@@ -167,7 +167,6 @@ describe('StakeHelper', async function() {
     // AcceptStakeRequest Testing
     let txResponse = await stakeHelperInstance.acceptStakeRequest(
       stakeRequestHash,
-      gatewayComposerAddress,
       valueTokenInWei,
       btStakeStruct.nonce,
       facilitator,

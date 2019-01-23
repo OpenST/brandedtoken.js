@@ -133,7 +133,6 @@ class StakeHelper {
    * Note: Add KYC worker account/private key in web3 wallet before calling acceptStakeRequest.
    *
    * @param stakeRequestHash Stake request hash unique for each stake.
-   * @param staker Staker address. Staker can be GatewayComposer.
    * @param stakeAmountInWei Stake amount in wei.
    * @param btStakeRequestNonce BrandedToken StakeRequest nonce.
    * @param facilitator Facilitator address.
@@ -144,7 +143,6 @@ class StakeHelper {
    */
   acceptStakeRequest(
     stakeRequestHash,
-    staker,
     stakeAmountInWei,
     btStakeRequestNonce,
     facilitator,
@@ -156,7 +154,6 @@ class StakeHelper {
     const oThis = this;
     const txObject = oThis._acceptStakeRequestRawTx(
       stakeRequestHash,
-      staker,
       stakeAmountInWei,
       btStakeRequestNonce,
       facilitator,
@@ -187,7 +184,6 @@ class StakeHelper {
    * Note: Add KYC worker account/private key in web3 wallet before calling acceptStakeRequest.
    *
    * @param stakeRequestHash Stake request hash unique for a stake request.
-   * @param staker Staker address. Staker can be GatewayComposer.
    * @param stakeAmountInWei Stake amount in wei.
    * @param nonce BrandedToken StakeRequest nonce.
    * @param facilitator Facilitator address.
@@ -199,7 +195,6 @@ class StakeHelper {
    */
   _acceptStakeRequestRawTx(
     stakeRequestHash,
-    staker,
     stakeAmountInWei,
     nonce,
     facilitator,
@@ -211,7 +206,7 @@ class StakeHelper {
     const oThis = this;
 
     const stakeRequestObject = {
-      staker: staker,
+      staker: oThis.gatewayComposer,
       stake: stakeAmountInWei,
       nonce: nonce
     };
@@ -223,7 +218,7 @@ class StakeHelper {
     let defaultOptions = {
       from: facilitator,
       to: oThis.gatewayComposer,
-      gas: '8000000'
+      gas: '2000000'
     };
 
     if (txOptions) {
