@@ -65,6 +65,42 @@ class StakeHelper {
   approveForValueToken(valueTokenContractAddress, valueTokenAbi, amountInWei, originWeb3, txOptions) {
     const oThis = this;
 
+    const txObject = oThis._approveForValueTokenRawTx(
+      valueTokenContractAddress,
+      valueTokenAbi,
+      amountInWei,
+      originWeb3,
+      txOptions
+    );
+    let txReceipt;
+
+    return txObject
+      .send(txOptions)
+      .on('transactionHash of request stake', function(transactionHash) {
+        console.log('\t - transaction hash:', transactionHash);
+      })
+      .on('receipt of request stake', function(receipt) {
+        txReceipt = receipt;
+        console.log('\t - Receipt:\n\x1b[2m', JSON.stringify(txReceipt), '\x1b[0m\n');
+      })
+      .on('error', function(error) {
+        console.log('\t !! Error !!', error, '\n\t !! ERROR !!\n');
+        return Promise.reject(error);
+      });
+  }
+
+  /**
+   * Approve gateway composer for ValueToken.
+   *
+   * @param valueTokenContractAddress Value token contract address.
+   * @param valueTokenAbi Value token ABI.
+   * @param amountInWei Amount to approve.
+   * @param originWeb3 Origin chain web3.
+   * @param txOptions Tx options.
+   */
+  _approveForValueTokenRawTx(valueTokenContractAddress, valueTokenAbi, amountInWei, originWeb3, txOptions) {
+    const oThis = this;
+
     const web3 = originWeb3 || oThis.originWeb3;
 
     if (valueTokenAbi.length == 0) {
