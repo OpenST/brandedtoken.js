@@ -205,33 +205,33 @@ describe('StakeHelper', async function() {
     assert.strictEqual(gatewayComposerAddress, stakeStruct.staker, 'Incorrect staker address');
   });
 
-  // it('Should perform acceptStakeRequest successfully', async function() {
-  //   this.timeout(2 * 60000);
-  //
-  //   const hashLockInstance = Mosaic.Helpers.StakeHelper.createSecretHashLock();
-  //   // AcceptStakeRequest Testing
-  //   await stakeHelperInstance.acceptStakeRequest(
-  //     stakeRequestHash,
-  //     gatewayComposerAddress,
-  //     valueTokenInWei,
-  //     stakeStruct.nonce,
-  //     facilitator,
-  //     worker,
-  //     hashLockInstance.hashLock,
-  //     web3,
-  //     txOptions
-  //   );
-  //
-  //   stakeRequestHash = await stakeHelperInstance._getStakeRequestHashForStakerRawTx(
-  //     gatewayComposerAddress,
-  //     web3,
-  //     txOptions
-  //   );
-  //   stakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
-  //   console.log('stakeRequestHash:', stakeRequestHash, 'stakeStruct:', stakeStruct);
-  //   assert.strictEqual(stakeRequestHash, null, 'BT.StakeRequestHash should be deleted for staker');
-  //   assert.strictEqual(stakeStruct.stake, 0, 'BT.StakeRequest struct should be deleted for input stakeRequestHash.');
-  // });
+  it('Should perform acceptStakeRequest successfully', async function() {
+    this.timeout(2 * 60000);
+
+    const hashLockInstance = Mosaic.Helpers.StakeHelper.createSecretHashLock();
+    // AcceptStakeRequest Testing
+    await stakeHelperInstance.acceptStakeRequest(
+      stakeRequestHash,
+      gatewayComposerAddress,
+      valueTokenInWei,
+      stakeStruct.nonce,
+      facilitator,
+      worker,
+      hashLockInstance.hashLock,
+      web3,
+      txOptions
+    );
+
+    stakeRequestHash = await stakeHelperInstance._getStakeRequestHashForStakerRawTx(
+      gatewayComposerAddress,
+      web3,
+      txOptions
+    );
+    stakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
+    console.log('stakeRequestHash:', stakeRequestHash, 'stakeStruct:', stakeStruct);
+    assert.strictEqual(stakeRequestHash, null, 'BT.StakeRequestHash should be deleted for staker');
+    assert.strictEqual(stakeStruct.stake, 0, 'BT.StakeRequest struct should be deleted for input stakeRequestHash.');
+  });
 });
 
 // Go easy on RPC Client (Geth)
