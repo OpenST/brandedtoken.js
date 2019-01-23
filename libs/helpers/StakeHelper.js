@@ -76,10 +76,10 @@ class StakeHelper {
 
     return txObject
       .send(txOptions)
-      .on('transactionHash of request stake', function(transactionHash) {
+      .on('transactionHash of approveForValueToken method', function(transactionHash) {
         console.log('\t - transaction hash:', transactionHash);
       })
-      .on('receipt of request stake', function(receipt) {
+      .on('receipt of of approveForValueToken method', function(receipt) {
         txReceipt = receipt;
         console.log('\t - Receipt:\n\x1b[2m', JSON.stringify(txReceipt), '\x1b[0m\n');
       })
