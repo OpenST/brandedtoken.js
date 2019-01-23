@@ -90,27 +90,6 @@ class StakeHelper {
   }
 
   /**
-   * Approve gateway composer for ValueToken.
-   *
-   * @param valueTokenContractAddress Value token contract address.
-   * @param valueTokenAbi Value token ABI.
-   * @param amountInWei Amount to approve.
-   * @param originWeb3 Origin chain web3.
-   * @param txOptions Tx options.
-   */
-  _approveForValueTokenRawTx(valueTokenContractAddress, valueTokenAbi, amountInWei, originWeb3, txOptions) {
-    const oThis = this;
-
-    const web3 = originWeb3 || oThis.originWeb3;
-
-    if (valueTokenAbi.length == 0) {
-      throw Error('Value token abi is not provided');
-    }
-    const contract = new web3.eth.Contract(valueTokenAbi, valueTokenContractAddress, txOptions);
-    return contract.methods.approve(oThis.gatewayComposer, amountInWei);
-  }
-
-  /**
    * Performs request stake on GatewayComposer.
    *
    * @param owner Owner of GatewayComposer contract.
@@ -442,6 +421,27 @@ class StakeHelper {
     const contract = new web3.eth.Contract(abi, oThis.brandedToken, txOptions);
 
     return contract.methods.stakeRequests(stakeRequestHash).call();
+  }
+
+  /**
+   * Approve gateway composer for ValueToken.
+   *
+   * @param valueTokenContractAddress Value token contract address.
+   * @param valueTokenAbi Value token ABI.
+   * @param amountInWei Amount to approve.
+   * @param originWeb3 Origin chain web3.
+   * @param txOptions Tx options.
+   */
+  _approveForValueTokenRawTx(valueTokenContractAddress, valueTokenAbi, amountInWei, originWeb3, txOptions) {
+    const oThis = this;
+
+    const web3 = originWeb3 || oThis.originWeb3;
+
+    if (valueTokenAbi.length == 0) {
+      throw Error('Value token abi is not provided');
+    }
+    const contract = new web3.eth.Contract(valueTokenAbi, valueTokenContractAddress, txOptions);
+    return contract.methods.approve(oThis.gatewayComposer, amountInWei);
   }
 }
 
