@@ -28,11 +28,6 @@ class StakeHelper {
     oThis.abiBinProvider = new AbiBinProvider();
   }
 
-  perform() {
-    // approveVT;
-    // requestStake();
-  }
-
   /**
    * Returns the amount of branded tokens equivalent to a given amount of value tokens.
    *
@@ -86,7 +81,7 @@ class StakeHelper {
    * @param gasPrice Gas price that staker is ready to pay to get the stake
    *                  and mint process done.
    * @param gasLimit Gas limit that staker is ready to pay.
-   * @param nonce Nonce of the staker address.
+   * @param stakerGatewayNonce Nonce of the staker address stored in Gateway.
    * @param originWeb3 Origin chain web3 object.
    * @param txOptions Tx options.
    */
@@ -98,7 +93,7 @@ class StakeHelper {
     gasPrice,
     gasLimit,
     beneficiary,
-    nonce,
+    stakerGatewayNonce,
     originWeb3,
     txOptions
   ) {
@@ -111,7 +106,7 @@ class StakeHelper {
       beneficiary,
       gasPrice,
       gasLimit,
-      nonce,
+      stakerGatewayNonce,
       originWeb3,
       txOptions
     );
@@ -140,7 +135,7 @@ class StakeHelper {
    * @param stakeRequestHash Stake request hash unique for each stake.
    * @param staker Staker address. Staker can be GatewayComposer.
    * @param stakeAmountInWei Stake amount in wei.
-   * @param nonce BrandedToken StakeRequest nonce.
+   * @param btStakeRequestNonce BrandedToken StakeRequest nonce.
    * @param facilitator Facilitator address.
    * @param workerAddress KYC worker address.
    * @param hashLock HashLock of facilitator.
@@ -151,7 +146,7 @@ class StakeHelper {
     stakeRequestHash,
     staker,
     stakeAmountInWei,
-    nonce,
+    btStakeRequestNonce,
     facilitator,
     workerAddress,
     hashLock,
@@ -163,7 +158,7 @@ class StakeHelper {
       stakeRequestHash,
       staker,
       stakeAmountInWei,
-      nonce,
+      btStakeRequestNonce,
       facilitator,
       workerAddress,
       hashLock,
@@ -239,8 +234,6 @@ class StakeHelper {
     const Contract = new web3.eth.Contract(abi, oThis.gatewayComposer, txOptions);
 
     const signature = oThis._getEIP712SignedData(stakeRequestObject, oThis.brandedToken, workerAddress, web3);
-    console.log('signature:', signature);
-    console.log('_acceptStakeRequestRawTx: Returning txObject.');
     const txObject = Contract.methods.acceptStakeRequest(
       stakeRequestHash,
       signature.r,
@@ -295,6 +288,7 @@ class StakeHelper {
     };
 
     let typedDataInstance = TypedDataClass.fromObject(typedDataInput);
+    console.log('typedDataInstance.getEIP712SignHash', typedDataInstance.getEIP712SignHash());
 
     if (typedDataInstance.validate() === true) {
       // It fetches account object from web3wallet.
@@ -405,6 +399,26 @@ class StakeHelper {
 
     const abi = oThis.abiBinProvider.getABI(brandedTokenContractName);
     const contract = new web3.eth.Contract(abi, oThis.brandedToken, txOptions);
+
+    return contract.methods.stakeRequests(stakeRequestHash).call();
+  }
+
+  /**
+   * Returns StakeRequest for a given StakeRequestHash.
+   *
+   * @param stakeRequestHash Hash of the requests done by the staker.
+   * @param originWeb3 Origin chain web3 object.
+   * @param txOptions Tx options.
+   * @returns {Object} Struct containing stake information.
+   * @private
+   */
+  _getGCStakeRequestRawTx(stakeRequestHash, originWeb3, txOptions) {
+    const oThis = this;
+
+    const web3 = originWeb3 || oThis.web3;
+
+    const abi = oThis.abiBinProvider.getABI(gatewayComposerContractName);
+    const contract = new web3.eth.Contract(abi, oThis.gatewayComposer, txOptions);
 
     return contract.methods.stakeRequests(stakeRequestHash).call();
   }
