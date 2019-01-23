@@ -30,12 +30,12 @@ let worker,
   gatewayComposerAddress,
   facilitator,
   beneficiary,
-  stakeStruct,
+  btStakeStruct,
   stakeHelperInstance,
   caBT,
   deployer;
 
-const valueTokenInWei = 200,
+const valueTokenInWei = '200',
   gasPrice = '8000000',
   gasLimit = '100',
   txOptions = {
@@ -65,7 +65,8 @@ describe('StakeHelper', async function() {
           const orgConfig = {
             deployer: config.deployerAddress,
             owner: owner,
-            workers: worker
+            workers: worker,
+            workerExpirationHeight: '20000000'
           };
           return orgHelper.setup(orgConfig).then(function() {
             caOrganization = orgHelper.address;
@@ -135,7 +136,7 @@ describe('StakeHelper', async function() {
   });
 
   it('Should perform requestStake successfully', async function() {
-    this.timeout(60000 * 2);
+    this.timeout(3 * 60000);
 
     const helperConfig = {
       deployer: config.deployerAddress,
@@ -178,7 +179,7 @@ describe('StakeHelper', async function() {
 
     stakeHelperInstance = new StakeHelper(web3, btAddress, gatewayComposerAddress);
     const txBrandedToken = await stakeHelperInstance.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
-      stakerNonce = 1,
+      stakerGatewayNonce = 1,
       caGateway = deployer.addresses.MockGatewayPass;
 
     await stakeHelperInstance.requestStake(
@@ -189,7 +190,7 @@ describe('StakeHelper', async function() {
       gasPrice,
       gasLimit,
       beneficiary,
-      stakerNonce,
+      stakerGatewayNonce,
       web3,
       txOptions
     );
@@ -200,21 +201,24 @@ describe('StakeHelper', async function() {
       txOptions
     );
 
-    stakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
+    btStakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
 
-    assert.strictEqual(gatewayComposerAddress, stakeStruct.staker, 'Incorrect staker address');
+    assert.strictEqual(gatewayComposerAddress, btStakeStruct.staker, 'Incorrect staker address');
   });
 
   it('Should perform acceptStakeRequest successfully', async function() {
-    this.timeout(2 * 60000);
+    this.timeout(3 * 60000);
+
+    const organizationContractInstance = Mosaic.Contracts.getOrganization(web3, caOrganization);
+    const isWorkerResult = await organizationContractInstance.methods.isWorker(worker).call();
+    assert.strictEqual(isWorkerResult, true, 'Make sure worker is whitelisted.');
 
     const hashLockInstance = Mosaic.Helpers.StakeHelper.createSecretHashLock();
     // AcceptStakeRequest Testing
-    await stakeHelperInstance.acceptStakeRequest(
+    let txResponse = await stakeHelperInstance.acceptStakeRequest(
       stakeRequestHash,
-      gatewayComposerAddress,
       valueTokenInWei,
-      stakeStruct.nonce,
+      btStakeStruct.nonce,
       facilitator,
       worker,
       hashLockInstance.hashLock,
@@ -227,10 +231,19 @@ describe('StakeHelper', async function() {
       web3,
       txOptions
     );
-    stakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
-    console.log('stakeRequestHash:', stakeRequestHash, 'stakeStruct:', stakeStruct);
-    assert.strictEqual(stakeRequestHash, null, 'BT.StakeRequestHash should be deleted for staker');
-    assert.strictEqual(stakeStruct.stake, 0, 'BT.StakeRequest struct should be deleted for input stakeRequestHash.');
+    btStakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
+    let gcStakeStruct = await stakeHelperInstance._getGCStakeRequestRawTx(stakeRequestHash, web3, txOptions);
+    assert.strictEqual(stakeRequestHash, config.nullBytes32, 'BT.StakeRequestHash should be deleted for staker');
+    assert.strictEqual(
+      btStakeStruct.stake,
+      '0',
+      'BT.StakeRequest struct should be deleted for input stakeRequestHash.'
+    );
+    assert.strictEqual(
+      gcStakeStruct.stakeVT,
+      '0',
+      'GC.StakeRequest struct should be deleted for input stakeRequestHash.'
+    );
   });
 });
 
