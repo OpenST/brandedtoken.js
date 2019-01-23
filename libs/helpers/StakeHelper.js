@@ -1,7 +1,6 @@
 'use strict';
 
-const index = require('../../index'),
-  AbiBinProvider = index.AbiBinProvider,
+const AbiBinProvider = require('./../AbiBinProvider'),
   gatewayComposerContractName = 'GatewayComposer',
   brandedTokenContractName = 'BrandedToken';
 
