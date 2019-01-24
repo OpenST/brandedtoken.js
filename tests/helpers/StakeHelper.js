@@ -33,7 +33,9 @@ let worker,
   btStakeStruct,
   stakeHelperInstance,
   caBT,
-  deployer;
+  deployer,
+  caGateway,
+  btAddress;
 
 const valueTokenInWei = '200',
   gasPrice = '8000000',
@@ -151,7 +153,7 @@ describe('StakeHelper', async function() {
 
     const btHelper = new BTHelper(web3, caBT);
     caBT = await btHelper.setup(helperConfig, deployParams);
-    const btAddress = caBT.contractAddress;
+    btAddress = caBT.contractAddress;
 
     const gcHelperConfig = {
       deployer: config.deployerAddress,
@@ -176,11 +178,11 @@ describe('StakeHelper', async function() {
 
     await txMockApprove.send(txOptions);
     await deployer.deployMockGatewayPass();
+    caGateway = deployer.addresses.MockGatewayPass;
 
     stakeHelperInstance = new StakeHelper(web3, btAddress, gatewayComposerAddress);
     const txBrandedToken = await stakeHelperInstance.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
-      stakerGatewayNonce = 1,
-      caGateway = deployer.addresses.MockGatewayPass;
+      stakerGatewayNonce = 1;
 
     await stakeHelperInstance.requestStake(
       owner,
@@ -204,6 +206,19 @@ describe('StakeHelper', async function() {
     btStakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
 
     assert.strictEqual(gatewayComposerAddress, btStakeStruct.staker, 'Incorrect staker address');
+  });
+
+  it('Should perform approve for bounty', async function() {
+    this.timeout(3 * 60000);
+
+    const mockTokenAbi = abiBinProvider.getABI('MockToken');
+    const mockContractInstance = new web3.eth.Contract(mockTokenAbi, caMockToken, txOptions);
+    const gatewayContractInstance = Mosaic.Contracts.getEIP20Gateway(web3, caGateway, txOptions);
+    let bounty = await gatewayContractInstance.methods.bounty().call();
+    await stakeHelperInstance.approveForBounty(facilitator, bounty, caMockToken, mockTokenAbi, web3);
+    let allowanceAfter = await mockContractInstance.methods.allowance(facilitator, gatewayComposerAddress).call();
+
+    assert.strictEqual(bounty, allowanceAfter, 'Facilitator allowance should match bounty amount');
   });
 
   it('Should perform acceptStakeRequest successfully', async function() {
