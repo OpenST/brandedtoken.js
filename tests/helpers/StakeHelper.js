@@ -87,56 +87,6 @@ describe('StakeHelper', async function() {
       });
   });
 
-  it('Should approve for value token', async function() {
-    this.timeout(60000 * 2);
-
-    const helperConfig = {
-      deployer: config.deployerAddress,
-      valueToken: caMockToken,
-      symbol: 'BT',
-      name: 'MyBrandedToken',
-      decimals: '18',
-      conversionRate: '1000',
-      conversionRateDecimals: 5,
-      organization: caOrganization
-    };
-
-    const btHelper = new BTHelper(web3, caBT);
-    caBT = await btHelper.setup(helperConfig, deployParams);
-    const btAddress = caBT.contractAddress;
-
-    const gcHelperConfig = {
-      deployer: config.deployerAddress,
-      valueToken: caMockToken,
-      brandedToken: btAddress,
-      owner: owner
-    };
-
-    let gcDeployParams = {
-      from: config.deployerAddress,
-      gasPrice: config.gasPrice
-    };
-
-    let gcHelper = new GCHelper(web3, caGC),
-      gatewayComposerInstance = await gcHelper.setup(gcHelperConfig, gcDeployParams);
-
-    gatewayComposerAddress = gatewayComposerInstance.contractAddress;
-    const approvalAmount = 1000;
-    stakeHelperInstance = new StakeHelper(web3, btAddress, gatewayComposerAddress);
-    const mockTokenAbi = abiBinProvider.getABI('MockToken');
-    const txMockApprove = await stakeHelperInstance.approveForValueToken(
-      caMockToken,
-      mockTokenAbi,
-      approvalAmount,
-      web3,
-      txOptions
-    );
-
-    const events = txMockApprove.events['Approval'].returnValues;
-    // Verify the spender address.
-    assert.strictEqual(gatewayComposerAddress, events['_spender']);
-  });
-
   it('Should perform requestStake successfully', async function() {
     this.timeout(3 * 60000);
 
@@ -172,15 +122,23 @@ describe('StakeHelper', async function() {
 
     gatewayComposerAddress = gatewayComposerInstance.contractAddress;
 
-    const mockTokenAbi = abiBinProvider.getABI('MockToken'),
-      mockContract = new web3.eth.Contract(mockTokenAbi, caMockToken, txOptions),
-      txMockApprove = mockContract.methods.approve(gatewayComposerAddress, 1000);
+    const mockTokenAbi = abiBinProvider.getABI('MockToken');
 
-    await txMockApprove.send(txOptions);
     await deployer.deployMockGatewayPass();
     caGateway = deployer.addresses.MockGatewayPass;
 
     stakeHelperInstance = new StakeHelper(web3, btAddress, gatewayComposerAddress);
+    let txMockApprove = await stakeHelperInstance.approveForValueToken(
+      caMockToken,
+      mockTokenAbi,
+      1000,
+      web3,
+      txOptions
+    );
+    const events = txMockApprove.events['Approval'].returnValues;
+    // Verify the spender address.
+    assert.strictEqual(gatewayComposerAddress, events['_spender']);
+
     const txBrandedToken = await stakeHelperInstance.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
       stakerGatewayNonce = 1;
 
