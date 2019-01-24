@@ -65,7 +65,67 @@ class StakeHelper {
       throw Error('Value token abi is not provided');
     }
     const contract = new web3.eth.Contract(valueTokenAbi, valueTokenContractAddress, txOptions);
-    return contract.methods.approve(oThis.gatewayComposer, amountInWei);
+
+    const txObject = contract.methods.approve(oThis.gatewayComposer, amountInWei);
+    let txReceipt;
+
+    return txObject
+      .send(txOptions)
+      .on('transactionHash', function(transactionHash) {
+        console.log('\t - transaction hash  of approveForValueToken method :', transactionHash);
+      })
+      .on('receipt', function(receipt) {
+        txReceipt = receipt;
+        console.log('\t - Receipt of approveForValueToken method:\n\x1b[2m', JSON.stringify(txReceipt), '\x1b[0m\n');
+      })
+      .on('error', function(error) {
+        console.log('\t !! Error from approveForValueToken method!!', error, '\n\t !! ERROR !!\n');
+        return Promise.reject(error);
+      });
+  }
+
+  /**
+   * Approve gateway composer address for bounty amount.
+   *
+   * @param facilitator Facilitator address.
+   * @param bountyInWei Bounty amount in wei's that needs to be approved.
+   * @param valueTokenContractAddress Value token contract address.
+   * @param valueTokenAbi Value token abi.
+   * @param originWeb3 Origin chain web3.
+   */
+  approveForBounty(facilitator, bountyInWei, valueTokenContractAddress, valueTokenAbi, originWeb3) {
+    const oThis = this;
+
+    const web3 = originWeb3 || oThis.originWeb3;
+
+    if (valueTokenAbi.length == 0) {
+      throw Error('Value token abi is not provided');
+    }
+
+    let txOptions = {
+      from: facilitator,
+      to: oThis.gatewayComposer,
+      gas: '500000'
+    };
+
+    let txReceipt = null;
+
+    const contract = new web3.eth.Contract(valueTokenAbi, valueTokenContractAddress, txOptions);
+    let txObject = contract.methods.approve(oThis.gatewayComposer, bountyInWei);
+
+    return txObject
+      .send(txOptions)
+      .on('transactionHash', function(transactionHash) {
+        console.log('\t - transaction hash of approveForBounty:', transactionHash);
+      })
+      .on('receipt', function(receipt) {
+        txReceipt = receipt;
+        console.log('\t - Receipt of approveForBounty:\n\x1b[2m', JSON.stringify(txReceipt), '\x1b[0m\n');
+      })
+      .on('error', function(error) {
+        console.log('\t !! Error of approveForBounty!!', error, '\n\t !! ERROR !!\n');
+        return Promise.reject(error);
+      });
   }
 
   /**
@@ -228,6 +288,7 @@ class StakeHelper {
     const Contract = new web3.eth.Contract(abi, oThis.gatewayComposer, txOptions);
 
     const signature = oThis._getEIP712SignedData(stakeRequestObject, oThis.brandedToken, workerAddress, web3);
+    console.log('_acceptStakeRequestRawTx: Returning txObject.');
     const txObject = Contract.methods.acceptStakeRequest(
       stakeRequestHash,
       signature.r,
@@ -415,50 +476,6 @@ class StakeHelper {
     const contract = new web3.eth.Contract(abi, oThis.gatewayComposer, txOptions);
 
     return contract.methods.stakeRequests(stakeRequestHash).call();
-  }
-
-  /**
-   * Approve gateway composer address for bounty amount.
-   *
-   * @param facilitator Facilitator address.
-   * @param bountyInWei Bounty amount in wei's that needs to be approved.
-   * @param valueTokenContractAddress Value token contract address.
-   * @param valueTokenAbi Value token abi.
-   * @param originWeb3 Origin chain web3.
-   */
-  approveForBounty(facilitator, bountyInWei, valueTokenContractAddress, valueTokenAbi, originWeb3) {
-    const oThis = this;
-
-    const web3 = originWeb3 || oThis.originWeb3;
-
-    if (valueTokenAbi.length == 0) {
-      throw Error('Value token abi is not provided');
-    }
-
-    let txOptions = {
-      from: facilitator,
-      to: oThis.gatewayComposer,
-      gas: '500000'
-    };
-
-    let txReceipt = null;
-
-    const contract = new web3.eth.Contract(valueTokenAbi, valueTokenContractAddress, txOptions);
-    let txObject = contract.methods.approve(oThis.gatewayComposer, bountyInWei);
-
-    return txObject
-      .send(txOptions)
-      .on('transactionHash', function(transactionHash) {
-        console.log('\t - transaction hash of approveForBounty:', transactionHash);
-      })
-      .on('receipt', function(receipt) {
-        txReceipt = receipt;
-        console.log('\t - Receipt of approveForBounty:\n\x1b[2m', JSON.stringify(txReceipt), '\x1b[0m\n');
-      })
-      .on('error', function(error) {
-        console.log('\t !! Error of approveForBounty!!', error, '\n\t !! ERROR !!\n');
-        return Promise.reject(error);
-      });
   }
 }
 

@@ -122,15 +122,23 @@ describe('StakeHelper', async function() {
 
     gatewayComposerAddress = gatewayComposerInstance.contractAddress;
 
-    const mockTokenAbi = abiBinProvider.getABI('MockToken'),
-      mockContract = new web3.eth.Contract(mockTokenAbi, caMockToken, txOptions),
-      txMockApprove = mockContract.methods.approve(gatewayComposerAddress, 1000);
+    const mockTokenAbi = abiBinProvider.getABI('MockToken');
 
-    await txMockApprove.send(txOptions);
     await deployer.deployMockGatewayPass();
     caGateway = deployer.addresses.MockGatewayPass;
 
     stakeHelperInstance = new StakeHelper(web3, btAddress, gatewayComposerAddress);
+    let txMockApprove = await stakeHelperInstance.approveForValueToken(
+      caMockToken,
+      mockTokenAbi,
+      1000,
+      web3,
+      txOptions
+    );
+    const events = txMockApprove.events['Approval'].returnValues;
+    // Verify the spender address.
+    assert.strictEqual(gatewayComposerAddress, events['_spender']);
+
     const txBrandedToken = await stakeHelperInstance.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
       stakerGatewayNonce = 1;
 
