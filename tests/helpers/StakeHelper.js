@@ -119,13 +119,13 @@ describe('StakeHelper', async function() {
       gatewayComposerInstance = await gcHelper.setup(gcHelperConfig, gcDeployParams);
 
     gatewayComposerAddress = gatewayComposerInstance.contractAddress;
-
+    const approvalAmount = 1000;
     stakeHelperInstance = new StakeHelper(web3, btAddress, gatewayComposerAddress);
     const mockTokenAbi = abiBinProvider.getABI('MockToken');
     const txMockApprove = await stakeHelperInstance.approveForValueToken(
       caMockToken,
       mockTokenAbi,
-      1000,
+      approvalAmount,
       web3,
       txOptions
     );
