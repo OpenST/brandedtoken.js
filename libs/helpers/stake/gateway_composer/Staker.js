@@ -1,6 +1,6 @@
 'use strict';
 
-const StakeHelper = require('./../StakeHelper');
+const StakeHelper = require('./StakeHelper');
 
 /**
  * Performs BrandedToken requestStake through GatewayComposer.

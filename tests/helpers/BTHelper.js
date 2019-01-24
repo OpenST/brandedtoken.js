@@ -36,7 +36,7 @@ let validateDeploymentReceipt = (receipt) => {
   return receipt;
 };
 
-const valueTokenTestAddress = '0x2c4e8f2d746113d0696ce89b35f0d8bf88e0aeca';
+const valueTokenTestAddress = '0x1610A6b7656E4A323ffeBfbC7E147F5A2ff9d423';
 
 describe('tests/helpers/BTHelper', function() {
   let deployParams = {
@@ -70,7 +70,7 @@ describe('tests/helpers/BTHelper', function() {
     it('should deploy new BrandedToken contract', function() {
       this.timeout(60000);
       return helper
-        .deploy(valueTokenTestAddress, 'TBT', 'Test', 10, 1, 0, caOrganization, deployParams)
+        .deploy(valueTokenTestAddress, 'BT', 'MyBrandedToken', 18, 1000, 5, caOrganization, deployParams)
         .then(validateDeploymentReceipt)
         .then((receipt) => {
           caBT = receipt.contractAddress;

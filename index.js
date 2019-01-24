@@ -3,7 +3,7 @@
 const AbiBinProvider = require('./libs/AbiBinProvider');
 const EconomySetup = require('./libs/EconomySetup');
 const Contracts = require('./libs/Contracts');
-const StakeHelper = require('./libs/helpers/stake/StakeHelper');
+const StakeHelper = require('./libs/helpers/stake/gateway_composer/StakeHelper');
 const Staker = require('./libs/helpers/stake/gateway_composer/Staker');
 const Facilitator = require('./libs/helpers/stake/gateway_composer/Facilitator');
 

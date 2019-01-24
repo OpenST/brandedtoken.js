@@ -7,6 +7,7 @@ const chai = require('chai'),
 
 const Setup = Package.EconomySetup,
   GCHelper = Setup.GatewayComposerHelper,
+  BTHelper = Setup.BrandedTokenHelper,
   assert = chai.assert;
 
 const config = require('../../tests/utils/configReader'),
@@ -34,9 +35,10 @@ let validateDeploymentReceipt = (receipt) => {
   return receipt;
 };
 
-const valueTokenTestAddress = '0x2c4e8f2d746113d0696ce89b35f0d8bf88e0aecb';
-const ownerTestAddress = '0x2c4e8f2d746113d0696ce89b35f0d8bf88e0aecc';
-const brandedTokenTestAddress = '0x2c4e8f2d746113d0696ce89b35f0d8bf88e0aecd';
+const ownerTestAddress = '0x1610A6b7656E4A323ffeBfbC7E147F5A2ff9d423';
+const valueTokenTestAddress = '0x1610A6b7656E4A323ffeBfbC7E147F5A2ff9d423';
+const caOrganization = '0x1610A6b7656E4A323ffeBfbC7E147F5A2ff9d423';
+let brandedTokenTestAddress;
 
 describe('tests/helpers/GCHelper', function() {
   let deployParams = {
@@ -44,7 +46,8 @@ describe('tests/helpers/GCHelper', function() {
     gasPrice: config.gasPrice
   };
 
-  let helper = new GCHelper(web3, caGC);
+  let gcHelper = new GCHelper(web3, caGC);
+  let btHelper = new BTHelper(web3, caGC);
 
   before(function() {
     this.timeout(3 * 60000);
@@ -52,10 +55,20 @@ describe('tests/helpers/GCHelper', function() {
     return web3WalletHelper.init(web3);
   });
 
+  it('should deploy new BrandedToken contract', function() {
+    this.timeout(3 * 60000);
+    return btHelper
+      .deploy(valueTokenTestAddress, 'BT', 'MyBrandedToken', 18, 1000, 5, caOrganization, deployParams)
+      .then(validateDeploymentReceipt)
+      .then((receipt) => {
+        brandedTokenTestAddress = receipt.contractAddress;
+      });
+  });
+
   if (!caGC) {
     it('should deploy new GatewayComposer contract', function() {
-      this.timeout(60000);
-      return helper
+      this.timeout(3 * 60000);
+      return gcHelper
         .deploy(ownerTestAddress, valueTokenTestAddress, brandedTokenTestAddress, deployParams)
         .then(validateDeploymentReceipt)
         .then((receipt) => {
@@ -73,7 +86,7 @@ describe('tests/helpers/GCHelper', function() {
       brandedToken: brandedTokenTestAddress,
       owner: ownerTestAddress
     };
-    return helper.setup(helperConfig, deployParams);
+    return gcHelper.setup(helperConfig, deployParams);
   });
 });
 
