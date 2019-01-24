@@ -3,7 +3,7 @@
 // Load external packages
 const chai = require('chai'),
   Web3 = require('web3'),
-  Package = require('../../index'),
+  Package = require('./../../index'),
   Mosaic = require('@openstfoundation/mosaic-tbd');
 
 const Setup = Package.EconomySetup,
@@ -11,7 +11,7 @@ const Setup = Package.EconomySetup,
   assert = chai.assert,
   config = require('../../tests/utils/configReader'),
   Web3WalletHelper = require('../../tests/utils/Web3WalletHelper'),
-  StakeHelper = require('../../libs/helpers/stake/StakeHelper'),
+  StakeHelper = require('../../libs/helpers/stake/gateway_composer/StakeHelper'),
   MockContractsDeployer = require('../utils/MockContractsDeployer'),
   abiBinProvider = MockContractsDeployer.abiBinProvider(),
   BTHelper = Package.EconomySetup.BrandedTokenHelper,
@@ -33,7 +33,9 @@ let worker,
   btStakeStruct,
   stakeHelperInstance,
   caBT,
-  deployer;
+  deployer,
+  caGateway,
+  btAddress;
 
 const valueTokenInWei = '200',
   gasPrice = '8000000',
@@ -86,7 +88,7 @@ describe('StakeHelper', async function() {
   });
 
   it('Should perform requestStake successfully', async function() {
-    this.timeout(3 * 60000);
+    this.timeout(4 * 60000);
 
     const helperConfig = {
       deployer: config.deployerAddress,
@@ -101,7 +103,7 @@ describe('StakeHelper', async function() {
 
     const btHelper = new BTHelper(web3, caBT);
     caBT = await btHelper.setup(helperConfig, deployParams);
-    const btAddress = caBT.contractAddress;
+    btAddress = caBT.contractAddress;
 
     const gcHelperConfig = {
       deployer: config.deployerAddress,
@@ -120,17 +122,25 @@ describe('StakeHelper', async function() {
 
     gatewayComposerAddress = gatewayComposerInstance.contractAddress;
 
-    const mockTokenAbi = abiBinProvider.getABI('MockToken'),
-      mockContract = new web3.eth.Contract(mockTokenAbi, caMockToken, txOptions),
-      txMockApprove = mockContract.methods.approve(gatewayComposerAddress, 1000);
+    const mockTokenAbi = abiBinProvider.getABI('MockToken');
 
-    await txMockApprove.send(txOptions);
     await deployer.deployMockGatewayPass();
+    caGateway = deployer.addresses.MockGatewayPass;
 
     stakeHelperInstance = new StakeHelper(web3, btAddress, gatewayComposerAddress);
+    let txMockApprove = await stakeHelperInstance.approveForValueToken(
+      caMockToken,
+      mockTokenAbi,
+      1000,
+      web3,
+      txOptions
+    );
+    const events = txMockApprove.events['Approval'].returnValues;
+    // Verify the spender address.
+    assert.strictEqual(gatewayComposerAddress, events['_spender']);
+
     const txBrandedToken = await stakeHelperInstance.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
-      stakerGatewayNonce = 1,
-      caGateway = deployer.addresses.MockGatewayPass;
+      stakerGatewayNonce = 1;
 
     await stakeHelperInstance.requestStake(
       owner,
@@ -154,6 +164,19 @@ describe('StakeHelper', async function() {
     btStakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
 
     assert.strictEqual(gatewayComposerAddress, btStakeStruct.staker, 'Incorrect staker address');
+  });
+
+  it('Should perform approve for bounty', async function() {
+    this.timeout(3 * 60000);
+
+    const mockTokenAbi = abiBinProvider.getABI('MockToken');
+    const mockContractInstance = new web3.eth.Contract(mockTokenAbi, caMockToken, txOptions);
+    const gatewayContractInstance = Mosaic.Contracts.getEIP20Gateway(web3, caGateway, txOptions);
+    let bounty = await gatewayContractInstance.methods.bounty().call();
+    await stakeHelperInstance.approveForBounty(facilitator, bounty, caMockToken, mockTokenAbi, web3);
+    let allowanceAfter = await mockContractInstance.methods.allowance(facilitator, gatewayComposerAddress).call();
+
+    assert.strictEqual(bounty, allowanceAfter, 'Facilitator allowance should match bounty amount');
   });
 
   it('Should perform acceptStakeRequest successfully', async function() {
