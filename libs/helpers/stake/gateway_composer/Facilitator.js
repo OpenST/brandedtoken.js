@@ -17,10 +17,12 @@ class Facilitator {
    */
   constructor(originWeb3, brandedToken, gatewayComposer, facilitator, txOptions) {
     const oThis = this;
+
     oThis.originWeb3 = originWeb3;
     oThis.gatewayComposer = gatewayComposer;
     oThis.brandedToken = brandedToken;
     oThis.facilitator = facilitator;
+    oThis.txOptions = txOptions;
   }
 
   /**
@@ -33,7 +35,6 @@ class Facilitator {
    * @param workerAddress KYC worker address.
    * @param hashLock HashLock of facilitator.
    * @param originWeb3 Origin chain web3 object.
-   * @param txOptions Tx options.
    */
   acceptStakeRequest(stakeRequestHash, stakeAmountInWei, btStakeRequestNonce, workerAddress, hashLock, originWeb3) {
     const oThis = this;
@@ -43,9 +44,10 @@ class Facilitator {
       stakeRequestHash,
       stakeAmountInWei,
       btStakeRequestNonce,
+      oThis.facilitator,
       workerAddress,
       hashLock,
-      originWeb3,
+      oThis.originWeb3,
       oThis.txOptions
     );
   }

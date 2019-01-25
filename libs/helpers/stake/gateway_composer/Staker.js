@@ -24,6 +24,21 @@ class Staker {
     oThis.txOptions = txOptions;
   }
 
+  /**
+   * Performs approve and requestStake on GatewayComposer.
+   *
+   * @param valueTokenAbi ValueToken contract ABI.
+   * @param owner Owner of GatewayComposer contract.
+   * @param stakeVTAmountInWei ValueToken amount which is staked.
+   * @param mintBTAmountInWei Amount of BT amount which will be minted.
+   * @param gatewayAddress Gateway contract address.
+   * @param gasPrice Gas price that staker is ready to pay to get the stake
+   *                  and mint process done.
+   * @param gasLimit Gas limit that staker is ready to pay.
+   * @param beneficiary The address in the auxiliary chain where the utility
+   *                     tokens will be minted.
+   * @param stakerGatewayNonce Nonce of the staker address stored in Gateway.
+   */
   async approveAndRequestStake(
     valueTokenAbi,
     owner,

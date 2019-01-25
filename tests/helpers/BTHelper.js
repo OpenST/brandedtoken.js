@@ -10,13 +10,14 @@ const Setup = Package.EconomySetup,
   BTHelper = Setup.BrandedTokenHelper,
   assert = chai.assert;
 
-const config = require('../../tests/utils/configReader'),
-  Web3WalletHelper = require('../../tests/utils/Web3WalletHelper');
+const config = require('./../utils/configReader'),
+  Web3WalletHelper = require('./../utils/Web3WalletHelper'),
+  KeepAliveConfig = require('./../utils/KeepAliveConfig');
 
 const web3 = new Web3(config.gethRpcEndPoint);
 let web3WalletHelper = new Web3WalletHelper(web3);
 
-//Contract Address. TBD: Do not forget to set caBT = null below.
+// Do not forget to set caBT = null below.
 //ca stands for contract address.
 let caBT = null;
 let caOrganization = null;
@@ -102,12 +103,4 @@ describe('tests/helpers/BTHelper', function() {
   });
 });
 
-// TODO Refactor to common method
-// Go easy on RPC Client (Geth)
-(function() {
-  let maxHttpScokets = 10;
-  let httpModule = require('http');
-  httpModule.globalAgent.keepAlive = true;
-  httpModule.globalAgent.keepAliveMsecs = 30 * 60 * 1000;
-  httpModule.globalAgent.maxSockets = maxHttpScokets;
-})();
+KeepAliveConfig.get();

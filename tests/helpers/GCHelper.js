@@ -11,7 +11,8 @@ const Setup = Package.EconomySetup,
   assert = chai.assert;
 
 const config = require('../../tests/utils/configReader'),
-  Web3WalletHelper = require('../../tests/utils/Web3WalletHelper');
+  Web3WalletHelper = require('../../tests/utils/Web3WalletHelper'),
+  KeepAliveConfig = require('../../tests/utils/KeepAliveConfig');
 
 const web3 = new Web3(config.gethRpcEndPoint);
 let web3WalletHelper = new Web3WalletHelper(web3);
@@ -90,12 +91,4 @@ describe('tests/helpers/GCHelper', function() {
   });
 });
 
-// TODO Refactor to common method
-// Go easy on RPC Client (Geth)
-(function() {
-  let maxHttpScokets = 10;
-  let httpModule = require('http');
-  httpModule.globalAgent.keepAlive = true;
-  httpModule.globalAgent.keepAliveMsecs = 30 * 60 * 1000;
-  httpModule.globalAgent.maxSockets = maxHttpScokets;
-})();
+KeepAliveConfig.get();
