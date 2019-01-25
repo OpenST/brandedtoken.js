@@ -39,7 +39,7 @@ class Staker {
    *                     tokens will be minted.
    * @param stakerGatewayNonce Nonce of the staker address stored in Gateway.
    */
-  async approveAndRequestStake(
+  async requestStake(
     valueTokenAbi,
     owner,
     stakeVTAmountInWei,

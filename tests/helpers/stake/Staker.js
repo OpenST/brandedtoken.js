@@ -87,7 +87,7 @@ describe('StakeHelper', async function() {
       });
   });
 
-  it('Completes staker.approveAndRequestStake successfully', async function() {
+  it('Completes staker.requestStake successfully', async function() {
     this.timeout(4 * 60000);
 
     const helperConfig = {
@@ -132,7 +132,7 @@ describe('StakeHelper', async function() {
       stakerGatewayNonce = 1;
 
     const stakerInstance = new Staker(web3, caMockToken, btAddress, gatewayComposerAddress, txOptions);
-    await stakerInstance.approveAndRequestStake(
+    await stakerInstance.requestStake(
       mockTokenAbi,
       owner,
       valueTokenInWei,
