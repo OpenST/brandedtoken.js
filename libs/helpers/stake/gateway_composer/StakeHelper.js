@@ -17,9 +17,8 @@ class StakeHelper {
    * @param originWeb3 Origin chain web3 address.
    * @param brandedToken Branded Token contract address.
    * @param gatewayComposer Gateway composer contract address.
-   * @param txOptions - Tx options.
    */
-  constructor(originWeb3, brandedToken, gatewayComposer, txOptions) {
+  constructor(originWeb3, brandedToken, gatewayComposer) {
     const oThis = this;
     oThis.originWeb3 = originWeb3;
     oThis.gatewayComposer = gatewayComposer;

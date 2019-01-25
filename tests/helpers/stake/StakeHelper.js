@@ -3,16 +3,16 @@
 // Load external packages
 const chai = require('chai'),
   Web3 = require('web3'),
-  Package = require('./../../index'),
+  Package = require('../../../index'),
   Mosaic = require('@openstfoundation/mosaic-tbd');
 
 const Setup = Package.EconomySetup,
   OrganizationHelper = Setup.OrganizationHelper,
   assert = chai.assert,
-  config = require('../../tests/utils/configReader'),
-  Web3WalletHelper = require('../../tests/utils/Web3WalletHelper'),
-  StakeHelper = require('../../libs/helpers/stake/gateway_composer/StakeHelper'),
-  MockContractsDeployer = require('../utils/MockContractsDeployer'),
+  config = require('../../utils/configReader'),
+  Web3WalletHelper = require('../../utils/Web3WalletHelper'),
+  StakeHelper = require('../../../libs/helpers/stake/gateway_composer/StakeHelper'),
+  MockContractsDeployer = require('../../utils/MockContractsDeployer'),
   abiBinProvider = MockContractsDeployer.abiBinProvider(),
   BTHelper = Package.EconomySetup.BrandedTokenHelper,
   GCHelper = Setup.GatewayComposerHelper;
@@ -139,13 +139,13 @@ describe('StakeHelper', async function() {
     // Verify the spender address.
     assert.strictEqual(gatewayComposerAddress, events['_spender']);
 
-    const txBrandedToken = await stakeHelperInstance.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
+    const mintBTAmountInWei = await stakeHelperInstance.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
       stakerGatewayNonce = 1;
 
     await stakeHelperInstance.requestStake(
       owner,
       valueTokenInWei,
-      txBrandedToken,
+      mintBTAmountInWei,
       caGateway,
       gasPrice,
       gasLimit,

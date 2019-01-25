@@ -35,13 +35,16 @@ class Staker {
     beneficiary,
     stakerGatewayNonce
   ) {
-    const stakeHelperInstance = new StakeHelper(
+    const oThis = this;
+
+    const stakeHelperInstance = new StakeHelper(oThis.originWeb3, oThis.brandedToken, oThis.gatewayComposer);
+    await stakeHelperInstance.approveForValueToken(
+      oThis.valueToken,
+      valueTokenAbi,
+      stakeVTAmountInWei,
       oThis.originWeb3,
-      oThis.brandedToken,
-      oThis.gatewayComposer,
       oThis.txOptions
     );
-    await stakeHelperInstance.approveForValueToken(valueTokenAbi, stakeVTAmountInWei);
     await stakeHelperInstance.requestStake(
       owner,
       stakeVTAmountInWei,

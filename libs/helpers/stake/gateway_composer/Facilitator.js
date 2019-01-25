@@ -35,21 +35,10 @@ class Facilitator {
    * @param originWeb3 Origin chain web3 object.
    * @param txOptions Tx options.
    */
-  acceptStakeRequest(
-    stakeRequestHash,
-    stakeAmountInWei,
-    btStakeRequestNonce,
-    workerAddress,
-    hashLock,
-    originWeb3,
-    txOptions
-  ) {
-    const stakeHelperInstance = new StakeHelper(
-      oThis.originWeb3,
-      oThis.brandedToken,
-      oThis.gatewayComposer,
-      oThis.txOptions
-    );
+  acceptStakeRequest(stakeRequestHash, stakeAmountInWei, btStakeRequestNonce, workerAddress, hashLock, originWeb3) {
+    const oThis = this;
+
+    const stakeHelperInstance = new StakeHelper(oThis.originWeb3, oThis.brandedToken, oThis.gatewayComposer);
     return stakeHelperInstance.acceptStakeRequest(
       stakeRequestHash,
       stakeAmountInWei,
@@ -57,7 +46,7 @@ class Facilitator {
       workerAddress,
       hashLock,
       originWeb3,
-      txOptions
+      oThis.txOptions
     );
   }
 }
