@@ -3,16 +3,16 @@
 // Load external packages
 const chai = require('chai'),
   Web3 = require('web3'),
-  Package = require('../../index');
+  Package = require('../../../index');
 
 const Setup = Package.EconomySetup,
   OrganizationHelper = Setup.OrganizationHelper,
   BTHelper = Setup.BrandedTokenHelper,
   assert = chai.assert;
 
-const config = require('./../utils/configReader'),
-  Web3WalletHelper = require('./../utils/Web3WalletHelper'),
-  KeepAliveConfig = require('./../utils/KeepAliveConfig');
+const config = require('../../utils/configReader'),
+  Web3WalletHelper = require('../../utils/Web3WalletHelper'),
+  KeepAliveConfig = require('../../utils/KeepAliveConfig');
 
 const web3 = new Web3(config.gethRpcEndPoint);
 let web3WalletHelper = new Web3WalletHelper(web3);

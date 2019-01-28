@@ -5,7 +5,7 @@ const AbiBinProvider = require('../../AbiBinProvider');
 const ContractName = 'GatewayComposer';
 
 /**
- * Performs setup and deployment related tasks.
+ * Performs setup and deployment of GatewayComposer.
  */
 class GCHelper {
   /**

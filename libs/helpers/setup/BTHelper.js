@@ -8,7 +8,7 @@ const DEFAULT_DECIMALS = 18;
 const DEFAULT_CONVERSION_RATE_DECIMALS = 5;
 
 /**
- *  BTHelper has setup and deploy related tasks related with BT contract.
+ *  BTHelper has setup and deployment methods for BT contract.
  */
 class BTHelper {
   /**
