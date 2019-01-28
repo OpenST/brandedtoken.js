@@ -3,11 +3,13 @@
 const StakeHelper = require('./StakeHelper');
 
 /**
- * Performs BrandedToken requestStake through GatewayComposer.
+ * Staker performs below tasks:
+ * - approves GatewayComposer for ValueToken
+ * - calls GatewayComposer.requestStake
  */
 class Staker {
   /**
-   * StakeHelper constructor object.
+   * Staker constructor object.
    *
    * @param originWeb3 Origin chain web3 address.
    * @param valueToken Value token contract address.
@@ -23,7 +25,9 @@ class Staker {
   }
 
   /**
-   * Performs approve and requestStake on GatewayComposer.
+   * Staker performs below tasks:
+   * - approves GatewayComposer for ValueToken
+   * - calls GatewayComposer.requestStake
    *
    * @param valueTokenAbi ValueToken contract ABI.
    * @param owner Owner of GatewayComposer contract.

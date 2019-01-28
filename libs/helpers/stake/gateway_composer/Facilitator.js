@@ -3,7 +3,9 @@
 const StakeHelper = require('./StakeHelper');
 
 /**
- * Performs BrandedToken acceptStake through GatewayComposer.
+ * Facilitator performs below tasks:
+ * - approves bounty amount to GatewayComposer
+ * - calls GatewayComposer.acceptStakeRequest
  */
 class Facilitator {
   /**
@@ -26,7 +28,10 @@ class Facilitator {
   }
 
   /**
-   * Facilitator performs accept stake request after approving bounty amount to GatewayComposer.
+   * Facilitator performs below tasks:
+   * - approves bounty amount to GatewayComposer
+   * - calls GatewayComposer.acceptStakeRequest
+   *
    * Note: Add KYC worker account/private key in web3 wallet before calling acceptStakeRequest.
    *
    * @param stakeRequestHash Stake request hash unique for each stake.
