@@ -6,8 +6,8 @@ const ContractName = 'UtilityBrandedToken';
 const DEFAULT_DECIMALS = 18;
 
 /**
- * Helper method which performs deployment and setup related with Utility
- * Branded Token contract.
+ * Helper method which performs deployment and setup related with Utility for
+ * BrandedToken contract.
  */
 class UBTHelper {
   constructor(web3, address) {

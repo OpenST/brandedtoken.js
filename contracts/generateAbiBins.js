@@ -1,10 +1,13 @@
-//1. Clone brandedtoken-contracts
-//2. Checkout develop or any branch of your liking.
-//3. run: ./node_modules/.bin/truffle compile
-//4. Come back to branded-token.js/contracts
-//5. run: node ./generateAbiBins.js
-//6. Make sure commit only the contracts that are needed.
-
+/**
+ * Generates ABI/BIN using truffle compile.
+ *
+ * 1. Clone brandedtoken-contracts
+ * 2. Checkout develop or any branch of your liking.
+ * 3. run: ./node_modules/.bin/truffle compile
+ * 4. Come back to branded-token.js/contracts
+ * 5. run: node ./generateAbiBins.js
+ * 6. Make sure commit only the contracts that are needed.
+ */
 const fs = require('fs');
 const path = require('path');
 
