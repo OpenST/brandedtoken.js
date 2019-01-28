@@ -137,7 +137,7 @@ describe('Facilitator', async function() {
     const mintBTAmountInWei = await stakeHelperInstance.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
       stakerGatewayNonce = 1;
 
-    const stakerInstance = new Staker(web3, caMockToken, btAddress, gatewayComposerAddress, txOptions);
+    const stakerInstance = new Staker(web3, caMockToken, btAddress, gatewayComposerAddress);
     await stakerInstance.requestStake(
       mockTokenAbi,
       owner,
@@ -147,7 +147,8 @@ describe('Facilitator', async function() {
       gasPrice,
       gasLimit,
       beneficiary,
-      stakerGatewayNonce
+      stakerGatewayNonce,
+      txOptions
     );
 
     stakeRequestHash = await stakeHelperInstance._getStakeRequestHashForStakerRawTx(
