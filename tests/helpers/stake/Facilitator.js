@@ -38,7 +38,8 @@ let worker,
   deployer,
   caGateway,
   btAddress,
-  stakeHelperInstance;
+  stakeHelperInstance,
+  mockTokenAbi;
 
 const valueTokenInWei = '200',
   gasPrice = '8000000',
@@ -49,7 +50,7 @@ let txOptions = {
   gas: '8000000'
 };
 
-describe('StakeHelper', async function() {
+describe('Facilitator', async function() {
   let deployParams = {
     from: config.deployerAddress,
     gasPrice: config.gasPrice
@@ -126,7 +127,7 @@ describe('StakeHelper', async function() {
 
     gatewayComposerAddress = gatewayComposerInstance.contractAddress;
 
-    const mockTokenAbi = abiBinProvider.getABI('MockToken');
+    mockTokenAbi = abiBinProvider.getABI('MockToken');
 
     await deployer.deployMockGatewayPass();
     caGateway = deployer.addresses.MockGatewayPass;
@@ -171,14 +172,20 @@ describe('StakeHelper', async function() {
       from: facilitator,
       gas: '8000000'
     };
-    const facilitatorInstance = new Facilitator(web3, btAddress, gatewayComposerAddress, facilitator, txOptions);
+    const gatewayContractInstance = Mosaic.Contracts.getEIP20Gateway(web3, caGateway, txOptions);
+    let bountyAmountInWei = await gatewayContractInstance.methods.bounty().call();
+
+    const facilitatorInstance = new Facilitator(web3, caMockToken, btAddress, gatewayComposerAddress, facilitator);
     await facilitatorInstance.acceptStakeRequest(
       stakeRequestHash,
+      bountyAmountInWei,
       valueTokenInWei,
       btStakeStruct.nonce,
+      mockTokenAbi,
       worker,
       hashLockInstance.hashLock,
-      web3
+      web3,
+      txOptions
     );
 
     stakeRequestHash = await stakeHelperInstance._getStakeRequestHashForStakerRawTx(

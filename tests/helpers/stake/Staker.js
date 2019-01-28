@@ -45,7 +45,7 @@ const valueTokenInWei = '200',
     gas: '8000000'
   };
 
-describe('StakeHelper', async function() {
+describe('Staker', async function() {
   let deployParams = {
     from: config.deployerAddress,
     gasPrice: config.gasPrice
@@ -131,7 +131,7 @@ describe('StakeHelper', async function() {
       mintBTAmountInWei = await stakeHelperInstance.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
       stakerGatewayNonce = 1;
 
-    const stakerInstance = new Staker(web3, caMockToken, btAddress, gatewayComposerAddress, txOptions);
+    const stakerInstance = new Staker(web3, caMockToken, btAddress, gatewayComposerAddress);
     await stakerInstance.requestStake(
       mockTokenAbi,
       owner,
@@ -141,7 +141,8 @@ describe('StakeHelper', async function() {
       gasPrice,
       gasLimit,
       beneficiary,
-      stakerGatewayNonce
+      stakerGatewayNonce,
+      txOptions
     );
 
     stakeRequestHash = await stakeHelperInstance._getStakeRequestHashForStakerRawTx(

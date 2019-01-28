@@ -13,15 +13,13 @@ class Staker {
    * @param valueToken Value token contract address.
    * @param brandedToken Branded Token contract address.
    * @param gatewayComposer Gateway composer contract address.
-   * @param txOptions - Tx options.
    */
-  constructor(originWeb3, valueToken, brandedToken, gatewayComposer, txOptions) {
+  constructor(originWeb3, valueToken, brandedToken, gatewayComposer) {
     const oThis = this;
     oThis.originWeb3 = originWeb3;
     oThis.valueToken = valueToken;
-    oThis.gatewayComposer = gatewayComposer;
     oThis.brandedToken = brandedToken;
-    oThis.txOptions = txOptions;
+    oThis.gatewayComposer = gatewayComposer;
   }
 
   /**
@@ -38,6 +36,7 @@ class Staker {
    * @param beneficiary The address in the auxiliary chain where the utility
    *                     tokens will be minted.
    * @param stakerGatewayNonce Nonce of the staker address stored in Gateway.
+   * @param txOptions - Tx options.
    */
   async requestStake(
     valueTokenAbi,
@@ -48,7 +47,8 @@ class Staker {
     gasPrice,
     gasLimit,
     beneficiary,
-    stakerGatewayNonce
+    stakerGatewayNonce,
+    txOptions
   ) {
     const oThis = this;
 
@@ -58,7 +58,7 @@ class Staker {
       valueTokenAbi,
       stakeVTAmountInWei,
       oThis.originWeb3,
-      oThis.txOptions
+      txOptions
     );
     await stakeHelperInstance.requestStake(
       owner,
@@ -70,7 +70,7 @@ class Staker {
       beneficiary,
       stakerGatewayNonce,
       oThis.originWeb3,
-      oThis.txOptions
+      txOptions
     );
   }
 }
