@@ -3,44 +3,69 @@
 const StakeHelper = require('./StakeHelper');
 
 /**
- * Performs BrandedToken acceptStake through GatewayComposer.
+ * Facilitator performs below tasks:
+ * - approves bounty amount to GatewayComposer
+ * - calls GatewayComposer.acceptStakeRequest
  */
 class Facilitator {
   /**
-   * StakeHelper constructor object.
+   * Facilitator constructor object.
    *
    * @param originWeb3 Origin chain web3 address.
+   * @param valueToken Value token contract address.
    * @param brandedToken Branded Token contract address.
    * @param gatewayComposer Gateway composer contract address.
    * @param facilitator Facilitator address.
-   * @param txOptions - Tx options.
    */
-  constructor(originWeb3, brandedToken, gatewayComposer, facilitator, txOptions) {
+  constructor(originWeb3, valueToken, brandedToken, gatewayComposer, facilitator) {
     const oThis = this;
 
     oThis.originWeb3 = originWeb3;
+    oThis.valueToken = valueToken;
     oThis.gatewayComposer = gatewayComposer;
     oThis.brandedToken = brandedToken;
     oThis.facilitator = facilitator;
-    oThis.txOptions = txOptions;
   }
 
   /**
-   * Facilitator performs accept stake request.
+   * Facilitator performs below tasks:
+   * - approves bounty amount to GatewayComposer
+   * - calls GatewayComposer.acceptStakeRequest
+   *
    * Note: Add KYC worker account/private key in web3 wallet before calling acceptStakeRequest.
    *
    * @param stakeRequestHash Stake request hash unique for each stake.
+   * @param bountyInWei Bounty amount in wei's that needs to be approved.
    * @param stakeAmountInWei Stake amount in wei.
    * @param btStakeRequestNonce BrandedToken StakeRequest nonce.
+   * @param valueTokenAbi ValueToken contract ABI.
    * @param workerAddress KYC worker address.
    * @param hashLock HashLock of facilitator.
    * @param originWeb3 Origin chain web3 object.
+   * @param txOptions - Tx options.
    */
-  acceptStakeRequest(stakeRequestHash, stakeAmountInWei, btStakeRequestNonce, workerAddress, hashLock, originWeb3) {
+  async acceptStakeRequest(
+    stakeRequestHash,
+    bountyInWei,
+    stakeAmountInWei,
+    btStakeRequestNonce,
+    valueTokenAbi,
+    workerAddress,
+    hashLock,
+    originWeb3,
+    txOptions
+  ) {
     const oThis = this;
 
     const stakeHelperInstance = new StakeHelper(oThis.originWeb3, oThis.brandedToken, oThis.gatewayComposer);
-    return stakeHelperInstance.acceptStakeRequest(
+    await stakeHelperInstance.approveForBounty(
+      oThis.facilitator,
+      bountyInWei,
+      oThis.valueToken,
+      valueTokenAbi,
+      originWeb3
+    );
+    await stakeHelperInstance.acceptStakeRequest(
       stakeRequestHash,
       stakeAmountInWei,
       btStakeRequestNonce,
@@ -48,7 +73,7 @@ class Facilitator {
       workerAddress,
       hashLock,
       oThis.originWeb3,
-      oThis.txOptions
+      txOptions
     );
   }
 }
