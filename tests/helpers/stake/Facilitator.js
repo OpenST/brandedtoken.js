@@ -3,19 +3,22 @@
 // Load external packages
 const chai = require('chai'),
   Web3 = require('web3'),
-  Package = require('../../index'),
+  Package = require('../../../index'),
   Mosaic = require('@openstfoundation/mosaic-tbd');
 
 const Setup = Package.EconomySetup,
   OrganizationHelper = Setup.OrganizationHelper,
   assert = chai.assert,
-  config = require('../../tests/utils/configReader'),
-  Web3WalletHelper = require('../../tests/utils/Web3WalletHelper'),
-  StakeHelper = require('../../libs/helpers/StakeHelper'),
-  MockContractsDeployer = require('../utils/MockContractsDeployer'),
+  config = require('./../../utils/configReader'),
+  Web3WalletHelper = require('./../../utils/Web3WalletHelper'),
+  StakeHelper = require('./../../../libs/helpers/stake/gateway_composer/StakeHelper'),
+  Staker = require('./../../../libs/helpers/stake/gateway_composer/Staker'),
+  Facilitator = require('./../../../libs/helpers/stake/gateway_composer/Facilitator'),
+  MockContractsDeployer = require('./../../utils/MockContractsDeployer'),
   abiBinProvider = MockContractsDeployer.abiBinProvider(),
   BTHelper = Package.EconomySetup.BrandedTokenHelper,
-  GCHelper = Setup.GatewayComposerHelper;
+  GCHelper = Setup.GatewayComposerHelper,
+  KeepAliveConfig = require('./../../utils/KeepAliveConfig');
 
 const web3 = new Web3(config.gethRpcEndPoint),
   web3WalletHelper = new Web3WalletHelper(web3),
@@ -31,21 +34,23 @@ let worker,
   facilitator,
   beneficiary,
   btStakeStruct,
-  stakeHelperInstance,
   caBT,
   deployer,
   caGateway,
-  btAddress;
+  btAddress,
+  stakeHelperInstance,
+  mockTokenAbi;
 
 const valueTokenInWei = '200',
   gasPrice = '8000000',
-  gasLimit = '100',
-  txOptions = {
-    from: owner,
-    gas: '8000000'
-  };
+  gasLimit = '100';
 
-describe('StakeHelper', async function() {
+let txOptions = {
+  from: owner,
+  gas: '8000000'
+};
+
+describe('Facilitator', async function() {
   let deployParams = {
     from: config.deployerAddress,
     gasPrice: config.gasPrice
@@ -53,7 +58,7 @@ describe('StakeHelper', async function() {
 
   before(function() {
     this.timeout(3 * 60000);
-    //This hook could take long time.
+
     return web3WalletHelper
       .init(web3)
       .then(function(_out) {
@@ -87,8 +92,8 @@ describe('StakeHelper', async function() {
       });
   });
 
-  it('Should perform requestStake successfully', async function() {
-    this.timeout(3 * 60000);
+  it('Completes staker.requestStake successfully', async function() {
+    this.timeout(4 * 60000);
 
     const helperConfig = {
       deployer: config.deployerAddress,
@@ -122,36 +127,27 @@ describe('StakeHelper', async function() {
 
     gatewayComposerAddress = gatewayComposerInstance.contractAddress;
 
-    const mockTokenAbi = abiBinProvider.getABI('MockToken');
+    mockTokenAbi = abiBinProvider.getABI('MockToken');
 
     await deployer.deployMockGatewayPass();
     caGateway = deployer.addresses.MockGatewayPass;
 
     stakeHelperInstance = new StakeHelper(web3, btAddress, gatewayComposerAddress);
-    let txMockApprove = await stakeHelperInstance.approveForValueToken(
-      caMockToken,
-      mockTokenAbi,
-      1000,
-      web3,
-      txOptions
-    );
-    const events = txMockApprove.events['Approval'].returnValues;
-    // Verify the spender address.
-    assert.strictEqual(gatewayComposerAddress, events['_spender']);
 
-    const txBrandedToken = await stakeHelperInstance.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
+    const mintBTAmountInWei = await stakeHelperInstance.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
       stakerGatewayNonce = 1;
 
-    await stakeHelperInstance.requestStake(
+    const stakerInstance = new Staker(web3, caMockToken, btAddress, gatewayComposerAddress);
+    await stakerInstance.requestStake(
+      mockTokenAbi,
       owner,
       valueTokenInWei,
-      txBrandedToken,
+      mintBTAmountInWei,
       caGateway,
       gasPrice,
       gasLimit,
       beneficiary,
       stakerGatewayNonce,
-      web3,
       txOptions
     );
 
@@ -162,24 +158,10 @@ describe('StakeHelper', async function() {
     );
 
     btStakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
-
     assert.strictEqual(gatewayComposerAddress, btStakeStruct.staker, 'Incorrect staker address');
   });
 
-  it('Should perform approve for bounty', async function() {
-    this.timeout(3 * 60000);
-
-    const mockTokenAbi = abiBinProvider.getABI('MockToken');
-    const mockContractInstance = new web3.eth.Contract(mockTokenAbi, caMockToken, txOptions);
-    const gatewayContractInstance = Mosaic.Contracts.getEIP20Gateway(web3, caGateway, txOptions);
-    let bounty = await gatewayContractInstance.methods.bounty().call();
-    await stakeHelperInstance.approveForBounty(facilitator, bounty, caMockToken, mockTokenAbi, web3);
-    let allowanceAfter = await mockContractInstance.methods.allowance(facilitator, gatewayComposerAddress).call();
-
-    assert.strictEqual(bounty, allowanceAfter, 'Facilitator allowance should match bounty amount');
-  });
-
-  it('Should perform acceptStakeRequest successfully', async function() {
+  it('Completes Facilitator.acceptStakeRequest successfully', async function() {
     this.timeout(3 * 60000);
 
     const organizationContractInstance = Mosaic.Contracts.getOrganization(web3, caOrganization);
@@ -187,12 +169,20 @@ describe('StakeHelper', async function() {
     assert.strictEqual(isWorkerResult, true, 'Make sure worker is whitelisted.');
 
     const hashLockInstance = Mosaic.Helpers.StakeHelper.createSecretHashLock();
-    // AcceptStakeRequest Testing
-    let txResponse = await stakeHelperInstance.acceptStakeRequest(
+    txOptions = {
+      from: facilitator,
+      gas: '8000000'
+    };
+    const gatewayContractInstance = Mosaic.Contracts.getEIP20Gateway(web3, caGateway, txOptions);
+    let bountyAmountInWei = await gatewayContractInstance.methods.bounty().call();
+
+    const facilitatorInstance = new Facilitator(web3, caMockToken, btAddress, gatewayComposerAddress, facilitator);
+    await facilitatorInstance.acceptStakeRequest(
       stakeRequestHash,
+      bountyAmountInWei,
       valueTokenInWei,
       btStakeStruct.nonce,
-      facilitator,
+      mockTokenAbi,
       worker,
       hashLockInstance.hashLock,
       web3,
@@ -220,11 +210,4 @@ describe('StakeHelper', async function() {
   });
 });
 
-// Go easy on RPC Client (Geth)
-(function() {
-  let maxHttpScokets = 10;
-  let httpModule = require('http');
-  httpModule.globalAgent.keepAlive = true;
-  httpModule.globalAgent.keepAliveMsecs = 30 * 60 * 1000;
-  httpModule.globalAgent.maxSockets = maxHttpScokets;
-})();
+KeepAliveConfig.get();

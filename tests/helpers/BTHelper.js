@@ -10,13 +10,14 @@ const Setup = Package.EconomySetup,
   BTHelper = Setup.BrandedTokenHelper,
   assert = chai.assert;
 
-const config = require('../../tests/utils/configReader'),
-  Web3WalletHelper = require('../../tests/utils/Web3WalletHelper');
+const config = require('./../utils/configReader'),
+  Web3WalletHelper = require('./../utils/Web3WalletHelper'),
+  KeepAliveConfig = require('./../utils/KeepAliveConfig');
 
 const web3 = new Web3(config.gethRpcEndPoint);
 let web3WalletHelper = new Web3WalletHelper(web3);
 
-//Contract Address. TBD: Do not forget to set caBT = null below.
+// Do not forget to set caBT = null below.
 //ca stands for contract address.
 let caBT = null;
 let caOrganization = null;
@@ -36,7 +37,7 @@ let validateDeploymentReceipt = (receipt) => {
   return receipt;
 };
 
-const valueTokenTestAddress = '0x2c4e8f2d746113d0696ce89b35f0d8bf88e0aeca';
+const valueTokenTestAddress = '0x1610A6b7656E4A323ffeBfbC7E147F5A2ff9d423';
 
 describe('tests/helpers/BTHelper', function() {
   let deployParams = {
@@ -70,7 +71,7 @@ describe('tests/helpers/BTHelper', function() {
     it('should deploy new BrandedToken contract', function() {
       this.timeout(60000);
       return helper
-        .deploy(valueTokenTestAddress, 'TBT', 'Test', 10, 1, 0, caOrganization, deployParams)
+        .deploy(valueTokenTestAddress, 'BT', 'MyBrandedToken', 18, 1000, 5, caOrganization, deployParams)
         .then(validateDeploymentReceipt)
         .then((receipt) => {
           caBT = receipt.contractAddress;
@@ -100,22 +101,6 @@ describe('tests/helpers/BTHelper', function() {
       .liftRestriction([caOrganization, config.deployerAddress], config.facilitatorAddress)
       .then(validateReceipt);
   });
-
-  // TODO Is this needed?
-  // it('should lift restrictions from gateway and stakeVault addresses', function () {
-  //   let gateway = "0xe23338a00852250653Ba00563C4A38f559c4E5d5";
-  //   this.timeout(60000);
-  //   return helper
-  //     .setGateway(gateway, config.facilitatorAddress);
-  // });
 });
 
-// TODO Refactor to common method
-// Go easy on RPC Client (Geth)
-(function() {
-  let maxHttpScokets = 10;
-  let httpModule = require('http');
-  httpModule.globalAgent.keepAlive = true;
-  httpModule.globalAgent.keepAliveMsecs = 30 * 60 * 1000;
-  httpModule.globalAgent.maxSockets = maxHttpScokets;
-})();
+KeepAliveConfig.get();

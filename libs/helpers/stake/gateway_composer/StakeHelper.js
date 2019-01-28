@@ -1,6 +1,6 @@
 'use strict';
 
-const AbiBinProvider = require('./../AbiBinProvider'),
+const AbiBinProvider = require('./../../../AbiBinProvider'),
   gatewayComposerContractName = 'GatewayComposer',
   brandedTokenContractName = 'BrandedToken';
 
@@ -17,9 +17,8 @@ class StakeHelper {
    * @param originWeb3 Origin chain web3 address.
    * @param brandedToken Branded Token contract address.
    * @param gatewayComposer Gateway composer contract address.
-   * @param txOptions - Tx options.
    */
-  constructor(originWeb3, brandedToken, gatewayComposer, txOptions) {
+  constructor(originWeb3, brandedToken, gatewayComposer) {
     const oThis = this;
     oThis.originWeb3 = originWeb3;
     oThis.gatewayComposer = gatewayComposer;
@@ -269,7 +268,6 @@ class StakeHelper {
       stake: stakeAmountInWei,
       nonce: nonce
     };
-    console.log('stakeRequestObject:', stakeRequestObject);
     const web3 = originWeb3 || oThis.originWeb3;
     const abiBinProvider = oThis.abiBinProvider;
     const abi = abiBinProvider.getABI(gatewayComposerContractName);
@@ -288,7 +286,6 @@ class StakeHelper {
     const Contract = new web3.eth.Contract(abi, oThis.gatewayComposer, txOptions);
 
     const signature = oThis._getEIP712SignedData(stakeRequestObject, oThis.brandedToken, workerAddress, web3);
-    console.log('_acceptStakeRequestRawTx: Returning txObject.');
     const txObject = Contract.methods.acceptStakeRequest(
       stakeRequestHash,
       signature.r,
