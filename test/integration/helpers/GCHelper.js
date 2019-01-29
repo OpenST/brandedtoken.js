@@ -10,12 +10,12 @@ const Setup = Package.EconomySetup,
   BTHelper = Setup.BrandedTokenHelper,
   assert = chai.assert;
 
+const { dockerSetup, dockerTeardown } = require('../../utils/docker');
+
 const config = require('../../utils/configReader'),
-  Web3WalletHelper = require('../../utils/Web3WalletHelper'),
   KeepAliveConfig = require('../../utils/KeepAliveConfig');
 
-const web3 = new Web3(config.gethRpcEndPoint);
-let web3WalletHelper = new Web3WalletHelper(web3);
+let web3;
 
 // Contract Address. TBD: Do not forget to set caGC = null below.
 //ca stands for contract address.
@@ -42,24 +42,32 @@ const caOrganization = '0x1610A6b7656E4A323ffeBfbC7E147F5A2ff9d423';
 let brandedTokenTestAddress;
 
 describe('tests/helpers/GCHelper', function() {
-  let deployParams = {
-    from: config.deployerAddress,
-    gasPrice: config.gasPrice
-  };
+  let deployerAddress;
+  let deployParams;
 
   let gcHelper = new GCHelper(web3, caGC);
   let btHelper = new BTHelper(web3, caGC);
 
-  before(function() {
-    this.timeout(3 * 60000);
-    // This hook could take long time.
-    return web3WalletHelper.init(web3);
+  before(async function() {
+    // Set up docker geth instance and retrieve RPC endpoint
+    const { rpcEndpointOrigin } = await dockerSetup();
+    web3 = new Web3(rpcEndpointOrigin);
+    const accountsOrigin = await web3.eth.getAccounts();
+    deployerAddress = accountsOrigin[0];
+    deployParams = {
+      from: deployerAddress,
+      gasPrice: config.gasPrice
+    };
+  });
+
+  after(() => {
+    dockerTeardown();
   });
 
   it('should deploy new BrandedToken contract', function() {
     this.timeout(3 * 60000);
     return btHelper
-      .deploy(valueTokenTestAddress, 'BT', 'MyBrandedToken', 18, 1000, 5, caOrganization, deployParams)
+      .deploy(valueTokenTestAddress, 'BT', 'MyBrandedToken', 18, 1000, 5, caOrganization, deployParams, web3)
       .then(validateDeploymentReceipt)
       .then((receipt) => {
         brandedTokenTestAddress = receipt.contractAddress;
@@ -70,7 +78,7 @@ describe('tests/helpers/GCHelper', function() {
     it('should deploy new GatewayComposer contract', function() {
       this.timeout(3 * 60000);
       return gcHelper
-        .deploy(ownerTestAddress, valueTokenTestAddress, brandedTokenTestAddress, deployParams)
+        .deploy(ownerTestAddress, valueTokenTestAddress, brandedTokenTestAddress, deployParams, web3)
         .then(validateDeploymentReceipt)
         .then((receipt) => {
           caGC = receipt.contractAddress;
@@ -82,12 +90,12 @@ describe('tests/helpers/GCHelper', function() {
   it('Should setup GatewayComposer', function() {
     this.timeout(60000);
     const helperConfig = {
-      deployer: config.deployerAddress,
+      deployer: deployerAddress,
       valueToken: valueTokenTestAddress,
       brandedToken: brandedTokenTestAddress,
       owner: ownerTestAddress
     };
-    return gcHelper.setup(helperConfig, deployParams);
+    return gcHelper.setup(helperConfig, deployParams, web3);
   });
 });
 
