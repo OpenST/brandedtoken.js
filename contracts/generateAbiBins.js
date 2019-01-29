@@ -1,5 +1,5 @@
 /**
- * Generates ABI/BIN using truffle compile.
+ * Generates ABI/BIN using truffle compiler.
  *
  * 1. Clone brandedtoken-contracts
  * 2. Checkout develop or any branch of your liking.
@@ -32,6 +32,7 @@ let metadata = {
   },
   total: 0
 };
+
 //Read all files.
 fs.readdir(contractsRepoPath, function(err, items) {
   metadata.total = items.length;

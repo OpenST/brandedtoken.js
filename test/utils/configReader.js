@@ -11,10 +11,8 @@ ConfigReader.prototype = {
   organizationOwner: devEnvConfig.organizationAddress,
   organizationAdmin: devEnvConfig.wallet1,
   organizationWorker: devEnvConfig.facilitator,
-
   wallet1: devEnvConfig.wallet1,
   wallet2: devEnvConfig.wallet2,
-  ephemeralKey: devEnvConfig.ephemeralKey1,
   facilitatorAddress: devEnvConfig.facilitator,
   gethRpcEndPoint: devEnvConfig.gethRpcEndPoint,
   passphrase: 'testtest',
