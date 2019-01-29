@@ -11,7 +11,7 @@ const Setup = Package.EconomySetup,
   assert = chai.assert,
   config = require('../../utils/configReader'),
   Web3WalletHelper = require('../../utils/Web3WalletHelper'),
-  Contracts = require('../../../libs/Contracts'),
+  Contracts = require('../../../lib/Contracts'),
   KeepAliveConfig = require('../../utils/KeepAliveConfig');
 
 const web3 = new Web3(config.gethRpcEndPoint);
