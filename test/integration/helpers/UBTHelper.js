@@ -74,6 +74,10 @@ describe('tests/helpers/UBTHelper', function() {
     }
   });
 
+  after(() => {
+    dockerTeardown();
+  });
+
   if (!caUBT) {
     it('should deploy new UtilityBrandedToken contract', function() {
       this.timeout(60000);

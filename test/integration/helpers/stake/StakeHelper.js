@@ -85,6 +85,10 @@ describe('StakeHelper', async function() {
     }
   });
 
+  after(() => {
+    dockerTeardown();
+  });
+
   it('Should perform requestStake successfully', async function() {
     this.timeout(4 * 60000);
 
