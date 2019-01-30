@@ -188,13 +188,19 @@ describe('StakeHelper', async function() {
     assert.strictEqual(isWorkerResult, true, 'Make sure worker is whitelisted.');
 
     const hashLockInstance = Mosaic.Helpers.StakeHelper.createSecretHashLock();
-    // AcceptStakeRequest Testing
+
+    // 1. Create TypedData
+    const stakeRequestTypedData = stakeHelperInstance.getStakeRequestTypedData(valueTokenInWei, btStakeStruct.nonce);
+
+    // 2. Generate EIP712 Signature.
+    const workerAccountInstance = web3.eth.accounts.wallet[worker];
+    const signature = await workerAccountInstance.signEIP712TypedData(stakeRequestTypedData);
+
+    // 3. Calls AcceptStakeRequest
     let txResponse = await stakeHelperInstance.acceptStakeRequest(
       stakeRequestHash,
-      valueTokenInWei,
-      btStakeStruct.nonce,
+      signature,
       facilitator,
-      worker,
       hashLockInstance.hashLock,
       web3,
       txOptions
