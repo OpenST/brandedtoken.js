@@ -1,13 +1,17 @@
 const childProcess = require('child_process');
 const path = require('path');
 const waitPort = require('wait-port');
+const config = require('./configReader');
 
 const composeFilePath = path.join(__dirname, './docker-compose.yml');
+
 
 const asyncSleep = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
+// docker-compose is expected to be available in the test environment
+//    (e.g., it is installed automatically in Travis CI's "trusty" build)
 const dockerSetup = () => {
   const dockerCompose = childProcess.spawn('docker-compose', ['-f', composeFilePath, 'up', '--force-recreate']);
 
@@ -20,16 +24,14 @@ const dockerSetup = () => {
     });
   }
 
-  const originPort = 8546;
-
-  const waitForOriginNode = waitPort({ port: originPort, output: 'silent' });
+  const waitForOriginNode = waitPort({ port: config.originPort, output: 'silent' });
   return Promise.all([waitForOriginNode])
     .then(() => {
       // even after the port is available, the node needs a bit of time to get online
       return asyncSleep(5000);
     })
     .then(() => ({
-      rpcEndpointOrigin: `http://localhost:${originPort}`
+      rpcEndpointOrigin: `http://localhost:${config.originPort}`
     }));
 };
 
