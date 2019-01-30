@@ -176,14 +176,19 @@ describe('Facilitator', async function() {
     const gatewayContractInstance = Mosaic.Contracts.getEIP20Gateway(web3, caGateway, txOptions);
     let bountyAmountInWei = await gatewayContractInstance.methods.bounty().call();
 
+    // 1. Create TypedData
+    const stakeRequestTypedData = stakeHelperInstance.getStakeRequestTypedData(valueTokenInWei, btStakeStruct.nonce);
+
+    // 2. Generate EIP712 Signature.
+    const workerAccountInstance = web3.eth.accounts.wallet[worker];
+    const signature = await workerAccountInstance.signEIP712TypedData(stakeRequestTypedData);
+
     const facilitatorInstance = new Facilitator(web3, caMockToken, btAddress, gatewayComposerAddress, facilitator);
     await facilitatorInstance.acceptStakeRequest(
       stakeRequestHash,
+      signature,
       bountyAmountInWei,
-      valueTokenInWei,
-      btStakeStruct.nonce,
       mockTokenAbi,
-      worker,
       hashLockInstance.hashLock,
       web3,
       txOptions
