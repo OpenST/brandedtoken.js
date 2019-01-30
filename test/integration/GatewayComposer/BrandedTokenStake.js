@@ -3,22 +3,22 @@
 // Load external packages
 const chai = require('chai'),
   Web3 = require('web3'),
-  Package = require('../../../../index'),
+  Package = require('../../../index'),
   Mosaic = require('@openstfoundation/mosaic-tbd');
 
 const Setup = Package.EconomySetup,
   OrganizationHelper = Setup.OrganizationHelper,
   assert = chai.assert,
-  config = require('../../../utils/configReader'),
-  Web3WalletHelper = require('../../../utils/Web3WalletHelper'),
-  StakeHelper = require('../../../../lib/helpers/stake/gateway_composer/StakeHelper'),
-  Staker = require('../../../../lib/helpers/stake/gateway_composer/Staker'),
-  Facilitator = require('../../../../lib/helpers/stake/gateway_composer/Facilitator'),
-  MockContractsDeployer = require('../../../utils/MockContractsDeployer'),
+  config = require('../../utils/configReader'),
+  Web3WalletHelper = require('../../utils/Web3WalletHelper'),
+  StakeHelper = require('../../../lib/helpers/stake/gateway_composer/StakeHelper'),
+  Staker = require('../../../lib/helpers/stake/gateway_composer/Staker'),
+  Facilitator = require('../../../lib/helpers/stake/gateway_composer/Facilitator'),
+  MockContractsDeployer = require('../../utils/MockContractsDeployer'),
   abiBinProvider = MockContractsDeployer.abiBinProvider(),
   BTHelper = Package.EconomySetup.BrandedTokenHelper,
   GCHelper = Setup.GatewayComposerHelper,
-  KeepAliveConfig = require('../../../utils/KeepAliveConfig');
+  KeepAliveConfig = require('../../utils/KeepAliveConfig');
 
 const web3 = new Web3(config.gethRpcEndPoint),
   web3WalletHelper = new Web3WalletHelper(web3),
@@ -50,7 +50,7 @@ let txOptions = {
   gas: '8000000'
 };
 
-describe('Facilitator', async function() {
+describe('Performs BrandedToken staking through GatewayComposer', async function() {
   let deployParams = {
     from: config.deployerAddress,
     gasPrice: config.gasPrice
