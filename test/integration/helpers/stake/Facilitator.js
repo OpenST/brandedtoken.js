@@ -10,7 +10,6 @@ const Setup = Package.EconomySetup,
   OrganizationHelper = Setup.OrganizationHelper,
   assert = chai.assert,
   config = require('../../../utils/configReader'),
-  Web3WalletHelper = require('../../../utils/Web3WalletHelper'),
   StakeHelper = require('../../../../lib/helpers/stake/gateway_composer/StakeHelper'),
   Staker = require('../../../../lib/helpers/stake/gateway_composer/Staker'),
   Facilitator = require('../../../../lib/helpers/stake/gateway_composer/Facilitator'),
@@ -20,15 +19,14 @@ const Setup = Package.EconomySetup,
   GCHelper = Setup.GatewayComposerHelper,
   KeepAliveConfig = require('../../../utils/KeepAliveConfig');
 
-const web3 = new Web3(config.gethRpcEndPoint),
-  web3WalletHelper = new Web3WalletHelper(web3),
-  owner = config.deployerAddress;
+const { dockerSetup, dockerTeardown } = require('../../../utils/docker');
 
-let worker,
+let web3,
+  owner,
+  worker,
   caOrganization = null,
   caMockToken,
   caGC,
-  wallets,
   stakeRequestHash,
   gatewayComposerAddress,
   facilitator,
@@ -45,58 +43,60 @@ const valueTokenInWei = '200',
   gasPrice = '8000000',
   gasLimit = '100';
 
-let txOptions = {
-  from: owner,
-  gas: '8000000'
-};
-
 describe('Facilitator', async function() {
-  let deployParams = {
-    from: config.deployerAddress,
-    gasPrice: config.gasPrice
-  };
+  let deployerAddress;
+  let deployParams;
+  let txOptions;
 
-  before(function() {
-    this.timeout(3 * 60000);
+  before(async function() {
+    // Set up docker geth instance and retrieve RPC endpoint
+    const { rpcEndpointOrigin } = await dockerSetup();
+    web3 = new Web3(rpcEndpointOrigin);
+    const accountsOrigin = await web3.eth.getAccounts();
+    deployerAddress = accountsOrigin[0];
+    owner = deployerAddress;
+    deployParams = {
+      from: deployerAddress,
+      gasPrice: config.gasPrice
+    };
 
-    return web3WalletHelper
-      .init(web3)
-      .then(function(_out) {
-        if (!caOrganization) {
-          console.log('* Setting up Organization');
-          wallets = web3WalletHelper.web3Object.eth.accounts.wallet;
-          worker = wallets[1].address;
-          beneficiary = wallets[2].address;
-          facilitator = wallets[3].address;
-          let orgHelper = new OrganizationHelper(web3, caOrganization);
-          const orgConfig = {
-            deployer: config.deployerAddress,
-            owner: owner,
-            workers: worker,
-            workerExpirationHeight: '20000000'
-          };
-          return orgHelper.setup(orgConfig).then(function() {
-            caOrganization = orgHelper.address;
-          });
-        }
-        return _out;
-      })
-      .then(function() {
-        if (!caMockToken) {
-          deployer = new MockContractsDeployer(config.deployerAddress, web3);
-          return deployer.deployMockToken().then(function() {
-            caMockToken = deployer.addresses.MockToken;
-            return caMockToken;
-          });
-        }
+    beneficiary = accountsOrigin[2];
+    facilitator = accountsOrigin[1];
+
+    if (!caOrganization) {
+      console.log('* Setting up Organization');
+      // Create worker address in wallet in order to sign EIP 712 hash
+      await web3.eth.accounts.wallet.create(1);
+      worker = web3.eth.accounts.wallet[0].address;
+
+      let orgHelper = new OrganizationHelper(web3, caOrganization);
+      const orgConfig = {
+        deployer: deployerAddress,
+        owner: owner,
+        workers: worker,
+        workerExpirationHeight: '20000000'
+      };
+      orgHelper.setup(orgConfig).then(function() {
+        caOrganization = orgHelper.address;
       });
+    }
+    if (!caMockToken) {
+      deployer = new MockContractsDeployer(deployerAddress, web3);
+      return deployer.deployMockToken().then(function() {
+        caMockToken = deployer.addresses.MockToken;
+      });
+    }
+  });
+
+  after(() => {
+    dockerTeardown();
   });
 
   it('Completes staker.requestStake successfully', async function() {
     this.timeout(4 * 60000);
 
     const helperConfig = {
-      deployer: config.deployerAddress,
+      deployer: deployerAddress,
       valueToken: caMockToken,
       symbol: 'BT',
       name: 'MyBrandedToken',
@@ -106,19 +106,24 @@ describe('Facilitator', async function() {
       organization: caOrganization
     };
 
+    txOptions = {
+      from: owner,
+      gas: '7500000'
+    };
+
     const btHelper = new BTHelper(web3, caBT);
     caBT = await btHelper.setup(helperConfig, deployParams);
     btAddress = caBT.contractAddress;
 
     const gcHelperConfig = {
-      deployer: config.deployerAddress,
+      deployer: deployerAddress,
       valueToken: caMockToken,
       brandedToken: btAddress,
       owner: owner
     };
 
     let gcDeployParams = {
-      from: config.deployerAddress,
+      from: deployerAddress,
       gasPrice: config.gasPrice
     };
 
@@ -171,7 +176,7 @@ describe('Facilitator', async function() {
     const hashLockInstance = Mosaic.Helpers.StakeHelper.createSecretHashLock();
     txOptions = {
       from: facilitator,
-      gas: '8000000'
+      gas: '7500000'
     };
     const gatewayContractInstance = Mosaic.Contracts.getEIP20Gateway(web3, caGateway, txOptions);
     let bountyAmountInWei = await gatewayContractInstance.methods.bounty().call();
