@@ -1,7 +1,7 @@
 {
   "name": "@openstfoundation/branded-token.js",
-  "version": "0.1.0",
-  "description": "JS interaction layer to interact with branded-tokens and composer contracts.",
+  "version": "0.10.0",
+  "description": "JS interaction layer to interact with branded-tokens and gateway composer contracts.",
   "main": "index.js",
   "scripts": {
     "pre-commit": "lint-staged"
@@ -13,7 +13,7 @@
   "keywords": [
     "OpenST",
     "OST",
-    "Mosaic",
+    "BrandedToken",
     "Simple Token",
     "Token Economy",
     "web3",
