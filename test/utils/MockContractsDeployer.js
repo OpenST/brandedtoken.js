@@ -10,8 +10,6 @@ const AbiBinProvider = Package.AbiBinProvider;
 
 const mockAbiFolder = path.resolve(__dirname, './mock-contracts/abi');
 const mockBinFolder = path.resolve(__dirname, './mock-contracts/bin');
-console.log(mockAbiFolder);
-console.log(mockBinFolder);
 class MockContractsDeployer {
   constructor(deployer, web3) {
     const oThis = this;
@@ -60,7 +58,6 @@ class MockContractsDeployer {
       txOptions
     );
 
-    console.log(`* Deploying ${contractName} Contract`);
     let txReceipt;
     return tx
       .send(txOptions)
@@ -73,7 +70,6 @@ class MockContractsDeployer {
       })
       .on('receipt', function(receipt) {
         txReceipt = receipt;
-        console.log('\t - Receipt:\n\x1b[2m', JSON.stringify(receipt), '\x1b[0m\n');
       })
       .then(function(instance) {
         oThis.addresses[contractName] = instance.options.address;
