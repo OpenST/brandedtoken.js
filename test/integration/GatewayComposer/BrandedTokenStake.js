@@ -44,7 +44,6 @@ describe('Performs BrandedToken staking through GatewayComposer', async function
     const { rpcEndpointOrigin } = await dockerSetup();
     originWeb3 = new Web3(rpcEndpointOrigin);
     const accountsOrigin = await originWeb3.eth.getAccounts();
-    //console.log('Accounts on origin:', accountsOrigin);
     deployerAddress = accountsOrigin[0];
     owner = deployerAddress;
     facilitator = accountsOrigin[1];
