@@ -6,7 +6,10 @@ ConfigReader.prototype = {
   gasPrice: '0x3B9ACA00',
   gas: 7500000,
   nullBytes32: '0x0000000000000000000000000000000000000000000000000000000000000000',
-  originPort: 8546
+  originPort: 8546,
+  stakeAmountInWei: '200',
+  stakeGasPrice: '7500000',
+  stakeGasLimit: '100'
 };
 
 module.exports = new ConfigReader();
