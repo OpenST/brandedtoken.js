@@ -2,6 +2,7 @@
 
 ## Version 0.10.0
 
+Updated package.json and npm run alignment ([#65](https://github.com/OpenSTFoundation/brandedtoken.js/pull/65))
 Integration test files cleanup ([#60](https://github.com/OpenSTFoundation/brandedtoken.js/pull/60))
 Use docker geth instance for testing ([#58](https://github.com/OpenSTFoundation/brandedtoken.js/pull/58))
 Directory structure improvements ([#54](https://github.com/OpenSTFoundation/brandedtoken.js/pull/54))
