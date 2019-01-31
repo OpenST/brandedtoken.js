@@ -3,32 +3,30 @@
 // Load external packages
 const chai = require('chai'),
   Web3 = require('web3'),
-  Package = require('../../../index'),
+  Package = require('./../../../index'),
   Mosaic = require('@openstfoundation/mosaic-tbd');
 
 const Setup = Package.EconomySetup,
   OrganizationHelper = Setup.OrganizationHelper,
   assert = chai.assert,
-  config = require('../../utils/configReader'),
-  Web3WalletHelper = require('../../utils/Web3WalletHelper'),
-  StakeHelper = require('../../../lib/helpers/stake/gateway_composer/StakeHelper'),
-  Staker = require('../../../lib/helpers/stake/gateway_composer/Staker'),
-  Facilitator = require('../../../lib/helpers/stake/gateway_composer/Facilitator'),
-  MockContractsDeployer = require('../../utils/MockContractsDeployer'),
+  config = require('./../../utils/configReader'),
+  StakeHelper = Package.Helpers.StakeHelper,
+  Staker = Package.Helpers.Staker,
+  Facilitator = Package.Helpers.Facilitator,
+  MockContractsDeployer = require('./../../utils/MockContractsDeployer'),
   abiBinProvider = MockContractsDeployer.abiBinProvider(),
   BTHelper = Package.EconomySetup.BrandedTokenHelper,
   GCHelper = Setup.GatewayComposerHelper,
-  KeepAliveConfig = require('../../utils/KeepAliveConfig');
+  KeepAliveConfig = require('./../../utils/KeepAliveConfig');
 
-const web3 = new Web3(config.gethRpcEndPoint),
-  web3WalletHelper = new Web3WalletHelper(web3),
-  owner = config.deployerAddress;
+const { dockerSetup, dockerTeardown } = require('./../../utils/docker');
 
-let worker,
+let originWeb3,
+  owner,
+  worker,
   caOrganization = null,
   caMockToken,
   caGC,
-  wallets,
   stakeRequestHash,
   gatewayComposerAddress,
   facilitator,
@@ -45,58 +43,88 @@ const valueTokenInWei = '200',
   gasPrice = '8000000',
   gasLimit = '100';
 
-let txOptions = {
-  from: owner,
-  gas: '8000000'
-};
-
 describe('Performs BrandedToken staking through GatewayComposer', async function() {
-  let deployParams = {
-    from: config.deployerAddress,
-    gasPrice: config.gasPrice
-  };
+  let deployerAddress;
+  let deployParams;
+  let txOptions;
 
-  before(function() {
-    this.timeout(3 * 60000);
+  before(async function() {
+    // Set up docker geth instance and retrieve RPC endpoint
+    console.log('Starting docker');
+    const { rpcEndpointOrigin } = await dockerSetup();
+    console.log('Docker started');
+    originWeb3 = new Web3(rpcEndpointOrigin);
+    const accountsOrigin = await originWeb3.eth.getAccounts();
+    console.log('Accounts on origin:', accountsOrigin);
+    deployerAddress = accountsOrigin[0];
+    owner = deployerAddress;
+    deployParams = {
+      from: deployerAddress,
+      gasPrice: config.gasPrice
+    };
 
-    return web3WalletHelper
-      .init(web3)
-      .then(function(_out) {
-        if (!caOrganization) {
-          console.log('* Setting up Organization');
-          wallets = web3WalletHelper.web3Object.eth.accounts.wallet;
-          worker = wallets[1].address;
-          beneficiary = wallets[2].address;
-          facilitator = wallets[3].address;
-          let orgHelper = new OrganizationHelper(web3, caOrganization);
-          const orgConfig = {
-            deployer: config.deployerAddress,
-            owner: owner,
-            workers: worker,
-            workerExpirationHeight: '20000000'
-          };
-          return orgHelper.setup(orgConfig).then(function() {
-            caOrganization = orgHelper.address;
-          });
-        }
-        return _out;
-      })
-      .then(function() {
-        if (!caMockToken) {
-          deployer = new MockContractsDeployer(config.deployerAddress, web3);
-          return deployer.deployMockToken().then(function() {
-            caMockToken = deployer.addresses.MockToken;
-            return caMockToken;
-          });
-        }
-      });
+    facilitator = accountsOrigin[1];
+    beneficiary = accountsOrigin[2];
+
+    // if (!caOrganization) {
+    //   console.log('* Setting up Organization');
+    //   // Create worker address in wallet in order to sign EIP 712 hash
+    //   await originWeb3.eth.accounts.wallet.create(1);
+    //   worker = originWeb3.eth.accounts.wallet[0].address;
+    //
+    //   let orgHelper = new OrganizationHelper(originWeb3, caOrganization);
+    //   const orgConfig = {
+    //     deployer: deployerAddress,
+    //     owner: owner,
+    //     workers: worker,
+    //     workerExpirationHeight: '20000000'
+    //   };
+    //   orgHelper.setup(orgConfig).then(function() {
+    //     caOrganization = orgHelper.address;
+    //   });
+    // }
+    // if (!caMockToken) {
+    //   deployer = new MockContractsDeployer(deployerAddress, originWeb3);
+    //   return deployer.deployMockToken().then(function() {
+    //     caMockToken = deployer.addresses.MockToken;
+    //   });
+    // }
   });
 
-  it('Completes staker.requestStake successfully', async function() {
+  after(() => {
+    dockerTeardown();
+  });
+
+  it('Deploys organization contract', async function() {
+    console.log('* Setting up Organization');
+    // Create worker address in wallet in order to sign EIP 712 hash
+    await originWeb3.eth.accounts.wallet.create(1);
+    worker = originWeb3.eth.accounts.wallet[0].address;
+
+    let orgHelper = new OrganizationHelper(originWeb3, caOrganization);
+    const orgConfig = {
+      deployer: deployerAddress,
+      owner: owner,
+      workers: worker,
+      workerExpirationHeight: '20000000'
+    };
+    orgHelper.setup(orgConfig).then(function() {
+      caOrganization = orgHelper.address;
+    });
+  });
+
+  it('Deploys EIP20Token contract', async function() {
+    deployer = new MockContractsDeployer(deployerAddress, originWeb3);
+    return deployer.deployMockToken().then(function() {
+      caMockToken = deployer.addresses.MockToken;
+    });
+  });
+
+  it('Performs staker.requestStake', async function() {
     this.timeout(4 * 60000);
 
     const helperConfig = {
-      deployer: config.deployerAddress,
+      deployer: deployerAddress,
       valueToken: caMockToken,
       symbol: 'BT',
       name: 'MyBrandedToken',
@@ -106,23 +134,28 @@ describe('Performs BrandedToken staking through GatewayComposer', async function
       organization: caOrganization
     };
 
-    const btHelper = new BTHelper(web3, caBT);
+    txOptions = {
+      from: owner,
+      gas: '7500000'
+    };
+
+    const btHelper = new BTHelper(originWeb3, caBT);
     caBT = await btHelper.setup(helperConfig, deployParams);
     btAddress = caBT.contractAddress;
 
     const gcHelperConfig = {
-      deployer: config.deployerAddress,
+      deployer: deployerAddress,
       valueToken: caMockToken,
       brandedToken: btAddress,
       owner: owner
     };
 
     let gcDeployParams = {
-      from: config.deployerAddress,
+      from: deployerAddress,
       gasPrice: config.gasPrice
     };
 
-    let gcHelper = new GCHelper(web3, caGC),
+    let gcHelper = new GCHelper(originWeb3, caGC),
       gatewayComposerInstance = await gcHelper.setup(gcHelperConfig, gcDeployParams);
 
     gatewayComposerAddress = gatewayComposerInstance.contractAddress;
@@ -132,12 +165,17 @@ describe('Performs BrandedToken staking through GatewayComposer', async function
     await deployer.deployMockGatewayPass();
     caGateway = deployer.addresses.MockGatewayPass;
 
-    stakeHelperInstance = new StakeHelper(web3, btAddress, gatewayComposerAddress);
+    stakeHelperInstance = new StakeHelper(originWeb3, btAddress, gatewayComposerAddress);
 
-    const mintBTAmountInWei = await stakeHelperInstance.convertToBTToken(valueTokenInWei, btAddress, web3, txOptions),
+    const mintBTAmountInWei = await stakeHelperInstance.convertToBTToken(
+        valueTokenInWei,
+        btAddress,
+        originWeb3,
+        txOptions
+      ),
       stakerGatewayNonce = 1;
 
-    const stakerInstance = new Staker(web3, caMockToken, btAddress, gatewayComposerAddress);
+    const stakerInstance = new Staker(originWeb3, caMockToken, btAddress, gatewayComposerAddress);
     await stakerInstance.requestStake(
       mockTokenAbi,
       owner,
@@ -153,54 +191,60 @@ describe('Performs BrandedToken staking through GatewayComposer', async function
 
     stakeRequestHash = await stakeHelperInstance._getStakeRequestHashForStakerRawTx(
       gatewayComposerAddress,
-      web3,
+      originWeb3,
       txOptions
     );
 
-    btStakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
+    btStakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, originWeb3, txOptions);
     assert.strictEqual(gatewayComposerAddress, btStakeStruct.staker, 'Incorrect staker address');
   });
 
-  it('Completes Facilitator.acceptStakeRequest successfully', async function() {
+  it('Performs Facilitator.acceptStakeRequest', async function() {
     this.timeout(3 * 60000);
 
-    const organizationContractInstance = Mosaic.Contracts.getOrganization(web3, caOrganization);
+    const organizationContractInstance = Mosaic.Contracts.getOrganization(originWeb3, caOrganization);
     const isWorkerResult = await organizationContractInstance.methods.isWorker(worker).call();
     assert.strictEqual(isWorkerResult, true, 'Make sure worker is whitelisted.');
 
     const hashLockInstance = Mosaic.Helpers.StakeHelper.createSecretHashLock();
     txOptions = {
       from: facilitator,
-      gas: '8000000'
+      gas: '7500000'
     };
-    const gatewayContractInstance = Mosaic.Contracts.getEIP20Gateway(web3, caGateway, txOptions);
+    const gatewayContractInstance = Mosaic.Contracts.getEIP20Gateway(originWeb3, caGateway, txOptions);
     let bountyAmountInWei = await gatewayContractInstance.methods.bounty().call();
 
     // 1. Create TypedData
     const stakeRequestTypedData = stakeHelperInstance.getStakeRequestTypedData(valueTokenInWei, btStakeStruct.nonce);
 
     // 2. Generate EIP712 Signature.
-    const workerAccountInstance = web3.eth.accounts.wallet[worker];
+    const workerAccountInstance = originWeb3.eth.accounts.wallet[worker];
     const signature = await workerAccountInstance.signEIP712TypedData(stakeRequestTypedData);
 
-    const facilitatorInstance = new Facilitator(web3, caMockToken, btAddress, gatewayComposerAddress, facilitator);
+    const facilitatorInstance = new Facilitator(
+      originWeb3,
+      caMockToken,
+      btAddress,
+      gatewayComposerAddress,
+      facilitator
+    );
     await facilitatorInstance.acceptStakeRequest(
       stakeRequestHash,
       signature,
       bountyAmountInWei,
       mockTokenAbi,
       hashLockInstance.hashLock,
-      web3,
+      originWeb3,
       txOptions
     );
 
     stakeRequestHash = await stakeHelperInstance._getStakeRequestHashForStakerRawTx(
       gatewayComposerAddress,
-      web3,
+      originWeb3,
       txOptions
     );
-    btStakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, web3, txOptions);
-    let gcStakeStruct = await stakeHelperInstance._getGCStakeRequestRawTx(stakeRequestHash, web3, txOptions);
+    btStakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, originWeb3, txOptions);
+    let gcStakeStruct = await stakeHelperInstance._getGCStakeRequestRawTx(stakeRequestHash, originWeb3, txOptions);
     assert.strictEqual(stakeRequestHash, config.nullBytes32, 'BT.StakeRequestHash should be deleted for staker');
     assert.strictEqual(
       btStakeStruct.stake,
