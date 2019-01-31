@@ -65,30 +65,6 @@ describe('Performs BrandedToken staking through GatewayComposer', async function
 
     facilitator = accountsOrigin[1];
     beneficiary = accountsOrigin[2];
-
-    // if (!caOrganization) {
-    //   console.log('* Setting up Organization');
-    //   // Create worker address in wallet in order to sign EIP 712 hash
-    //   await originWeb3.eth.accounts.wallet.create(1);
-    //   worker = originWeb3.eth.accounts.wallet[0].address;
-    //
-    //   let orgHelper = new OrganizationHelper(originWeb3, caOrganization);
-    //   const orgConfig = {
-    //     deployer: deployerAddress,
-    //     owner: owner,
-    //     workers: worker,
-    //     workerExpirationHeight: '20000000'
-    //   };
-    //   orgHelper.setup(orgConfig).then(function() {
-    //     caOrganization = orgHelper.address;
-    //   });
-    // }
-    // if (!caMockToken) {
-    //   deployer = new MockContractsDeployer(deployerAddress, originWeb3);
-    //   return deployer.deployMockToken().then(function() {
-    //     caMockToken = deployer.addresses.MockToken;
-    //   });
-    // }
   });
 
   after(() => {

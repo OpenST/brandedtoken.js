@@ -3,7 +3,7 @@ const path = require('path');
 const waitPort = require('wait-port');
 const config = require('./configReader');
 
-const composeFilePath = path.join(__dirname, './docker-compose.yml');
+const composeFilePath = require('./../config/docker-compose.yml');
 
 const asyncSleep = (ms) => {
   return new Promise((resolve) => setTimeout(resolve, ms));
