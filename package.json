@@ -1,11 +1,8 @@
 {
-  "name": "@openstfoundation/branded-token.js",
+  "name": "@openstfoundation/brandedtoken.js",
   "version": "0.10.0",
-  "description": "JS interaction layer to interact with branded-tokens and gateway composer contracts.",
+  "description": "JS interaction layer to interact with branded tokens and gateway composer contracts.",
   "main": "index.js",
-  "scripts": {
-    "pre-commit": "lint-staged"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/OpenSTFoundation/branded-token.js.git"
@@ -26,6 +23,10 @@
   "bugs": {
     "url": "https://github.com/OpenSTFoundation/branded-token.js/issues"
   },
+  "scripts": {
+    "test": "mocha --recursive --timeout 120000 test --exit",
+    "pre-commit": "lint-staged"
+  },
   "dependencies": {
     "@openstfoundation/mosaic-tbd": "https://github.com/OpenSTFoundation/mosaic-tbd.git"
   },
@@ -44,13 +45,20 @@
     "abi-decoder": "1.2.0",
     "wait-port": "0.2.2"
   },
-  "pre-commit": [
-    "pre-commit"
-  ],
+  "pre-commit": {
+    "run": [
+      "pre-commit"
+    ]
+  },
   "lint-staged": {
-    "*.js": [
-      "prettier --write --config .prettierrc.json",
-      "git add"
+    "linters": {
+      "*.js": [
+        "prettier --write --config .prettierrc.json",
+        "git add"
+      ]
+    },
+    "ignore": [
+      "**/dist/*.js"
     ]
   }
 }

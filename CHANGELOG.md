@@ -1,4 +1,6 @@
-## 0.10.0
+# brandedtoken.js Change Log
+
+## Version 0.10.0
 
 Use docker geth instance for testing ([#58](https://github.com/OpenSTFoundation/brandedtoken.js/pull/58))
 Directory structure improvements ([#54](https://github.com/OpenSTFoundation/brandedtoken.js/pull/54))
