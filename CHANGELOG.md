@@ -1,5 +1,6 @@
 ## 0.10.0
 
+Integration test files cleanup ([#60](https://github.com/OpenSTFoundation/brandedtoken.js/pull/60))
 Use docker geth instance for testing ([#58](https://github.com/OpenSTFoundation/brandedtoken.js/pull/58))
 Directory structure improvements ([#54](https://github.com/OpenSTFoundation/brandedtoken.js/pull/54))
 Documentation improvements ([#53](https://github.com/OpenSTFoundation/brandedtoken.js/pull/53))
