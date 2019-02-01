@@ -1,19 +1,16 @@
 {
-  "name": "@openstfoundation/branded-token.js",
-  "version": "0.1.0",
-  "description": "JS interaction layer to interact with branded-tokens and composer contracts.",
+  "name": "@openstfoundation/brandedtoken.js",
+  "version": "0.10.0",
+  "description": "JS interaction layer to interact with branded tokens and gateway composer contracts.",
   "main": "index.js",
-  "scripts": {
-    "pre-commit": "lint-staged"
-  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OpenSTFoundation/branded-token.js.git"
+    "url": "git+https://github.com/OpenSTFoundation/brandedtoken.js.git"
   },
   "keywords": [
     "OpenST",
     "OST",
-    "Mosaic",
+    "BrandedToken",
     "Simple Token",
     "Token Economy",
     "web3",
@@ -21,10 +18,14 @@
     "EIP20"
   ],
   "homepage": "https://openst.org",
-  "author": "OpenST Ltd.",
+  "author": "OpenST Limited",
   "license": "LGPL-3.0",
   "bugs": {
-    "url": "https://github.com/OpenSTFoundation/branded-token.js/issues"
+    "url": "https://github.com/OpenSTFoundation/brandedtoken.js/issues"
+  },
+  "scripts": {
+    "test": "mocha --recursive --timeout 120000 test --exit",
+    "pre-commit": "lint-staged"
   },
   "dependencies": {
     "@openstfoundation/mosaic-tbd": "https://github.com/OpenSTFoundation/mosaic-tbd.git"
@@ -44,13 +45,20 @@
     "abi-decoder": "1.2.0",
     "wait-port": "0.2.2"
   },
-  "pre-commit": [
-    "pre-commit"
-  ],
+  "pre-commit": {
+    "run": [
+      "pre-commit"
+    ]
+  },
   "lint-staged": {
-    "*.js": [
-      "prettier --write --config .prettierrc.json",
-      "git add"
+    "linters": {
+      "*.js": [
+        "prettier --write --config .prettierrc.json",
+        "git add"
+      ]
+    },
+    "ignore": [
+      "**/dist/*.js"
     ]
   }
 }
