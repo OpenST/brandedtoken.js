@@ -111,7 +111,7 @@ let passphrase = 'some passphrase.....';
 
 // Other constants
 const gasPrice = '0x12A05F200';
-const gas = 8000000;
+const gas = 7500000;
 
 ```
 
