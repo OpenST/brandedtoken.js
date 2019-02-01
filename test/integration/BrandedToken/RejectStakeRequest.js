@@ -66,17 +66,15 @@ describe('RejectStakeRequest', async function() {
       workers: worker,
       workerExpirationHeight: '20000000'
     };
-    orgHelper.setup(orgConfig).then(function() {
-      caOrganization = orgHelper.address;
-    });
+    await orgHelper.setup(orgConfig);
+    caOrganization = orgHelper.address;
     assert.isNotNull(caOrganization, 'Organization contract address should not be null.');
   });
 
   it('Deploys EIP20Token contract', async function() {
     const deployerInstance = new MockContractsDeployer(deployerAddress, originWeb3);
-    return deployerInstance.deployMockToken().then(function() {
-      caMockToken = deployerInstance.addresses.MockToken;
-    });
+    await deployerInstance.deployMockToken();
+    caMockToken = deployerInstance.addresses.MockToken;
     assert.isNotNull(caMockToken, 'EIP20Token contract address should not be null.');
   });
 
