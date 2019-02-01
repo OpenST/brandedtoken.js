@@ -4,11 +4,11 @@ Description <TBD>
 
 #### Overview of different components:
 
-1. BrandedToken contract: Description <TBD>
+1. BrandedToken: Description <Amulya TBD>
 
-2. GatewayComposer contract: Description <TBD>
+2. GatewayComposer: Description <Amulya TBD>
 
-3. UtilityBrandedToken contract: Description <TBD>
+3. UtilityBrandedToken: Description <Amulya TBD>
 
 #### Basic setup
 
@@ -121,50 +121,31 @@ brandedtoken.js comes with an in-built abi-bin provider for managing abi(s) and 
 
 The abiBinProvider provides developers with following abi(s) and bin(s):
 
-* [MockToken](brandedtoken-contracts RC url TBD) (an EIP20 contract with name 'MockToken')
-* [BrandedToken](brandedtoken-contracts RC url TBD) (BrandedToken contract deployed on ValueChain)
-* [UtilityBrandedToken](brandedtoken-contracts RC url TBD) (UtilityBrandedToken contract deployed on UtilityChain)
-* [GatewayComposer](brandedtoken-contracts RC url) (GatewayComposer contract deployed on ValueChain per staker)
+* [MockToken](brandedtoken-contracts RC url Amulya TBD) (an EIP20 contract with name 'MockToken')
+* [BrandedToken](brandedtoken-contracts RC url Amulya TBD) (BrandedToken contract deployed on ValueChain)
+* [UtilityBrandedToken](brandedtoken-contracts RC url Amulya TBD) (UtilityBrandedToken contract deployed on UtilityChain)
+* [GatewayComposer](brandedtoken-contracts RC Amulya url) (GatewayComposer contract deployed on ValueChain per staker)
  
-
 ```js
 
 // Get the MockToken ABI
 let abiBinProvider = openST.abiBinProvider();
-let mockTokenAbi = abiBinProvider.getABI('MockToken');
+const mockTokenAbi = abiBinProvider.getABI('BrandedToken');
 
 ``` 
 
-###### OpenST Deployer
-
-OpenST.js comes with a Deployer class that can deploy MockToken, TokenRules, TransferRule, and TokenHolder contracts.
-
-```js
-let deployerParams = {
-  "from": deployerAddress,
-  "gasPrice": gasPrice,
-  "gas": gas
-};
-let deployer = new openST.Deployer( deployerParams );
-```
 
 #### Deployment of contracts
 
 For BrandedToken staking through GatewayComposer, you will want an EIP20 contract. You can 
 either use a pre-deployed EIP20 contract or deploy a new one as shown below (presently only deploys a new MockToken contract).
 
-```js
-// Deploy EIP20 
-// if needed (not mandatory)
-let eip20Address = null;
-deployer.deployEIP20Token().then(function( receipt ){
-  eip20Address = receipt.contractAddress;
-  console.log('eip20Address noted down:', eip20Address);
-});
+##### Deploy EIP20Token contract(TBD)
 
-```
 
-An organization contract needs to be deployed per economy. You can follow below steps for deploying organization contract.
+##### Deploy Organization contract
+
+An organization contract needs to be deployed per economy. You can follow below steps for deploying Organization contract.
 
 ```js
 // Deploy Organization contract 
@@ -176,9 +157,187 @@ const organizationConfig = {
   workers: worker,
   workerExpirationHeight: '20000000' // High expiration limit
 };
-organizationHelperObject.setup(organizationConfig).then(function(){
+let deployParams = {
+  gas: '7500000',
+  gasPrice: '0x3B9ACA00'
+};
+organizationHelperObject.setup(organizationConfig, deployParams).then(function(){
     organizationAddress = organizationHelperObject.address;
 });
 
 
+```   
+
+##### Deploy EIP20Token Mock contract
+```js
+let eip20Token;
+const MockContractsDeployer = require('./test/utils/MockContractsDeployer');
+const mockContractDeployerObject = new MockContractsDeployer(deployerAddress, web3Provider);
+mockContractDeployerObject.deployMockToken().then(function(){
+      eip20Token = mockContractDeployerObject.addresses.MockToken;
+});
+
+``` 
+
+##### Deploy BrandedToken contract
+
+```js
+const brandedTokenHelperConfig = {
+    deployer: deployerAddress,
+    valueToken: eip20Token,
+    symbol: 'BT',
+    name: 'MyBrandedToken',
+    decimals: '18',
+    conversionRate: '10',
+    conversionRateDecimals: 5,
+    organization: organizationAddress
+};
+deployParams = {
+  gas: '7500000',
+  gasPrice: '0x3B9ACA00'
+};
+const brandedTokenHelper = Setup.BrandedTokenHelper;
+let brandedTokenAddress;
+brandedTokenHelper.setup(brandedTokenHelperConfig, deployParams).then(function(){
+    brandedTokenAddress = brandedTokenHelper.address;
+});
+
+
+```  
+
+##### Deploy UtilityBrandedToken contract
+
+```js
+const utilityBrandedTokenHelperConfig = {
+    deployer: deployerAddress,
+    token: brandedTokenAddress,
+    symbol: "UBT",
+    name: "MyBrandedToken",
+    decimals: "18",
+    organization: organizationAddress
+};
+deployParams = {
+  gas: '7500000',
+  gasPrice: '0x3B9ACA00'
+};
+const utilityBrandedTokenHelper = Setup.UtilityBrandedTokenHelper;
+let utilityBrandedTokenAddress;
+utilityBrandedTokenHelper.setup(utilityBrandedTokenHelperConfig, deployParams).then(function(){
+    utilityBrandedTokenAddress = utilityBrandedTokenHelper.address;
+});
+
+
+```
+
+##### Deploy GatewayComposer contract
+
+```js
+const gatewayComposerConfig = {
+    deployer: deployerAddress,
+    owner: staker,
+    valueToken: eip20Token,
+    brandedToken: brandedTokenAddress
+};
+deployParams = {
+  gas: '7500000',
+  gasPrice: '0x3B9ACA00'
+};
+const gatewayComposerHelper = Setup.GatewayComposerHelper;
+let gatewayComposerAddress;
+gatewayComposerHelper.setup(gatewayComposerConfig, deployParams).then(function(){
+    gatewayComposerAddress = gatewayComposerHelper.address;
+});
+
+```
+
+##### Deploy Gateway Mock contract
+```js
+const mockContractDeployerObject = new MockContractsDeployer(deployerAddress, web3Provider);
+let gatewayAddress;
+mockContractDeployerObject.deployMockGatewayPass().then(function(){
+      gatewayAddress = mockContractDeployerObject.addresses.MockGatewayPass;
+});
+
+``` 
+
+#### BrandedToken Staking through GatewayComposer
+
+##### Approve GatewayComposer for ValueToken & Calls requestStake
+
+```js
+const StakeHelper = BrandedToken.Helpers.StakeHelper;
+const stakeHelperInstance = new StakeHelper(web3Provider, brandedTokenAddress, gatewayComposerAddress);
+let txOptions = {
+  from: owner
+};
+const stakeAmountInWei = '100';
+const stakerGatewayNonce = 1;
+let mintBTAmountInWei;
+stakeHelperInstance.convertToBTToken(stakeAmountInWei, brandedTokenAddress, web3Provider, txOptions).then(function(result){
+    mintBTAmountInWei = result;
+});
+const stakerInstance = new Staker(web3Provider, eip20Token, brandedTokenAddress, gatewayComposerAddress);
+const stakeGasPrice = '0x3B9ACA00';
+const stakeGasLimit = '7500000';
+const beneficiary = '0xaabb1122....................';
+stakerInstance.requestStake(
+    mockTokenAbi,
+    owner,
+    stakeAmountInWei,
+    mintBTAmountInWei,
+    gatewayAddress,
+    stakeGasPrice,
+    stakeGasLimit,
+    beneficiary,
+    stakerGatewayNonce,
+    txOptions
+).then(function(){
+  console.log("Request stake completed!");
+})
+
 ```           
+
+##### Facilitator collects worker signature
+
+```js
+// StakeRequest nonce stored in BrandedToken contract.
+let stakeRequestNonce;
+// 1. Create TypedData
+const stakeRequestTypedData = stakeHelperInstance.getStakeRequestTypedData(stakeAmountInWei, stakeRequestNonce);
+
+// 2. Generate EIP712 signature object.
+const workerAccountInstance = web3Provider.eth.accounts.wallet[worker];
+workerAccountInstance.signEIP712TypedData(stakeRequestTypedData).then(function(result){
+  signature = result;
+})
+
+``` 
+
+##### Facilitator calls acceptStakeRequest
+
+```js
+const Mosaic = require('@openstfoundation/mosaic');
+const hashLockInstance = Mosaic.Helpers.StakeHelper.createSecretHashLock();
+const gatewayContractInstance = Mosaic.Contracts.getEIP20Gateway(web3Provider, gatewayAddress);
+let bountyAmountInWei;
+gatewayContractInstance.methods.bounty().call().then(function(result){
+  bountyAmountInWei = result;
+});
+const Facilitator = BrandedToken.Helpers.Facilitator;
+const facilitatorInstance = new Facilitator(web3Provider, eip20Token, brandedTokenAddress, gatewayComposerAddress, facilitator);
+txOptions = {
+  gas: '7500000'
+};    
+let stakeRequestHash; // stakeRequestHash unique per stake request stored in GatewayComposer.stakeRequests mapping
+facilitatorInstance.acceptStakeRequest(
+  stakeRequestHash, 
+  signature, 
+  bountyAmountInWei, 
+  mockTokenAbi, 
+  hashLockInstance.hashLock, 
+  web3Provider,
+  txOptions
+).then(function(){
+  console.log("Successfully completed acceptStakeRequest!");
+})
+```
