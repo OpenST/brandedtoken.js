@@ -57,7 +57,7 @@ describe('RejectStakeRequest', async function() {
     //    and fund in order to execute rejectStakeRequest
     await originWeb3.eth.accounts.wallet.create(1);
     worker = originWeb3.eth.accounts.wallet[0].address;
-    await originWeb3.eth.sendTransaction({from: accountsOrigin[2], to: worker, value: originWeb3.utils.toWei('1')});
+    await originWeb3.eth.sendTransaction({ from: accountsOrigin[2], to: worker, value: originWeb3.utils.toWei('1') });
 
     let orgHelper = new OrganizationHelper(originWeb3, caOrganization);
     const orgConfig = {
@@ -66,17 +66,15 @@ describe('RejectStakeRequest', async function() {
       workers: worker,
       workerExpirationHeight: '20000000'
     };
-    orgHelper.setup(orgConfig).then(function() {
-      caOrganization = orgHelper.address;
-    });
+    await orgHelper.setup(orgConfig);
+    caOrganization = orgHelper.address;
     assert.isNotNull(caOrganization, 'Organization contract address should not be null.');
   });
 
   it('Deploys EIP20Token contract', async function() {
     const deployerInstance = new MockContractsDeployer(deployerAddress, originWeb3);
-    return deployerInstance.deployMockToken().then(function() {
-      caMockToken = deployerInstance.addresses.MockToken;
-    });
+    await deployerInstance.deployMockToken();
+    caMockToken = deployerInstance.addresses.MockToken;
     assert.isNotNull(caMockToken, 'EIP20Token contract address should not be null.');
   });
 
@@ -172,7 +170,7 @@ describe('RejectStakeRequest', async function() {
 
   it('Performs worker.rejectStakeRequest', async function() {
     const brandedToken = Contracts.getBrandedToken(originWeb3, btAddress);
-    const tx = brandedToken.methods.rejectStakeRequest(stakeRequestHash)
+    const tx = brandedToken.methods.rejectStakeRequest(stakeRequestHash);
 
     txOptions = {
       from: worker,
