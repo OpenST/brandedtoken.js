@@ -1,12 +1,31 @@
+// Copyright 2019 OpenST Ltd.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// ----------------------------------------------------------------------------
+//
+// http://www.simpletoken.org/
+//
+// ----------------------------------------------------------------------------
+
 'use strict';
 
-//__NOT_FOR_WEB__BEGIN__
-const fs = require('fs'),
-  path = require('path');
-//__NOT_FOR_WEB__END__
+const path = require('path');
+// __NOT_FOR_WEB__END__
 
 const Package = require('../../index');
-const AbiBinProvider = Package.AbiBinProvider;
+
+const { AbiBinProvider } = Package.AbiBinProvider;
 
 const mockAbiFolder = path.resolve(__dirname, './mock-contracts/abi');
 const mockBinFolder = path.resolve(__dirname, './mock-contracts/bin');
@@ -32,46 +51,46 @@ class MockContractsDeployer {
 
   deploy(contractName, web3, txOptions) {
     const oThis = this;
-    web3 = web3 || oThis.web3;
-    const abiBinProvider = oThis.abiBinProvider;
+    const web3Provider = web3 || oThis.web3;
+    const { abiBinProvider } = oThis.abiBinProvider;
     const abi = abiBinProvider.getABI(contractName);
     const bin = abiBinProvider.getBIN(contractName);
 
-    let defaultOptions = {
+    const defaultOptions = {
       from: oThis.deployer,
       gas: '7500000',
-      gasPrice: '0x5B9ACA00'
+      gasPrice: '0x5B9ACA00',
     };
 
     if (txOptions) {
       Object.assign(defaultOptions, txOptions);
     }
-    txOptions = defaultOptions;
+    const finalTxOptions = defaultOptions;
 
-    let args = [];
-    const contract = new web3.eth.Contract(abi, null, txOptions);
-    let tx = contract.deploy(
+    const args = [];
+    const contract = new web3Provider.eth.Contract(abi, null, finalTxOptions);
+    const tx = contract.deploy(
       {
         data: bin,
-        arguments: args
+        arguments: args,
       },
-      txOptions
+      finalTxOptions,
     );
 
     let txReceipt;
     return tx
       .send(txOptions)
-      .on('transactionHash', function(transactionHash) {
+      .on('transactionHash', (transactionHash) => {
         console.log('\t - transaction hash:', transactionHash);
       })
-      .on('error', function(error) {
+      .on('error', (error) => {
         console.log('\t !! Error !!', error, '\n\t !! ERROR !!\n');
         return Promise.reject(error);
       })
-      .on('receipt', function(receipt) {
+      .on('receipt', (receipt) => {
         txReceipt = receipt;
       })
-      .then(function(instance) {
+      .then((instance) => {
         oThis.addresses[contractName] = instance.options.address;
         console.log(`\t - ${contractName} Contract Address:`, instance.options.address);
         return txReceipt;

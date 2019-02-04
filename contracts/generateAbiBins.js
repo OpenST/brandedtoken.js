@@ -1,3 +1,25 @@
+// Copyright 2019 OpenST Ltd.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+// ----------------------------------------------------------------------------
+//
+// http://www.simpletoken.org/
+//
+// ----------------------------------------------------------------------------
+
+'use strict';
+
 /**
  * Generates ABI/BIN using truffle compiler.
  *
@@ -14,8 +36,8 @@ const fs = require('fs');
 const path = require('path');
 
 let contractsRepoPath = path.join(__dirname, '../../brandedtoken-contracts/build/contracts/');
-let abiOutputPath = path.join(__dirname, './abi');
-let binOutputPath = path.join(__dirname, './bin');
+const abiOutputPath = path.join(__dirname, './abi');
+const binOutputPath = path.join(__dirname, './bin');
 
 if (process.argv.length > 2) {
   contractsRepoPath = process.argv[2];
@@ -23,38 +45,38 @@ if (process.argv.length > 2) {
 
 console.log(`Looking for truffle compile output in path ${contractsRepoPath}`);
 
-let metadata = {
+const metadata = {
   abi: {
     generated: [],
-    ignored: []
+    ignored: [],
   },
   bin: {
     generated: [],
-    ignored: []
+    ignored: [],
   },
-  total: 0
+  total: 0,
 };
 
-//Read all files.
-fs.readdir(contractsRepoPath, function(err, items) {
+// Read all files.
+fs.readdir(contractsRepoPath, (err, items) => {
   metadata.total = items.length;
-  for (var i = 0; i < items.length; i++) {
-    let fileName = items[i];
+  for (let i = 0; i < items.length; i++) {
+    const fileName = items[i];
     if (!fileName.endsWith('.json')) {
-      //Do nothing
+      // Do nothing
       continue;
     }
 
-    //Determine file Name
-    let fileSplits = fileName.split('.');
+    // Determine file Name
+    const fileSplits = fileName.split('.');
     if (fileSplits.length > 2) {
       throw `Unexpected File Name ${fileName}`;
     }
 
-    let contractName = fileSplits[0];
+    const contractName = fileSplits[0];
 
     if (contractName.startsWith('Mock') || contractName.startsWith('Test')) {
-      //Skip it.
+      // Skip it.
       metadata.abi.ignored.push(contractName);
       metadata.bin.ignored.push(contractName);
       continue;
@@ -62,32 +84,32 @@ fs.readdir(contractsRepoPath, function(err, items) {
 
     console.log(`Processing ${fileName}`);
 
-    let jsonFilePath = path.join(contractsRepoPath, fileName);
+    const jsonFilePath = path.join(contractsRepoPath, fileName);
     console.log(`jsonFilePath ${jsonFilePath}`);
-    let json = require(jsonFilePath);
+    const json = require(jsonFilePath);
 
-    //Generate Abi files
+    // Generate Abi files
     if (json.abi && json.abi.length) {
       console.log('--- Generating abi file');
-      //Write to file.
-      let fileContent = JSON.stringify(json.abi);
-      let outputFile = path.join(abiOutputPath, contractName + '.abi');
+      // Write to file.
+      const fileContent = JSON.stringify(json.abi);
+      const outputFile = path.join(abiOutputPath, `${contractName}.abi`);
       fs.writeFileSync(outputFile, fileContent);
-      //Update Metadata
+      // Update Metadata
       metadata.abi.generated.push(contractName);
     } else {
       console.log('--- abi file not generated');
       metadata.abi.ignored.push(contractName);
     }
 
-    //Generate Bin files
+    // Generate Bin files
     if (json.bytecode && json.bytecode.length && json.bytecode != '0x') {
       console.log('--- Generating bin file');
-      //Write to file.
-      let fileContent = json.bytecode;
-      let outputFile = path.join(binOutputPath, contractName + '.bin');
+      // Write to file.
+      const fileContent = json.bytecode;
+      const outputFile = path.join(binOutputPath, `${contractName}.bin`);
       fs.writeFileSync(outputFile, fileContent);
-      //Update Metadata
+      // Update Metadata
       metadata.bin.generated.push(contractName);
     } else {
       console.log('--- bin file not generated');
@@ -101,13 +123,13 @@ fs.readdir(contractsRepoPath, function(err, items) {
     'Abi File generated for',
     metadata.abi.generated.length,
     'contracts. Artifacts can be found here: ',
-    abiOutputPath
+    abiOutputPath,
   );
   console.log(
     'Bin generated for',
     metadata.bin.generated.length,
     'contracts. Artifacts can be found here: ',
-    binOutputPath
+    binOutputPath,
   );
   if (metadata.abi.ignored.length) {
     console.log('Abi generation ignored for \n\t', metadata.abi.ignored.join('\n\t '));
