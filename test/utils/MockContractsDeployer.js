@@ -25,7 +25,7 @@ const path = require('path');
 
 const Package = require('../../index');
 
-const { AbiBinProvider } = Package.AbiBinProvider;
+const AbiBinProvider = Package.AbiBinProvider;
 
 const mockAbiFolder = path.resolve(__dirname, './mock-contracts/abi');
 const mockBinFolder = path.resolve(__dirname, './mock-contracts/bin');
@@ -52,7 +52,7 @@ class MockContractsDeployer {
   deploy(contractName, web3, txOptions) {
     const oThis = this;
     const web3Provider = web3 || oThis.web3;
-    const { abiBinProvider } = oThis.abiBinProvider;
+    const abiBinProvider = oThis.abiBinProvider;
     const abi = abiBinProvider.getABI(contractName);
     const bin = abiBinProvider.getBIN(contractName);
 
@@ -79,7 +79,7 @@ class MockContractsDeployer {
 
     let txReceipt;
     return tx
-      .send(txOptions)
+      .send(finalTxOptions)
       .on('transactionHash', (transactionHash) => {
         console.log('\t - transaction hash:', transactionHash);
       })
@@ -98,7 +98,7 @@ class MockContractsDeployer {
   }
 
   static abiBinProvider() {
-    return new AbiBinProvider(mockAbiFolder, mockBinFolder);
+    return (new AbiBinProvider(mockAbiFolder, mockBinFolder));
   }
 }
 

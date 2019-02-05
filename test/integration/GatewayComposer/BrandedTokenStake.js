@@ -32,17 +32,17 @@ const Package = require('./../../../index');
 
 const Setup = Package.EconomySetup;
 
-const { OrganizationHelper } = Setup.OrganizationHelper;
+const OrganizationHelper = Setup.OrganizationHelper;
 
-const { assert } = chai.assert;
+const assert = chai.assert;
 
 const config = require('./../../utils/configReader');
 
-const { StakeHelper } = Package.Helpers.StakeHelper;
+const StakeHelper = Package.Helpers.StakeHelper;
 
-const { Staker } = Package.Helpers.Staker;
+const Staker = Package.Helpers.Staker;
 
-const { Facilitator } = Package.Helpers.Facilitator;
+const Facilitator = Package.Helpers.Facilitator;
 
 const MockContractsDeployer = require('./../../utils/MockContractsDeployer');
 
@@ -50,7 +50,7 @@ const abiBinProvider = MockContractsDeployer.abiBinProvider();
 
 const BTHelper = Package.EconomySetup.BrandedTokenHelper;
 
-const { GatewayComposerHelper } = Setup.GatewayComposerHelper;
+const GatewayComposerHelper = Setup.GatewayComposerHelper;
 
 const { dockerSetup, dockerTeardown } = require('./../../utils/docker');
 
@@ -94,10 +94,10 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
     const { rpcEndpointOrigin } = await dockerSetup();
     originWeb3 = new Web3(rpcEndpointOrigin);
     const accountsOrigin = await originWeb3.eth.getAccounts();
-    [deployerAddress] = accountsOrigin[0];
+    [deployerAddress, facilitator, beneficiary] = accountsOrigin;
     owner = deployerAddress;
-    [facilitator] = accountsOrigin[1];
-    [beneficiary] = accountsOrigin[2];
+    // [facilitator] = accountsOrigin[1];
+    // [beneficiary] = accountsOrigin[2];
   });
 
   after(() => {
@@ -218,12 +218,19 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
       txOptions,
     );
 
-    btStakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, originWeb3, txOptions);
+    btStakeStruct = await stakeHelperInstance._getStakeRequestRawTx(
+      stakeRequestHash,
+      originWeb3,
+      txOptions,
+    );
     assert.strictEqual(gatewayComposerAddress, btStakeStruct.staker, 'Incorrect staker address');
   });
 
   it('Validates worker is whitelisted', async () => {
-    const organizationContractInstance = Mosaic.Contracts.getOrganization(originWeb3, caOrganization);
+    const organizationContractInstance = Mosaic.Contracts.getOrganization(
+      originWeb3,
+      caOrganization,
+    );
     const isWorkerResult = await organizationContractInstance.methods.isWorker(worker).call();
     assert.strictEqual(isWorkerResult, true, 'Make sure worker is whitelisted.');
   });
@@ -246,7 +253,11 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
       from: facilitator,
       gas: '7500000',
     };
-    const gatewayContractInstance = Mosaic.Contracts.getEIP20Gateway(originWeb3, caGateway, txOptions);
+    const gatewayContractInstance = Mosaic.Contracts.getEIP20Gateway(
+      originWeb3,
+      caGateway,
+      txOptions,
+    );
     const bountyAmountInWei = await gatewayContractInstance.methods.bounty().call();
 
     const facilitatorInstance = new Facilitator(
@@ -271,9 +282,21 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
       originWeb3,
       txOptions,
     );
-    btStakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, originWeb3, txOptions);
-    const gcStakeStruct = await stakeHelperInstance._getGCStakeRequestRawTx(stakeRequestHash, originWeb3, txOptions);
-    assert.strictEqual(stakeRequestHash, config.nullBytes32, 'BT.StakeRequestHash should be deleted for staker');
+    btStakeStruct = await stakeHelperInstance._getStakeRequestRawTx(
+      stakeRequestHash,
+      originWeb3,
+      txOptions,
+    );
+    const gcStakeStruct = await stakeHelperInstance._getGCStakeRequestRawTx(
+      stakeRequestHash,
+      originWeb3,
+      txOptions,
+    );
+    assert.strictEqual(
+      stakeRequestHash,
+      config.nullBytes32,
+      'BT.StakeRequestHash should be deleted for staker',
+    );
     assert.strictEqual(
       btStakeStruct.stake,
       '0',

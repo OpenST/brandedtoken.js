@@ -103,7 +103,7 @@ fs.readdir(contractsRepoPath, (err, items) => {
     }
 
     // Generate Bin files
-    if (json.bytecode && json.bytecode.length && json.bytecode != '0x') {
+    if (json.bytecode && json.bytecode.length && json.bytecode !== '0x') {
       console.log('--- Generating bin file');
       // Write to file.
       const fileContent = json.bytecode;

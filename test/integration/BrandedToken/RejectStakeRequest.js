@@ -25,8 +25,6 @@ const chai = require('chai');
 
 const Web3 = require('web3');
 
-const Mosaic = require('@openstfoundation/mosaic-tbd');
-
 const Package = require('../../../index');
 
 const Setup = Package.EconomySetup;
@@ -216,7 +214,11 @@ describe('RejectStakeRequest', async () => {
       txOptions,
     );
 
-    btStakeStruct = await stakeHelperInstance._getStakeRequestRawTx(stakeRequestHash, originWeb3, txOptions);
+    btStakeStruct = await stakeHelperInstance._getStakeRequestRawTx(
+      stakeRequestHash,
+      originWeb3,
+      txOptions,
+    );
     assert.strictEqual(gatewayComposerAddress, btStakeStruct.staker, 'Incorrect staker address');
   });
 
