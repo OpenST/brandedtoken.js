@@ -237,6 +237,7 @@ describe('RejectStakeRequest', async () => {
       })
       .on('error', (error) => {
         console.log('\t !! Error for requestStake!!', error, '\n\t !! ERROR !!\n');
+        /* eslint no-undef: "off" */
         return Promise.reject(error);
       });
   });
