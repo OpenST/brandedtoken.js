@@ -27,7 +27,6 @@ const config = require('./configReader');
 
 const composeFilePath = path.join(__dirname, './docker-compose.yml');
 
-/* eslint no-undef: "off" */
 const asyncSleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 // docker-compose is expected to be available in the test environment
@@ -45,7 +44,6 @@ const dockerSetup = () => {
   }
 
   const waitForOriginNode = waitPort({ port: config.originPort, output: 'silent' });
-  /* eslint no-undef: "off" */
   return Promise.all([waitForOriginNode])
     .then(() => asyncSleep(5000))
     .then(() => ({

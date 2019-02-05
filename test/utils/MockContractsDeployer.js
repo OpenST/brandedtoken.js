@@ -85,7 +85,6 @@ class MockContractsDeployer {
       })
       .on('error', (error) => {
         console.log('\t !! Error !!', error, '\n\t !! ERROR !!\n');
-        /* eslint no-undef: "off" */
         return Promise.reject(error);
       })
       .on('receipt', (receipt) => {
