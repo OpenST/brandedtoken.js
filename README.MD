@@ -4,76 +4,45 @@ Description <TBD>
 
 #### Overview of different components:
 
-1. BrandedToken: Description <Amulya TBD>
+1. BrandedToken: A Branded Token allows a mainstream application to create a value-backed token designed specifically for its application's context. A Branded Token implements the required and optional [EIP-20 Standard Token interface](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md).
 
-2. GatewayComposer: Description <Amulya TBD>
+2. GatewayComposer: A Gateway Composer facilitates staking value for branded tokens and minting a utility representation of those branded tokens with a Utility Branded Token through a gateway for use within the given application, thereby reducing both the number of transactions to execute and the number of contracts to call in order to stake and mint.
 
-3. UtilityBrandedToken: Description <Amulya TBD>
+
+3. UtilityBrandedToken: A Utility Branded Token, which also implements the EIP-20 Standard Token interface, is the utility token representation of the Branded Token on a sidechain. This representation is orchestrated via a gateway, comprising a Gateway contract on the same chain as the Branded Token, and a CoGateway contract on the sidechain with the Utility Branded Token.
+
+The following steps assume that nodejs and geth are installed and running.
+This code was tested with geth version: 1.7.3-stable. Other higher versions should also work.
+
+####  Functionality
+The steps below describe the process of staking an EIP-20 token to create a BrandedToken on the value chain (assumed to be ethereum ) and minting (creating) a value-backed Utility Branded Token on the sidechain for use in applications.
 
 #### Basic setup
 
-1.  Install the following packages
-
-```bash
-sudo apt-get update
-sudo apt-get install nodejs
-sudo apt-get install npm
-
-```
-
-2.  Install BrandedToken.js in your project using npm
+1.  Install BrandedToken.js in your project using npm
 
 ```bash
 $ npm install @openstfoundation/brandedtoken.js --save
 
 ```
 
-3.  Install Geth
-
-    This code was tested with geth version: 1.7.3-stable. Other higher versions should also work.
-
-```bash
-curl https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-1.7.3-4bb3c89d.tar.gz | tar xvz
-mv geth-linux-amd64-1.7.3-4bb3c89d /usr/local/bin
-ln -s /usr/local/bin/geth-linux-amd64-1.7.3-4bb3c89d/geth /usr/local/bin/geth
-export PATH="$PATH:/usr/local/bin/geth-linux-amd64-1.7.3-4bb3c89d"
-
-```
-        
-4.  Sync your development machine with one of the following test environments
+2.  Sync your development machine with one of the following test environments
 
     - https://ropsten.etherscan.io/
     - https://kovan.etherscan.io/
     - https://rinkeby.etherscan.io/
-    
-5.  Create the following addresses and fund them with gas
+
+3.  Create the following addresses and fund them with gas
 
     - deployerAddress - address that deploys the EIP20Token, BrandedToken, UtilityBrandedToken and GatewayComposer contracts.
     - facilitator - address that calls acceptStakeRequest and rejectStakeRequest.
     - owner - address that calls GatewayComposer.requestStake.
-    - worker - address that calls BrandedToken.rejectStakeRequest. 
+    - worker - address that calls BrandedToken.rejectStakeRequest.
 
-##### Follow below steps to run integration tests locally
-
-Install Docker
-
-    Download docker executable to local machine using below urls:
-        https://docs.docker.com/docker-for-mac/
-        https://hub.docker.com/editions/community/docker-ce-desktop-mac
-        
-Run below command from root directory of brandedtoken.js to run tests
-
-```bash
-    npm run test
-    
-```      
-
-###### Initialize the chain on developer machine
-
-After installing geth in above step, you should start the geth.
 
 
 #### Creating an BrandedToken object
+The Branded Token object is an entry point for developer - using the BrandedToken object, a staking can be initiated.
 
 ```js
 // Creating brandedtoken.js object
@@ -82,10 +51,9 @@ const Setup = BrandedToken.EconomySetup;
 
 ```
 
-###### Sample constants
+######  Constants
 
-You can set below constants to other addresses and data that you may prefer.
-Please remember to use only addresses that you are able to access
+Please can set below constants to addresses that you are able to control.
 
 ```js
 
@@ -125,19 +93,18 @@ The abiBinProvider provides developers with following abi(s) and bin(s):
 * [BrandedToken](brandedtoken-contracts RC url Amulya TBD) (BrandedToken contract deployed on ValueChain)
 * [UtilityBrandedToken](brandedtoken-contracts RC url Amulya TBD) (UtilityBrandedToken contract deployed on UtilityChain)
 * [GatewayComposer](brandedtoken-contracts RC Amulya url) (GatewayComposer contract deployed on ValueChain per staker)
- 
+
 ```js
 
 // Get the MockToken ABI
 let abiBinProvider = openST.abiBinProvider();
 const mockTokenAbi = abiBinProvider.getABI('BrandedToken');
 
-``` 
+```
 
 
 #### Deployment of contracts
-
-For BrandedToken staking through GatewayComposer, you will want an EIP20 contract. You can 
+To stake BrandedToken using GatewayComposer, you will need an EIP20 contract. You can
 either use a pre-deployed EIP20 contract or deploy a new one as shown below (presently only deploys a new MockToken contract).
 
 ##### Deploy EIP20Token contract(TBD)
@@ -145,10 +112,10 @@ either use a pre-deployed EIP20 contract or deploy a new one as shown below (pre
 
 ##### Deploy Organization contract
 
-An organization contract needs to be deployed per economy. You can follow below steps for deploying Organization contract.
+An Organization contract serves as an on-chain access control mechanism by assigning roles to a set of addresses.
 
 ```js
-// Deploy Organization contract 
+// Deploy Organization contract
 const OrganizationHelper = Setup.OrganizationHelper;
 const organizationHelperObject = new OrganizationHelper(web3Provider);
 const organizationConfig = {
@@ -169,6 +136,8 @@ organizationHelperObject.setup(organizationConfig, deployParams).then(function()
 ```   
 
 ##### Deploy EIP20Token Mock contract
+The Mock Contract stands in place of the Value Token.If you have a pre-deployed ValueToken, please skip this step.
+
 ```js
 let eip20Token;
 const MockContractsDeployer = require('./test/utils/MockContractsDeployer');
@@ -177,10 +146,10 @@ mockContractDeployerObject.deployMockToken().then(function(){
       eip20Token = mockContractDeployerObject.addresses.MockToken;
 });
 
-``` 
+```
 
 ##### Deploy BrandedToken contract
-
+BrandedToken is a value-backed EIP-20 token with a fixed conversion rate against the Value Token chosen. This contract is deployed on the value chain.
 ```js
 const brandedTokenHelperConfig = {
     deployer: deployerAddress,
@@ -206,6 +175,7 @@ brandedTokenHelper.setup(brandedTokenHelperConfig, deployParams).then(function()
 ```  
 
 ##### Deploy UtilityBrandedToken contract
+The UtilityBrandedToken is a representation of the BrandedToken on the sidechains. Thus, this contract is deployed on the sidechain
 
 ```js
 const utilityBrandedTokenHelperConfig = {
@@ -230,6 +200,7 @@ utilityBrandedTokenHelper.setup(utilityBrandedTokenHelperConfig, deployParams).t
 ```
 
 ##### Deploy GatewayComposer contract
+Gateway composer is a contract optimizes the transactions required to perform the stake and mint process. This contract is deployed on the value chain.
 
 ```js
 const gatewayComposerConfig = {
@@ -251,6 +222,8 @@ gatewayComposerHelper.setup(gatewayComposerConfig, deployParams).then(function()
 ```
 
 ##### Deploy Gateway Mock contract
+Gateway contract facilitates the transposition of the BrandedToken from the value chain to the sidechain. The contract is deployed on the value chain.
+
 ```js
 const mockContractDeployerObject = new MockContractsDeployer(deployerAddress, web3Provider);
 let gatewayAddress;
@@ -258,7 +231,7 @@ mockContractDeployerObject.deployMockGatewayPass().then(function(){
       gatewayAddress = mockContractDeployerObject.addresses.MockGatewayPass;
 });
 
-``` 
+```
 
 #### BrandedToken Staking through GatewayComposer
 
@@ -298,7 +271,7 @@ stakerInstance.requestStake(
 ```           
 
 ##### Facilitator collects worker signature
-
+The facilitator is a service that facilitates progress of the stake and mint.
 ```js
 // StakeRequest nonce stored in BrandedToken contract.
 let stakeRequestNonce;
@@ -311,7 +284,7 @@ workerAccountInstance.signEIP712TypedData(stakeRequestTypedData).then(function(r
   signature = result;
 })
 
-``` 
+```
 
 ##### Facilitator calls acceptStakeRequest
 
@@ -330,14 +303,29 @@ txOptions = {
 };    
 let stakeRequestHash; // stakeRequestHash unique per stake request stored in GatewayComposer.stakeRequests mapping
 facilitatorInstance.acceptStakeRequest(
-  stakeRequestHash, 
-  signature, 
-  bountyAmountInWei, 
-  mockTokenAbi, 
-  hashLockInstance.hashLock, 
+  stakeRequestHash,
+  signature,
+  bountyAmountInWei,
+  mockTokenAbi,
+  hashLockInstance.hashLock,
   web3Provider,
   txOptions
 ).then(function(){
   console.log("Successfully completed acceptStakeRequest!");
 })
 ```
+
+#### Follow below steps to run integration tests locally
+
+Install Docker
+
+    Download docker executable to local machine using below urls:
+        https://docs.docker.com/docker-for-mac/
+        https://hub.docker.com/editions/community/docker-ce-desktop-mac
+
+Run below command from root directory of brandedtoken.js to run tests
+
+```bash
+    npm run test
+
+```      
