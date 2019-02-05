@@ -32,17 +32,17 @@ const Package = require('./../../../index');
 
 const Setup = Package.EconomySetup;
 
-const OrganizationHelper = Setup.OrganizationHelper;
+const { OrganizationHelper } = Setup;
 
-const assert = chai.assert;
+const { assert } = chai;
 
 const config = require('./../../utils/configReader');
 
-const StakeHelper = Package.Helpers.StakeHelper;
+const { StakeHelper } = Package.Helpers;
 
-const Staker = Package.Helpers.Staker;
+const { Staker } = Package.Helpers;
 
-const Facilitator = Package.Helpers.Facilitator;
+const { Facilitator } = Package.Helpers;
 
 const MockContractsDeployer = require('./../../utils/MockContractsDeployer');
 
@@ -50,7 +50,7 @@ const abiBinProvider = MockContractsDeployer.abiBinProvider();
 
 const BTHelper = Package.EconomySetup.BrandedTokenHelper;
 
-const GatewayComposerHelper = Setup.GatewayComposerHelper;
+const { GatewayComposerHelper } = Setup;
 
 const { dockerSetup, dockerTeardown } = require('./../../utils/docker');
 

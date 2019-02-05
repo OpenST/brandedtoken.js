@@ -59,8 +59,8 @@
 //        "git add"
 //      ]
 //    },
-//    "ignore": [
-//      "**/dist/*.js"
-//    ]
+    "ignore": [
+      "**/dist/*.js"
+    ]
   }
 }

@@ -29,9 +29,9 @@ const Package = require('../../../index');
 
 const Setup = Package.EconomySetup;
 
-const OrganizationHelper = Setup.OrganizationHelper;
+const { OrganizationHelper } = Setup;
 
-const assert = chai.assert;
+const { assert } = chai;
 
 const config = require('../../utils/configReader');
 
@@ -45,9 +45,9 @@ const abiBinProvider = MockContractsDeployer.abiBinProvider();
 
 const BTHelper = Package.EconomySetup.BrandedTokenHelper;
 
-const GatewayComposerHelper = Setup.GatewayComposerHelper;
+const { GatewayComposerHelper } = Setup;
 
-const Contracts = Package.Contracts;
+const { Contracts } = Package;
 
 const { dockerSetup, dockerTeardown } = require('../../utils/docker');
 
