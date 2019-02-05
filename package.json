@@ -52,15 +52,15 @@
       "pre-commit"
     ]
   },
-  "lint-staged": {
+//  "lint-staged": {
 //    "linters": {
 //      "*.js": [
 //        "eslint --config .eslintrc . --fix",
 //        "git add"
 //      ]
 //    },
-    "ignore": [
-      "**/dist/*.js"
-    ]
-  }
+//    "ignore": [
+//      "**/dist/*.js"
+//    ]
+//  }
 }

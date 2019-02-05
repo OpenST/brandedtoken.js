@@ -40,7 +40,7 @@ const abiOutputPath = path.join(__dirname, './abi');
 const binOutputPath = path.join(__dirname, './bin');
 
 if (process.argv.length > 2) {
-  [, , contractsRepoPath] = process.argv[2];
+  [, , contractsRepoPath] = process.argv;
 }
 
 console.log(`Looking for truffle compile output in path ${contractsRepoPath}`);
@@ -60,17 +60,18 @@ const metadata = {
 // Read all files.
 fs.readdir(contractsRepoPath, (err, items) => {
   metadata.total = items.length;
-  for (let i = 0; i < items.length; i++) {
+  for (let i = 0; i < items.length; i += 1) {
     const fileName = items[i];
     if (!fileName.endsWith('.json')) {
       // Do nothing
+      /* eslint no-continue: "off" */
       continue;
     }
 
     // Determine file Name
     const fileSplits = fileName.split('.');
     if (fileSplits.length > 2) {
-      throw `Unexpected File Name ${fileName}`;
+      throw new Error(`Unexpected File Name ${fileName}`);
     }
 
     const contractName = fileSplits[0];
@@ -79,6 +80,7 @@ fs.readdir(contractsRepoPath, (err, items) => {
       // Skip it.
       metadata.abi.ignored.push(contractName);
       metadata.bin.ignored.push(contractName);
+      /* eslint no-continue: "off" */
       continue;
     }
 
@@ -86,6 +88,7 @@ fs.readdir(contractsRepoPath, (err, items) => {
 
     const jsonFilePath = path.join(contractsRepoPath, fileName);
     console.log(`jsonFilePath ${jsonFilePath}`);
+    /* eslint global-require: "off", import/no-dynamic-require: "off" */
     const json = require(jsonFilePath);
 
     // Generate Abi files
