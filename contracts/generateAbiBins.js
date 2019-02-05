@@ -40,7 +40,7 @@ const abiOutputPath = path.join(__dirname, './abi');
 const binOutputPath = path.join(__dirname, './bin');
 
 if (process.argv.length > 2) {
-  contractsRepoPath = process.argv[2];
+  [, , contractsRepoPath] = process.argv[2];
 }
 
 console.log(`Looking for truffle compile output in path ${contractsRepoPath}`);

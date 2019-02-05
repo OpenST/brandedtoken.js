@@ -89,9 +89,8 @@ describe('RejectStakeRequest', async () => {
     const { rpcEndpointOrigin } = await dockerSetup();
     originWeb3 = new Web3(rpcEndpointOrigin);
     accountsOrigin = await originWeb3.eth.getAccounts();
-    deployerAddress = accountsOrigin[0];
+    [deployerAddress, beneficiary] = accountsOrigin;
     owner = deployerAddress;
-    beneficiary = accountsOrigin[1];
   });
 
   after(() => {
