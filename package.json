@@ -55,7 +55,7 @@
   "lint-staged": {
     "linters": {
       "*.js": [
-        "eslint --config .eslintrc . --fix",
+        "eslint --config .eslintrc .",
         "git add"
       ]
     },
