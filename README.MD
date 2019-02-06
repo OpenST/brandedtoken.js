@@ -5,7 +5,7 @@ BrandedToken.js supports interaction with BrandedToken-contracts.
 
 The steps below describe the process of staking an EIP20 token to create a BrandedToken on the value chain (assumed to be Ethereum) and minting (creating) a value-backed Utility Branded Token on the sidechain for use in applications.
 
-#  Setup
+##  Setup
 This library assumes that nodejs and geth are installed and running. To install BrandedToken.js in your project using npm:
 
 ```bash
@@ -15,7 +15,7 @@ $ npm install @openstfoundation/brandedtoken.js --save
 This code was tested with geth version: 1.7.3-stable. Other higher versions should also work.
 
 
-# Creating a BrandedToken object
+## Creating a BrandedToken object
 The BrandedToken object is an entry point: using the BrandedToken object, a staking can be initiated.
 
 ```js
@@ -26,7 +26,7 @@ const Setup = BrandedToken.EconomySetup;
 ```
 
 
-# ABI and BIN provider
+## ABI and BIN provider
 
 brandedtoken.js comes with an abi-bin provider for managing abi(s) and bin(s).
 
@@ -45,7 +45,7 @@ const mockTokenAbi = abiBinProvider.getABI('BrandedToken');
 ```
 
 
-# Deploying contracts
+## Deploying contracts
 
 ## Constants
 Before deploying contracts, please set some constants to funded addresses that you control.
@@ -78,7 +78,7 @@ const gas = 7500000;
 
 ```
 
-## Deploy EIP20Token contract
+### Deploy EIP20Token contract
 
 To stake BrandedToken, you will need an EIP20 contract for the ValueToken. You can either use an existing EIP20 contract or deploy a new one as shown below (presently only deploys a new MockToken contract). If you have an existing ValueToken, please skip this step.
 
@@ -92,7 +92,7 @@ mockContractDeployerObject.deployMockToken().then(function(){
 ```
 
 
-## Deploy Organization contract
+### Deploy Organization contract
 
 An Organization contract serves as an on-chain access control mechanism by assigning roles to a set of addresses.
 
@@ -118,7 +118,7 @@ organizationHelperObject.setup(organizationConfig, deployParams).then(function()
 
 ```   
 
-## Deploy BrandedToken contract
+### Deploy BrandedToken contract
 BrandedToken is a value-backed EIP20 token with a fixed conversion rate against the ValueToken chosen. This contract is deployed on the value chain.
 ```js
 const brandedTokenHelperConfig = {
@@ -144,7 +144,7 @@ brandedTokenHelper.setup(brandedTokenHelperConfig, deployParams).then(function()
 
 ```  
 
-## Deploy UtilityBrandedToken contract
+### Deploy UtilityBrandedToken contract
 The UtilityBrandedToken is a representation of the BrandedToken on a sidechain. Thus, this contract is deployed on a sidechain
 
 ```js
@@ -169,7 +169,7 @@ utilityBrandedTokenHelper.setup(utilityBrandedTokenHelperConfig, deployParams).t
 
 ```
 
-## Deploy GatewayComposer contract
+### Deploy GatewayComposer contract
 Gateway composer is a contract that optimizes the transactions required to perform the stake and mint process. This contract is deployed on the value chain.
 
 ```js
@@ -191,7 +191,7 @@ gatewayComposerHelper.setup(gatewayComposerConfig, deployParams).then(function()
 
 ```
 
-## Deploy Gateway Mock contract
+### Deploy Gateway Mock contract
 Gateway contract facilitates the transposition of the BrandedToken from the value chain to the sidechain. The contract is deployed on the value chain.
 
 ```js
@@ -202,9 +202,9 @@ mockContractDeployerObject.deployMockGatewayPass().then(function(){
 
 ```
 
-# BrandedToken Staking through GatewayComposer
+## BrandedToken Staking through GatewayComposer
 
-##Approve GatewayComposer for ValueToken and call requestStake
+### Approve GatewayComposer for ValueToken and call requestStake
 
 ```js
 const StakeHelper = BrandedToken.Helpers.StakeHelper;
@@ -239,7 +239,7 @@ stakerInstance.requestStake(
 
 ```           
 
-## Facilitator collects worker signature
+### Facilitator collects worker signature
 The facilitator is a service that facilitates progress of the stake and mint.
 ```js
 // StakeRequest nonce stored in BrandedToken contract.
@@ -255,7 +255,7 @@ workerAccountInstance.signEIP712TypedData(stakeRequestTypedData).then(function(s
 
 ```
 
-## Facilitator calls acceptStakeRequest
+### Facilitator calls acceptStakeRequest
 
 ```js
 const Mosaic = require('@openstfoundation/mosaic');
@@ -284,7 +284,7 @@ facilitatorInstance.acceptStakeRequest(
 })
 ```
 
-# Tests
+## Tests
 
 Tests require docker-compose. To run the tests, execute below command from root directory.
 
