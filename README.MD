@@ -87,10 +87,9 @@ brandedtoken.js comes with an in-built abi-bin provider for managing abi(s) and 
 
 The abiBinProvider provides developers with following abi(s) and bin(s):
 
-* [MockToken](brandedtoken-contracts RC url Amulya TBD) (an EIP20 contract with name 'MockToken')
-* [BrandedToken](brandedtoken-contracts RC url Amulya TBD) (BrandedToken contract deployed on ValueChain)
-* [UtilityBrandedToken](brandedtoken-contracts RC url Amulya TBD) (UtilityBrandedToken contract deployed on UtilityChain)
-* [GatewayComposer](brandedtoken-contracts RC Amulya url) (GatewayComposer contract deployed on ValueChain per staker)
+* [BrandedToken](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/BrandedToken.sol) (BrandedToken contract deployed on ValueChain)
+* [UtilityBrandedToken](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/UtilityBrandedToken.sol) (UtilityBrandedToken contract deployed on UtilityChain)
+* [GatewayComposer](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/GatewayComposer.sol) (GatewayComposer contract deployed on ValueChain per staker)
 
 ```js
 
