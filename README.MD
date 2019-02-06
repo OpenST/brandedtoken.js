@@ -1,11 +1,8 @@
 BrandedToken.js
 ============
-<<<<<<< Updated upstream
-Description <Amulya TBD>
-=======
+
 BrandedToken.js supports interaction with BrandedToken-contracts.
 The steps below describe the process of staking an EIP-20 token to create a BrandedToken on the value chain (assumed to be ethereum ) and minting (creating) a value-backed Utility Branded Token on the sidechain for use in applications.
->>>>>>> Stashed changes
 
 #### Overview of different components:
 
