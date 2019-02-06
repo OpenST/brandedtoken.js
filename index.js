@@ -20,6 +20,8 @@
 
 'use strict';
 
+/* eslint object-shorthand: "off" */
+
 const AbiBinProvider = require('./lib/AbiBinProvider');
 const EconomySetup = require('./lib/EconomySetup');
 const Contracts = require('./lib/Contracts');
@@ -28,18 +30,12 @@ const Staker = require('./lib/helpers/stake/gateway_composer/Staker');
 const Facilitator = require('./lib/helpers/stake/gateway_composer/Facilitator');
 
 module.exports = {
-  /* eslint object-shorthand: "off" */
   AbiBinProvider: AbiBinProvider,
-  /* eslint object-shorthand: "off" */
   EconomySetup: EconomySetup,
-  /* eslint object-shorthand: "off" */
   Contracts: Contracts,
   Helpers: {
-    /* eslint object-shorthand: "off" */
     StakeHelper: StakeHelper,
-    /* eslint object-shorthand: "off" */
     Staker: Staker,
-    /* eslint object-shorthand: "off" */
     Facilitator: Facilitator,
   },
 };
