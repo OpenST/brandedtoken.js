@@ -26,9 +26,9 @@ const path = require('path');
 const Package = require('../../index');
 
 const { AbiBinProvider } = Package;
-
 const mockAbiFolder = path.resolve(__dirname, './mock-contracts/abi');
 const mockBinFolder = path.resolve(__dirname, './mock-contracts/bin');
+
 class MockContractsDeployer {
   constructor(deployer, web3) {
     const oThis = this;

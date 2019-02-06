@@ -28,59 +28,34 @@ const Web3 = require('web3');
 const Package = require('../../../index');
 
 const Setup = Package.EconomySetup;
-
 const { OrganizationHelper } = Setup;
-
 const { assert } = chai;
-
 const config = require('../../utils/configReader');
-
 const StakeHelper = require('../../../lib/helpers/stake/gateway_composer/StakeHelper');
-
 const Staker = require('../../../lib/helpers/stake/gateway_composer/Staker');
-
 const MockContractsDeployer = require('../../utils/MockContractsDeployer');
 
 const abiBinProvider = MockContractsDeployer.abiBinProvider();
-
 const BTHelper = Package.EconomySetup.BrandedTokenHelper;
-
 const { GatewayComposerHelper } = Setup;
-
 const { Contracts } = Package;
-
 const { dockerSetup, dockerTeardown } = require('../../utils/docker');
 
 let originWeb3;
-
 let owner;
-
 let worker;
-
 let caOrganization;
-
 let caMockToken;
-
 let stakeRequestHash;
-
 let gatewayComposerAddress;
-
 let beneficiary;
-
 let btStakeStruct;
-
 let caGateway;
-
 let btAddress;
-
 let stakeHelperInstance;
-
 let mockTokenAbi;
-
 let deployerAddress;
-
 let txOptions;
-
 let accountsOrigin;
 
 describe('RejectStakeRequest', async () => {

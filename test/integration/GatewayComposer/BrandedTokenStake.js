@@ -23,69 +23,41 @@
 
 // Load external packages
 const chai = require('chai');
-
 const Web3 = require('web3');
-
 const Mosaic = require('@openstfoundation/mosaic-tbd');
-
 const Package = require('./../../../index');
 
 const Setup = Package.EconomySetup;
-
 const { OrganizationHelper } = Setup;
-
 const { assert } = chai;
-
 const config = require('./../../utils/configReader');
 
 const { StakeHelper } = Package.Helpers;
-
 const { Staker } = Package.Helpers;
-
 const { Facilitator } = Package.Helpers;
-
 const MockContractsDeployer = require('./../../utils/MockContractsDeployer');
 
 const abiBinProvider = MockContractsDeployer.abiBinProvider();
-
 const BTHelper = Package.EconomySetup.BrandedTokenHelper;
-
 const { GatewayComposerHelper } = Setup;
-
 const { dockerSetup, dockerTeardown } = require('./../../utils/docker');
 
 let originWeb3;
-
 let owner;
-
 let worker;
-
 let caOrganization;
-
 let caMockToken;
-
 let stakeRequestHash;
-
 let gatewayComposerAddress;
-
 let facilitator;
-
 let beneficiary;
-
 let btStakeStruct;
-
 let caGateway;
-
 let btAddress;
-
 let stakeHelperInstance;
-
 let mockTokenAbi;
-
 let deployerAddress;
-
 let txOptions;
-
 let signature;
 
 describe('Performs BrandedToken staking through GatewayComposer', async () => {
