@@ -1,13 +1,12 @@
 BrandedToken.js
 ============
-Description <TBD>
+Description <Amulya TBD>
 
 #### Overview of different components:
 
 1. BrandedToken: A Branded Token allows a mainstream application to create a value-backed token designed specifically for its application's context. A Branded Token implements the required and optional [EIP-20 Standard Token interface](https://github.com/ethereum/EIPs/blob/master/EIPS/eip-20.md).
 
 2. GatewayComposer: A Gateway Composer facilitates staking value for branded tokens and minting a utility representation of those branded tokens with a Utility Branded Token through a gateway for use within the given application, thereby reducing both the number of transactions to execute and the number of contracts to call in order to stake and mint.
-
 
 3. UtilityBrandedToken: A Utility Branded Token, which also implements the EIP-20 Standard Token interface, is the utility token representation of the Branded Token on a sidechain. This representation is orchestrated via a gateway, comprising a Gateway contract on the same chain as the Branded Token, and a CoGateway contract on the sidechain with the Utility Branded Token.
 
@@ -41,7 +40,7 @@ $ npm install @openstfoundation/brandedtoken.js --save
 
 
 
-#### Creating an BrandedToken object
+#### Creating a BrandedToken object
 The Branded Token object is an entry point for developer - using the BrandedToken object, a staking can be initiated.
 
 ```js
@@ -58,7 +57,7 @@ Please can set below constants to addresses that you are able to control.
 ```js
 
 // Initialize web3 object using the geth endpoint
-const web3Provider = 'http://127.0.0.1:8545';
+const web3Provider = new Web3('http://127.0.0.1:8545');
 
 // organization owner. Doesn't need to be eth funded.
 let organizationOwner = '0xaabb1122....................';
@@ -107,7 +106,18 @@ const mockTokenAbi = abiBinProvider.getABI('BrandedToken');
 To stake BrandedToken using GatewayComposer, you will need an EIP20 contract. You can
 either use a pre-deployed EIP20 contract or deploy a new one as shown below (presently only deploys a new MockToken contract).
 
-##### Deploy EIP20Token contract(TBD)
+##### Deploy EIP20Token contract
+
+The Mock Contract stands in place of the Value Token.If you have a pre-deployed ValueToken, please skip this step.
+
+```js
+const MockContractsDeployer = require('./test/utils/MockContractsDeployer');
+const mockContractDeployerObject = new MockContractsDeployer(deployerAddress, web3Provider);
+let eip20Token;
+mockContractDeployerObject.deployMockToken().then(function(){
+  eip20Token = mockContractDeployerObject.addresses.MockToken;
+});
+```
 
 
 ##### Deploy Organization contract
@@ -128,25 +138,13 @@ let deployParams = {
   gas: '7500000',
   gasPrice: '0x3B9ACA00'
 };
+let organizationAddress;
 organizationHelperObject.setup(organizationConfig, deployParams).then(function(){
     organizationAddress = organizationHelperObject.address;
 });
 
 
 ```   
-
-##### Deploy EIP20Token Mock contract
-The Mock Contract stands in place of the Value Token.If you have a pre-deployed ValueToken, please skip this step.
-
-```js
-let eip20Token;
-const MockContractsDeployer = require('./test/utils/MockContractsDeployer');
-const mockContractDeployerObject = new MockContractsDeployer(deployerAddress, web3Provider);
-mockContractDeployerObject.deployMockToken().then(function(){
-      eip20Token = mockContractDeployerObject.addresses.MockToken;
-});
-
-```
 
 ##### Deploy BrandedToken contract
 BrandedToken is a value-backed EIP-20 token with a fixed conversion rate against the Value Token chosen. This contract is deployed on the value chain.
@@ -225,7 +223,6 @@ gatewayComposerHelper.setup(gatewayComposerConfig, deployParams).then(function()
 Gateway contract facilitates the transposition of the BrandedToken from the value chain to the sidechain. The contract is deployed on the value chain.
 
 ```js
-const mockContractDeployerObject = new MockContractsDeployer(deployerAddress, web3Provider);
 let gatewayAddress;
 mockContractDeployerObject.deployMockGatewayPass().then(function(){
       gatewayAddress = mockContractDeployerObject.addresses.MockGatewayPass;
@@ -280,8 +277,8 @@ const stakeRequestTypedData = stakeHelperInstance.getStakeRequestTypedData(stake
 
 // 2. Generate EIP712 signature object.
 const workerAccountInstance = web3Provider.eth.accounts.wallet[worker];
-workerAccountInstance.signEIP712TypedData(stakeRequestTypedData).then(function(result){
-  signature = result;
+workerAccountInstance.signEIP712TypedData(stakeRequestTypedData).then(function(signature){
+  console.log("signature:", signature);
 })
 
 ```
