@@ -3,7 +3,7 @@ BrandedToken.js
 
 BrandedToken.js supports interaction with BrandedToken-contracts.
 
-The steps below describe the process of staking an EIP-20 token to create a BrandedToken on the value chain (assumed to be Ethereum) and minting (creating) a value-backed Utility Branded Token on the sidechain for use in applications.
+The steps below describe the process of staking an EIP20Token to create a BrandedToken on the value chain (assumed to be Ethereum) and minting (creating) a value-backed Utility Branded Token on the sidechain for use in applications.
 
 ##  Setup
 This library assumes that nodejs and geth are installed and running. To install BrandedToken.js in your project using npm:
@@ -38,7 +38,7 @@ The abiBinProvider provides abi(s) and bin(s) for the following contracts:
 ```js
 
 // Get the MockToken ABI
-let abiBinProvider = new  BrandedToken.AbiBinProvider();
+let abiBinProvider = new BrandedToken.AbiBinProvider();
 const mockTokenAbi = abiBinProvider.getABI('BrandedToken');
 
 ```
@@ -78,9 +78,9 @@ const gas = 7500000;
 
 ```
 
-### Deploy EIP-20Token contract
+### Deploy EIP20Token contract
 
-To stake BrandedToken, you will need an EIP-20 contract for the ValueToken. You can either use an existing EIP-20 contract or deploy a new one as shown below (presently only deploys a new MockToken contract). If you have an existing ValueToken, please skip this step.
+To stake BrandedToken, you will need an EIP20Token for the ValueToken. You can either use an existing EIP20Token contract or deploy a new one as shown below (presently only deploys a new MockToken contract). If you have an existing ValueToken, please skip this step.
 
 ```js
 const MockContractsDeployer = require('./test/utils/MockContractsDeployer');
@@ -120,7 +120,7 @@ organizationHelperObject.setup(organizationConfig, deployParams).then(function()
 ```   
 
 ### Deploy BrandedToken contract
-BrandedToken is a value-backed EIP-20 token with a fixed conversion rate against the ValueToken chosen. This contract is deployed on the value chain.
+BrandedToken is a value-backed EIP20Token with a fixed conversion rate against the ValueToken chosen. This contract is deployed on the value chain.
 ```js
 const brandedTokenHelperConfig = {
     deployer: deployerAddress,
