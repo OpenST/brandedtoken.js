@@ -21,7 +21,6 @@ The BrandedToken object is an entry point: using the BrandedToken object, a stak
 ```js
 // Creating brandedtoken.js object
 const BrandedToken = require('./index.js');
-const Setup = BrandedToken.EconomySetup;
 
 ```
 
@@ -98,6 +97,7 @@ An Organization contract serves as an on-chain access control mechanism by assig
 
 ```js
 // Deploy Organization contract
+const Setup = BrandedToken.EconomySetup;
 const OrganizationHelper = Setup.OrganizationHelper;
 const organizationHelperObject = new OrganizationHelper(web3Provider);
 const organizationConfig = {
@@ -192,7 +192,8 @@ gatewayComposerHelper.setup(gatewayComposerConfig, deployParams).then(function()
 ```
 
 ### Deploy Gateway Mock contract
-Gateway contract facilitates the transposition of the BrandedToken from the value chain to the sidechain. The contract is deployed on the value chain.
+Gateway contract facilitates the transposition of the BrandedToken from the value chain to the sidechain. The contract is deployed on the value chain. 
+Please skip this step if real Gateway contract address is available.
 
 ```js
 let gatewayAddress;
@@ -213,6 +214,8 @@ let txOptions = {
   from: owner
 };
 const stakeAmountInWei = '100';
+
+// stakerGatewayNonce is the nonce of the staker address stored in Gateway contract. Alternatively it can also be fetched from Gateway.getNonce(stakeAddress) method.
 const stakerGatewayNonce = 1;
 let mintBTAmountInWei;
 stakeHelperInstance.convertToBTToken(stakeAmountInWei, brandedTokenAddress, web3Provider, txOptions).then(function(result){
@@ -258,7 +261,7 @@ workerAccountInstance.signEIP712TypedData(stakeRequestTypedData).then(function(s
 ### Facilitator calls acceptStakeRequest
 
 ```js
-const Mosaic = require('@openstfoundation/mosaic');
+const Mosaic = require('@openstfoundation/mosaic.js');
 const hashLockInstance = Mosaic.Helpers.StakeHelper.createSecretHashLock();
 const gatewayContractInstance = Mosaic.Contracts.getEIP20Gateway(web3Provider, gatewayAddress);
 let bountyAmountInWei;
