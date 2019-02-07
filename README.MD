@@ -39,7 +39,7 @@ The abiBinProvider provides abi(s) and bin(s) for the following contracts:
 
 // Get the MockToken ABI
 let abiBinProvider = new BrandedToken.AbiBinProvider();
-const mockTokenAbi = abiBinProvider.getABI('BrandedToken');
+const brandedTokenAbi = abiBinProvider.getABI('BrandedToken');
 
 ```
 
@@ -226,8 +226,9 @@ const stakerInstance = new Staker(web3Provider, eip20Token, brandedTokenAddress,
 const stakeGasPrice = '0x3B9ACA00';
 const stakeGasLimit = '7500000';
 const beneficiary = '0xaabb1122....................';
+const eip20TokenAbi = ''; // Add JSON parsed eip20Token ABI here
 stakerInstance.requestStake(
-    mockTokenAbi,
+    eip20TokenAbi,
     staker,
     stakeAmountInWei,
     mintBTAmountInWei,
@@ -280,7 +281,7 @@ facilitatorInstance.acceptStakeRequest(
   stakeRequestHash,
   signature,
   bountyAmountInWei,
-  mockTokenAbi,
+  eip20TokenAbi,
   hashLockInstance.hashLock,
   web3Provider,
   txOptions
