@@ -214,7 +214,7 @@ const stakeHelperInstance = new StakeHelper(web3Provider, brandedTokenAddress, g
 let txOptions = {
   from: staker
 };
-const stakeAmountInWei = '100';
+const stakeAmountInWei = '1000000000000';
 
 // stakerGatewayNonce is the nonce of the staker address stored in Gateway contract. Alternatively it can also be fetched from Gateway.getNonce(stakeAddress) method.
 const stakerGatewayNonce = 1;
@@ -237,25 +237,26 @@ stakerInstance.requestStake(
     beneficiary,
     stakerGatewayNonce,
     txOptions
-).then(function(){
-  console.log("Request stake completed!");
-})
+).then(console.log)
+
 
 ```           
 
 ### Facilitator collects worker signature
+
 The facilitator is a service that facilitates progress of the stake and mint.
+
 ```js
 // StakeRequest nonce stored in BrandedToken contract.
-let stakeRequestNonce;
+let stakeRequestNonce = 0;
 // 1. Create TypedData
 const stakeRequestTypedData = stakeHelperInstance.getStakeRequestTypedData(stakeAmountInWei, stakeRequestNonce);
 
 // 2. Generate EIP712 signature object.
-const workerAccountInstance = web3Provider.eth.accounts.wallet[worker];
-workerAccountInstance.signEIP712TypedData(stakeRequestTypedData).then(function(signature){
-  console.log("signature:", signature);
-})
+// You will need to have worker private key for signing.
+const workerPrivateKey = '0xaabb1122....................';
+const workerAccount = oThis.web3Object.eth.accounts.decrypt(workerPrivateKey, passphrase);
+const signature = workerAccount.signEIP712TypedData(stakeRequestTypedData);
 
 ```
 
