@@ -38,7 +38,7 @@ The abiBinProvider provides abi(s) and bin(s) for the following contracts:
 ```js
 
 // Get the MockToken ABI
-let abiBinProvider = openST.abiBinProvider();
+let abiBinProvider = new  BrandedToken.AbiBinProvider();
 const mockTokenAbi = abiBinProvider.getABI('BrandedToken');
 
 ```
@@ -52,24 +52,25 @@ Before deploying contracts, please set some constants to funded addresses that y
 ```js
 
 // Initialize web3 object using the geth endpoint
+const Web3 = require('web3');
 const web3Provider = new Web3('http://127.0.0.1:8545');
 
 // organization owner. Doesn't need to be eth funded.
-let organizationOwner = '0xaabb1122....................';
+const organizationOwner = '0xaabb1122....................';
 
 // deployer address
-let deployerAddress = '0xaabb1122....................';
+const deployerAddress = '0xaabb1122....................';
 
 // Facilitator address
-let facilitator = '0xaabb1122....................';
+const facilitator = '0xaabb1122....................';
 
 // staker address
-let staker = '0xaabb1122....................';
+const staker = '0xaabb1122....................';
 
 // worker address
-let worker = '0xaabb1122....................';
+const worker = '0xaabb1122....................';
 
-let passphrase = 'some passphrase.....';
+const passphrase = 'some passphrase.....';
 
 // Other constants
 const gasPrice = '0x12A05F200';
@@ -135,10 +136,10 @@ deployParams = {
   gas: '7500000',
   gasPrice: '0x3B9ACA00'
 };
-const brandedTokenHelper = Setup.BrandedTokenHelper;
+const brandedTokenHelperObject = new Setup.BrandedTokenHelper(web3Provider);
 let brandedTokenAddress;
-brandedTokenHelper.setup(brandedTokenHelperConfig, deployParams).then(function(){
-    brandedTokenAddress = brandedTokenHelper.address;
+brandedTokenHelperObject.setup(brandedTokenHelperConfig, deployParams).then(function(){
+    brandedTokenAddress = brandedTokenHelperObject.address;
 });
 
 
@@ -160,7 +161,7 @@ deployParams = {
   gas: '7500000',
   gasPrice: '0x3B9ACA00'
 };
-const utilityBrandedTokenHelper = Setup.UtilityBrandedTokenHelper;
+const utilityBrandedTokenHelper = new Setup.UtilityBrandedTokenHelper(web3Provider);
 let utilityBrandedTokenAddress;
 utilityBrandedTokenHelper.setup(utilityBrandedTokenHelperConfig, deployParams).then(function(){
     utilityBrandedTokenAddress = utilityBrandedTokenHelper.address;
@@ -183,7 +184,7 @@ deployParams = {
   gas: '7500000',
   gasPrice: '0x3B9ACA00'
 };
-const gatewayComposerHelper = Setup.GatewayComposerHelper;
+const gatewayComposerHelper = new Setup.GatewayComposerHelper(web3Provider);
 let gatewayComposerAddress;
 gatewayComposerHelper.setup(gatewayComposerConfig, deployParams).then(function(){
     gatewayComposerAddress = gatewayComposerHelper.address;
@@ -211,7 +212,7 @@ mockContractDeployerObject.deployMockGatewayPass().then(function(){
 const StakeHelper = BrandedToken.Helpers.StakeHelper;
 const stakeHelperInstance = new StakeHelper(web3Provider, brandedTokenAddress, gatewayComposerAddress);
 let txOptions = {
-  from: owner
+  from: staker
 };
 const stakeAmountInWei = '100';
 
@@ -227,7 +228,7 @@ const stakeGasLimit = '7500000';
 const beneficiary = '0xaabb1122....................';
 stakerInstance.requestStake(
     mockTokenAbi,
-    owner,
+    staker,
     stakeAmountInWei,
     mintBTAmountInWei,
     gatewayAddress,
