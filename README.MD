@@ -255,7 +255,7 @@ let stakeRequestNonce = 0;
 const stakeRequestTypedData = stakeHelperInstance.getStakeRequestTypedData(stakeAmountInWei, stakeRequestNonce);
 
 // 2. Generate EIP712 signature object.
-// Account is unlocked which means access to the private key.
+// Worker account is unlocked which means access to the private key.
 const signature = workerAccount.signEIP712TypedData(stakeRequestTypedData);
 ```
 
