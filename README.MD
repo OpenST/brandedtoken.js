@@ -254,9 +254,9 @@ let stakeRequestNonce = 0;
 const stakeRequestTypedData = stakeHelperInstance.getStakeRequestTypedData(stakeAmountInWei, stakeRequestNonce);
 
 // 2. Generate EIP712 signature object.
-// You will need to have worker private key for signing.
-const workerPrivateKey = '0xaabb1122....................';
-const workerAccount = oThis.web3Object.eth.accounts.decrypt(workerPrivateKey, passphrase);
+// You will need to have worker key store file for signing.
+const workerKeyStoreData = '...'; //The encrypted keystore JSON.
+const workerAccount = web3Provider.eth.accounts.decrypt(workerKeyStoreData, passphrase);
 const signature = workerAccount.signEIP712TypedData(stakeRequestTypedData);
 
 ```
