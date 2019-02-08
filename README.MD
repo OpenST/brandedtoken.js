@@ -246,6 +246,7 @@ stakerInstance.requestStake(
 ### Facilitator collects worker signature
 
 The facilitator is a service that facilitates progress of the stake and mint.
+You must have access to the private key to sign with the worker account. Please see web3 documentation for signing with accounts.
 
 ```js
 // StakeRequest nonce stored in BrandedToken contract.
@@ -254,11 +255,8 @@ let stakeRequestNonce = 0;
 const stakeRequestTypedData = stakeHelperInstance.getStakeRequestTypedData(stakeAmountInWei, stakeRequestNonce);
 
 // 2. Generate EIP712 signature object.
-// You will need to have worker key store file for signing.
-const workerKeyStoreData = '...'; //The encrypted keystore JSON.
-const workerAccount = web3Provider.eth.accounts.decrypt(workerKeyStoreData, passphrase);
+// Account is unlocked which means access to the private key.
 const signature = workerAccount.signEIP712TypedData(stakeRequestTypedData);
-
 ```
 
 ### Facilitator calls acceptStakeRequest
