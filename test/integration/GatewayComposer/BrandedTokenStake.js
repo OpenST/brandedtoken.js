@@ -20,8 +20,8 @@
 
 'use strict';
 
-
 // Load external packages
+const BN = require('bn.js');
 const chai = require('chai');
 const Web3 = require('web3');
 const Mosaic = require('@openstfoundation/mosaic-tbd');
@@ -67,9 +67,9 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
     originWeb3 = new Web3(rpcEndpointOrigin);
     const accountsOrigin = await originWeb3.eth.getAccounts();
     [deployerAddress, facilitator, beneficiary] = accountsOrigin;
+    // Deployer while deploying MockToken gets MAX ValueTokens.
+    // Since owner is the deployer, owner also gets MAX ValueTokens.
     owner = deployerAddress;
-    // [facilitator] = accountsOrigin[1];
-    // [beneficiary] = accountsOrigin[2];
   });
 
   after(() => {
@@ -86,7 +86,7 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
       deployer: deployerAddress,
       owner,
       workers: worker,
-      workerExpirationHeight: '20000000',
+      workerExpirationHeight: config.workerExpirationHeight,
     };
     await orgHelper.setup(orgConfig);
     caOrganization = orgHelper.address;
@@ -104,11 +104,11 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
     const btHelperConfig = {
       deployer: deployerAddress,
       valueToken: caMockToken,
-      symbol: 'BT',
-      name: 'MyBrandedToken',
-      decimals: '18',
-      conversionRate: '1000',
-      conversionRateDecimals: 5,
+      symbol: config.symbol,
+      name: config.name,
+      decimals: config.decimals,
+      conversionRate: config.conversionRate,
+      conversionRateDecimals: config.conversionRateDecimals,
       organization: caOrganization,
     };
 
@@ -138,7 +138,6 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
 
     const gcHelper = new GatewayComposerHelper(originWeb3, null);
 
-
     const gatewayComposerInstance = await gcHelper.setup(gcHelperConfig, gcDeployParams);
 
     gatewayComposerAddress = gatewayComposerInstance.contractAddress;
@@ -150,6 +149,17 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
     await deployerInstance.deployMockGatewayPass();
     caGateway = deployerInstance.addresses.MockGatewayPass;
     assert.isNotNull(caGateway, 'Gateway contract address should not be null.');
+  });
+
+  it('Verifies ValueToken balance of owner', async () => {
+    const mockTokenInstance = Mosaic.Contracts.getEIP20Token(
+      originWeb3,
+      caMockToken,
+    );
+    const balanceOfStaker = await mockTokenInstance.methods.balanceOf(owner).call();
+    const balanceOfStakerBN = new BN(balanceOfStaker);
+    const stakeAmountBN = new BN(config.stakeAmountInWei);
+    assert.strictEqual(balanceOfStakerBN.cmp(stakeAmountBN), 1, 'staker ValueToken balance should be greater/equal to stakeAmountInWei.');
   });
 
   it('Performs staker.requestStake', async () => {
@@ -166,7 +176,6 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
       originWeb3,
       txOptions,
     );
-
 
     const stakerGatewayNonce = 1;
 
@@ -195,7 +204,8 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
       originWeb3,
       txOptions,
     );
-    assert.strictEqual(gatewayComposerAddress, btStakeStruct.staker, 'Incorrect staker address');
+    assert.strictEqual(gatewayComposerAddress, btStakeStruct.staker, 'Incorrect staker address.');
+    assert.strictEqual(config.stakeAmountInWei, btStakeStruct.stake, 'Incorrect stake amount.');
   });
 
   it('Validates worker is whitelisted', async () => {

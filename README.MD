@@ -207,14 +207,16 @@ mockContractDeployerObject.deployMockGatewayPass().then(function(){
 ## BrandedToken Staking through GatewayComposer
 
 ### Approve GatewayComposer for ValueToken and call requestStake
+Please make sure staker has sufficient stake amount before calling this step.
 
 ```js
 const StakeHelper = BrandedToken.Helpers.StakeHelper;
 const stakeHelperInstance = new StakeHelper(web3Provider, brandedTokenAddress, gatewayComposerAddress);
 let txOptions = {
-  from: staker
+  from: staker,
+  gas: '7500000',
 };
-const stakeAmountInWei = '1000000000000';
+const stakeAmountInWei = '10000000000';
 
 // stakerGatewayNonce is the nonce of the staker address stored in Gateway contract. Alternatively it can also be fetched from Gateway.getNonce(stakeAddress) method.
 const stakerGatewayNonce = 1;
@@ -272,6 +274,7 @@ gatewayContractInstance.methods.bounty().call().then(function(result){
 const Facilitator = BrandedToken.Helpers.Facilitator;
 const facilitatorInstance = new Facilitator(web3Provider, eip20Token, brandedTokenAddress, gatewayComposerAddress, facilitator);
 txOptions = {
+  from: facilitator,
   gas: '7500000'
 };    
 let stakeRequestHash; // stakeRequestHash unique per stake request stored in GatewayComposer.stakeRequests mapping
