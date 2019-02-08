@@ -20,7 +20,7 @@
 
 'use strict';
 
-const ConfigReader = function () {};
+const ConfigReader = function constructor() {};
 
 ConfigReader.prototype = {
   gasPrice: '0x3B9ACA00',

@@ -20,7 +20,7 @@
 
 'use strict';
 
-const TestHelper = function (homeDir) {
+const TestHelper = function constructor(homeDir) {
   const oThis = this;
 
   oThis.homeDir = homeDir;
