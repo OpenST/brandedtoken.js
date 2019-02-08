@@ -2,7 +2,8 @@
 
 ## Version 0.10.0
 
-* Illustrate reject stakeRequest flow in integration test ([#62] (https://github.com/OpenSTFoundation/brandedtoken.js/pull/62))
+* Replace mosaic-tbd with mosaic.js ([#74](https://github.com/OpenSTFoundation/brandedtoken.js/pull/74))
+* Illustrate reject stakeRequest flow in integration test ([#62](https://github.com/OpenSTFoundation/brandedtoken.js/pull/62))
 * Updated package.json and npm run alignment ([#65](https://github.com/OpenSTFoundation/brandedtoken.js/pull/65))
 * Integration test files cleanup ([#60](https://github.com/OpenSTFoundation/brandedtoken.js/pull/60))
 * Use docker geth instance for testing ([#58](https://github.com/OpenSTFoundation/brandedtoken.js/pull/58))
