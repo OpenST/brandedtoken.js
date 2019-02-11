@@ -24,7 +24,7 @@
 const BN = require('bn.js');
 const chai = require('chai');
 const Web3 = require('web3');
-const Mosaic = require('@openstfoundation/mosaic-tbd');
+const Mosaic = require('@openstfoundation/mosaic.js');
 const Package = require('./../../../index');
 
 const Setup = Package.EconomySetup;
