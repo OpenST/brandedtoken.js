@@ -2,6 +2,12 @@
 
 ## Version 0.10.0
 
+<!-- [**Release 0.10.0, (<date-here>)**](https://github.com/OpenSTFoundation/brandedtoken.js/releases/tag/0.10.0) -->
+
+ You can use brandedtoken.js to interact with BrandedToken contracts.
+
+### Notable Changes
+
 * Replace mosaic-tbd with mosaic.js ([#74](https://github.com/OpenSTFoundation/brandedtoken.js/pull/74))
 * Readme ([#72](https://github.com/OpenSTFoundation/brandedtoken.js/pull/72))
 * License Update and repo alignment as per eslint configuration ([#71](https://github.com/OpenSTFoundation/brandedtoken.js/pull/71))
