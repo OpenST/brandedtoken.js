@@ -2,9 +2,9 @@
 
 ## Version 0.10.0
 
-<!-- [**Release 0.10.0, (<date-here>)**](https://github.com/OpenSTFoundation/brandedtoken.js/releases/tag/0.10.0) -->
+<!-- [**0.10.0, (<release date: DD MM YYYY>)**](https://github.com/OpenSTFoundation/brandedtoken.js/releases/tag/0.10.0) -->
 
- You can use brandedtoken.js to interact with BrandedToken contracts.
+You can use brandedtoken.js to interact with BrandedToken contracts.
 
 ### Notable Changes
 
