@@ -26,7 +26,7 @@ The BrandedToken object is an entry point: using the BrandedToken object, a stak
 
 ```js
 // Creating brandedtoken.js object
-const BrandedToken = require('./index.js');
+const BrandedToken = require('@openstfoundation/brandedtoken.js');
 
 ```
 
