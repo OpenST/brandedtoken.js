@@ -98,9 +98,9 @@ An Organization contract serves as an on-chain access control mechanism by assig
 
 ```js
 // Deploy Organization contract
+const Mosaic = require('@openstfoundation/mosaic.js');
 const Setup = BrandedToken.EconomySetup;
-const OrganizationHelper = Setup.OrganizationHelper;
-const organizationHelperObject = new OrganizationHelper(web3Provider);
+const { Organization } = Mosaic.ContractInteract;
 const organizationConfig = {
   deployer: deployerAddress,
   owner: organizationOwner,
@@ -111,9 +111,11 @@ let deployParams = {
   gas: '7500000',
   gasPrice: '0x3B9ACA00'
 };
+let organizationContractInstance;
 let organizationAddress;
-organizationHelperObject.setup(organizationConfig, deployParams).then(function(){
-    organizationAddress = organizationHelperObject.address;
+Organization.setup(originWeb3, orgConfig).then(function(instance){
+  organizationContractInstance = instance;
+  organizationAddress = organizationContractInstance.address;
 });
 
 
@@ -264,11 +266,10 @@ const signature = workerAccount.signEIP712TypedData(stakeRequestTypedData);
 ### Facilitator calls acceptStakeRequest
 
 ```js
-const Mosaic = require('@openstfoundation/mosaic.js');
-const hashLockInstance = Mosaic.Helpers.StakeHelper.createSecretHashLock();
-const gatewayContractInstance = Mosaic.Contracts.getEIP20Gateway(web3Provider, gatewayAddress);
+const hashLockInstance = Mosaic.Utils.createSecretHashLock();
+const gatewayContractInstance = new Mosaic.ContractInteract.EIP20Gateway(web3Provider, gatewayAddress);
 let bountyAmountInWei;
-gatewayContractInstance.methods.bounty().call().then(function(result){
+gatewayContractInstance.getBounty.then(function(result){
   bountyAmountInWei = result;
 });
 const Facilitator = BrandedToken.Helpers.Facilitator;

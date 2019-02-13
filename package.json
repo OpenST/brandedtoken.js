@@ -28,7 +28,7 @@
     "pre-commit": "lint-staged"
   },
   "dependencies": {
-    "@openstfoundation/mosaic.js": "0.10.0-alpha.4"
+    "@openstfoundation/mosaic.js": "https://github.com/OpenSTFoundation/mosaic.js.git#npm_integration_fixes"
   },
   "devDependencies": {
     "eslint": "5.5.0",
