@@ -221,12 +221,6 @@ describe('RejectStakeRequest', async () => {
 
     return tx
       .send(txOptions)
-      .on('transactionHash', (transactionHash) => {
-        console.log('\t - transaction hash of reject stake request:', transactionHash);
-      })
-      .on('error', (error) => {
-        console.log('\t !! Error for requestStake!!', error, '\n\t !! ERROR !!\n');
-        return Promise.reject(error);
-      });
+      .on('error', error => Promise.reject(error));
   });
 });
