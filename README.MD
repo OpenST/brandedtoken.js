@@ -256,30 +256,42 @@ const signature = workerAccount.signEIP712TypedData(stakeRequestTypedData);
 ### Facilitator calls acceptStakeRequest
 
 ```js
+const { AbiBinProvider } = BrandedToken;
+const Mosaic = require('@openstfoundation/mosaic.js');
 const hashLockInstance = Mosaic.Utils.createSecretHashLock();
 const gatewayContractInstance = new Mosaic.ContractInteract.EIP20Gateway(web3Provider, gatewayAddress);
-let bountyAmountInWei;
-gatewayContractInstance.getBounty().then(function(result){
-  bountyAmountInWei = result;
-});
-const Facilitator = BrandedToken.Helpers.Facilitator;
-const facilitatorInstance = new Facilitator(web3Provider, eip20Token, brandedTokenAddress, gatewayComposerAddress, facilitator);
-txOptions = {
-  from: facilitator,
-  gas: '7500000'
-};    
-let stakeRequestHash; // stakeRequestHash unique per stake request stored in GatewayComposer.stakeRequests mapping
-facilitatorInstance.acceptStakeRequest(
-  stakeRequestHash,
-  signature,
-  bountyAmountInWei,
-  eip20TokenAbi,
-  hashLockInstance.hashLock,
-  web3Provider,
-  txOptions
-).then(function(){
-  console.log("Successfully completed acceptStakeRequest!");
-})
+
+const stake = async () => {
+  const bountyAmountInWei = await gatewayContractInstance.getBounty();
+
+  const Facilitator = BrandedToken.Helpers.Facilitator;
+  const facilitatorInstance = new Facilitator(
+    web3Provider,
+    eip20Token,
+    brandedTokenAddress,
+    gatewayComposerAddress,
+    facilitator,
+    new AbiBinProvider(),
+  );
+
+  txOptions = {
+    from: facilitator,
+    gas: '7500000'
+  };
+
+  let stakeRequestHash; // stakeRequestHash unique per stake request stored in GatewayComposer.stakeRequests mapping
+  facilitatorInstance.acceptStakeRequest(
+    stakeRequestHash,
+    signature,
+    bountyAmountInWei,
+    hashLockInstance.hashLock,
+    txOptions
+  ).then(() => {
+    console.log("Successfully completed acceptStakeRequest!");
+  });
+};
+
+stake();
 ```
 
 ## Tests

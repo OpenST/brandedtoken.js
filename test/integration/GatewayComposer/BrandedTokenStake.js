@@ -22,18 +22,20 @@
 
 // Load external packages
 const BN = require('bn.js');
-const chai = require('chai');
+const { assert } = require('chai');
 const Web3 = require('web3');
 const Mosaic = require('@openstfoundation/mosaic.js');
 const Package = require('./../../../index');
 
+const { AbiBinProvider } = Package;
 const Setup = Package.EconomySetup;
-const { assert } = chai;
 const config = require('./../../utils/configReader');
 
-const { StakeHelper } = Package.Helpers;
-const { Staker } = Package.Helpers;
-const { Facilitator } = Package.Helpers;
+const {
+  StakeHelper,
+  Staker,
+  Facilitator,
+} = Package.Helpers;
 const MockContractsDeployer = require('./../../utils/MockContractsDeployer');
 
 const abiBinProvider = MockContractsDeployer.abiBinProvider();
@@ -238,14 +240,13 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
       btAddress,
       gatewayComposerAddress,
       facilitator,
+      new AbiBinProvider(),
     );
     await facilitatorInstance.acceptStakeRequest(
       stakeRequestHash,
       signature,
       bountyAmountInWei,
-      mockTokenAbi,
       hashLockInstance.hashLock,
-      originWeb3,
       txOptions,
     );
 

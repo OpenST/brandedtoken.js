@@ -30,9 +30,9 @@ const Staker = require('./lib/helpers/stake/gateway_composer/Staker');
 const Facilitator = require('./lib/helpers/stake/gateway_composer/Facilitator');
 
 module.exports = {
-  AbiBinProvider: AbiBinProvider,
-  EconomySetup: EconomySetup,
-  Contracts: Contracts,
+  AbiBinProvider,
+  EconomySetup,
+  Contracts,
   Helpers: {
     StakeHelper: StakeHelper,
     Staker: Staker,
