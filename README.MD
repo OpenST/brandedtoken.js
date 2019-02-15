@@ -37,7 +37,7 @@ The abiBinProvider provides abi(s) and bin(s) for the following contracts:
 
 ```js
 
-// Get the MockToken ABI
+// Fetching ABI examples.
 let abiBinProvider = new BrandedToken.AbiBinProvider();
 const brandedTokenAbi = abiBinProvider.getABI('BrandedToken');
 
@@ -80,17 +80,7 @@ const gas = 7500000;
 
 ### Deploy EIP20Token contract
 
-To stake BrandedToken, you will need an EIP20Token for the ValueToken. You can either use an existing EIP20Token contract or deploy a new one as shown below (presently only deploys a new MockToken contract). If you have an existing ValueToken, please skip this step.
-
-```js
-const MockContractsDeployer = require('./test/utils/MockContractsDeployer');
-const mockContractDeployerObject = new MockContractsDeployer(deployerAddress, web3Provider);
-let eip20Token;
-mockContractDeployerObject.deployMockToken().then(function(){
-  eip20Token = mockContractDeployerObject.addresses.MockToken;
-});
-```
-
+To stake BrandedToken, you will need an EIP20Token for the ValueToken. You can either use an existing EIP20Token contract or deploy a new one.
 
 ### Deploy Organization contract
 
@@ -194,17 +184,9 @@ gatewayComposerHelper.setup(gatewayComposerConfig, deployParams).then(function()
 
 ```
 
-### Deploy Gateway Mock contract
+### Deploy Gateway contract
 Gateway contract facilitates the transposition of the BrandedToken from the value chain to the sidechain. The contract is deployed on the value chain.
-Please skip this step if real Gateway contract address is available.
-
-```js
-let gatewayAddress;
-mockContractDeployerObject.deployMockGatewayPass().then(function(){
-      gatewayAddress = mockContractDeployerObject.addresses.MockGatewayPass;
-});
-
-```
+You can either use an existing EIP20Token contract or deploy a new one.
 
 ## BrandedToken Staking through GatewayComposer
 
@@ -269,7 +251,7 @@ const signature = workerAccount.signEIP712TypedData(stakeRequestTypedData);
 const hashLockInstance = Mosaic.Utils.createSecretHashLock();
 const gatewayContractInstance = new Mosaic.ContractInteract.EIP20Gateway(web3Provider, gatewayAddress);
 let bountyAmountInWei;
-gatewayContractInstance.getBounty.then(function(result){
+gatewayContractInstance.getBounty().then(function(result){
   bountyAmountInWei = result;
 });
 const Facilitator = BrandedToken.Helpers.Facilitator;
