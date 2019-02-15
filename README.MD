@@ -3,7 +3,7 @@ BrandedToken.js
 
 ![Build master](https://img.shields.io/travis/OpenSTFoundation/brandedtoken.js/master.svg?label=build%20master&style=flat)
 ![Build develop](https://img.shields.io/travis/OpenSTFoundation/brandedtoken.js/develop.svg?label=build%20develop&style=flat)
-![npm version](https://img.shields.io/npm/v/@openstfoundation/mosaic.js.svg?style=flat)
+![npm version](https://img.shields.io/npm/v/@openstfoundation/brandedtoken.js.svg?style=flat)
 ![Discuss on Discourse](https://img.shields.io/discourse/https/discuss.openst.org/topics.svg?style=flat)
 ![Chat on Gitter](https://img.shields.io/gitter/room/OpenSTFoundation/SimpleToken.svg?style=flat)
 
