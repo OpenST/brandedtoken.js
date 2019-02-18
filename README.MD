@@ -205,8 +205,8 @@ const stakeAmountInWei = '10000000000';
 // stakerGatewayNonce is the nonce of the staker address stored in Gateway contract. Alternatively it can also be fetched from Gateway.getNonce(stakeAddress) method.
 const stakerGatewayNonce = 1;
 let mintBTAmountInWei;
-stakeHelperInstance.convertToBTToken(stakeAmountInWei, brandedTokenAddress, web3Provider, txOptions).then(function(result){
-    mintBTAmountInWei = result;
+stakeHelperInstance.convertToBTToken(stakeAmountInWei, brandedTokenAddress, web3Provider, txOptions).then(function(mintAmount){
+    mintBTAmountInWei = mintAmount;
 });
 const stakerInstance = new Staker(web3Provider, eip20Token, brandedTokenAddress, gatewayComposerAddress);
 const stakeGasPrice = '0x3B9ACA00';
@@ -224,7 +224,9 @@ stakerInstance.requestStake(
     beneficiary,
     stakerGatewayNonce,
     txOptions
-).then(console.log)
+).then(function(){
+    console.log("Successfully completed requestStake!");
+})
 
 
 ```           
