@@ -24,7 +24,8 @@
     "url": "https://github.com/OpenSTFoundation/brandedtoken.js/issues"
   },
   "scripts": {
-    "test": "mocha --recursive --timeout 120000 test --exit",
+    "test": "mocha --recursive --timeout 120000 test/unit --exit",
+    "test:integration": "mocha --recursive --timeout 120000 test/integration --exit",
     "pre-commit": "lint-staged"
   },
   "dependencies": {
