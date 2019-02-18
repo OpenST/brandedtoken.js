@@ -9,10 +9,9 @@ const AssertAsync = require('../../utils/AssertAsync');
 const BrandedToken = require('../../../lib/ContractInteract/BrandedToken');
 const Utils = require('../../../utils/Utils');
 
-describe('BrandedToken.acceptStakeRequest()', () => {
+describe('BrandedToken.liftRestriction()', () => {
   let brandedToken;
-  let
-    web3;
+  let web3;
 
   beforeEach(() => {
     web3 = new Web3();
@@ -21,16 +20,12 @@ describe('BrandedToken.acceptStakeRequest()', () => {
   });
 
   it('should pass with correct params', async () => {
-    const stakeRequestHash = web3.utils.sha3('dummy');
-    const r = 'r';
-    const v = 'v';
-    const s = 's';
-
+    const addresses = ['0x0000000000000000000000000000000000000002'];
     const mockRawTx = 'mockRawTx';
 
     const rawTx = sinon.replace(
       brandedToken,
-      'acceptStakeRequestRawTx',
+      'liftRestrictionRawTx',
       sinon.fake.returns(Promise.resolve(mockRawTx)),
     );
 
@@ -42,57 +37,54 @@ describe('BrandedToken.acceptStakeRequest()', () => {
     const txOptions = {
       from: '0x0000000000000000000000000000000000000003',
     };
-    const response = await brandedToken.acceptStakeRequest(
-      stakeRequestHash,
-      r,
-      s,
-      v,
+    const response = await brandedToken.liftRestriction(
+      addresses,
       txOptions,
     );
     assert.isTrue(
       response,
       'Request stake should return true',
     );
-    Spy.assert(rawTx, 1, [[stakeRequestHash, r, s, v]]);
+    Spy.assert(rawTx, 1, [[addresses]]);
     Spy.assert(spySendTransaction, 1, [[mockRawTx, txOptions]]);
     sinon.restore();
   });
 
   it('should throw an error when transaction options is undefined', async () => {
-    const stakeRequestHash = web3.utils.sha3('dummy');
-    const r = 'r';
-    const v = 'v';
-    const s = 's';
+    const addresses = ['0x0000000000000000000000000000000000000002'];
     const txOptions = undefined;
 
     await AssertAsync.reject(
-      brandedToken.acceptStakeRequest(stakeRequestHash, r, s, v, txOptions),
+      brandedToken.liftRestriction(
+        addresses,
+        txOptions,
+      ),
       'Invalid transaction options: undefined.',
     );
   });
 
   it('should throw an error when account address is undefined', async () => {
-    const stakeRequestHash = web3.utils.sha3('dummy');
-    const r = 'r';
-    const v = 'v';
-    const s = 's';
+    const addresses = ['0x0000000000000000000000000000000000000002'];
     const txOptions = {};
     await AssertAsync.reject(
-      brandedToken.acceptStakeRequest(stakeRequestHash, r, s, v, txOptions),
+      brandedToken.liftRestriction(
+        addresses,
+        txOptions,
+      ),
       `Invalid from address ${txOptions.from} in transaction options.`,
     );
   });
 
   it('should throw an error when account address is invalid', async () => {
-    const stakeRequestHash = web3.utils.sha3('dummy');
-    const r = 'r';
-    const v = 'v';
-    const s = 's';
+    const addresses = ['0x0000000000000000000000000000000000000002'];
     const txOptions = {
       from: '0x123',
     };
     await AssertAsync.reject(
-      brandedToken.acceptStakeRequest(stakeRequestHash, r, s, v, txOptions),
+      brandedToken.liftRestriction(
+        addresses,
+        txOptions,
+      ),
       `Invalid from address ${txOptions.from} in transaction options.`,
     );
   });
