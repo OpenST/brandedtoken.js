@@ -46,6 +46,7 @@ describe('BrandedToken.acceptStakeRequestRawTx()', () => {
     );
 
     Spy.assert(spyRawTx, 1, [[stakeRequestHash, r, s, v]]);
+    sinon.restore();
   });
   it('should throw an error when stakeRequestHash is invalid', async () => {
     const stakeRequestHash = undefined;
