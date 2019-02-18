@@ -10,8 +10,8 @@ const BrandedToken = require('../../../lib/ContractInteract/BrandedToken');
 
 describe('BrandedToken.constructor()', () => {
   let web3;
-  let
-    tokenAddress;
+  let tokenAddress;
+
   beforeEach(() => {
     web3 = new Web3();
     tokenAddress = '0x0000000000000000000000000000000000000002';
@@ -50,7 +50,8 @@ describe('BrandedToken.constructor()', () => {
 
     const errorMessage = `Could not load utility branded token contract for: ${tokenAddress}`;
     assert.throws(() => {
-      BrandedToken(web3, tokenAddress);
+      // eslint-disable-next-line no-new
+      new BrandedToken(web3, tokenAddress);
     },
     errorMessage);
 
@@ -60,13 +61,15 @@ describe('BrandedToken.constructor()', () => {
 
   it('should throw an error when web3 object is undefined', async () => {
     assert.throws(() => {
-      BrandedToken(undefined, tokenAddress);
+      // eslint-disable-next-line no-new
+      new BrandedToken(undefined, tokenAddress);
     }, /Mandatory Parameter 'web3' is missing or invalid/);
   });
 
   it('should throw an error when token contract address is undefined', async () => {
     assert.throws(() => {
-      BrandedToken(web3, undefined);
+      // eslint-disable-next-line no-new
+      new BrandedToken(web3, undefined);
     }, /Mandatory Parameter 'address' is missing or invalid./);
   });
 });
