@@ -25,13 +25,13 @@ describe('BrandedToken.requestStake()', () => {
     const convertToBTSpy = sinon.replace(
       brandedToken,
       'convertToBrandedTokens',
-      sinon.fake.returns(stakeAmount),
+      sinon.fake.returns(Promise.resolve(stakeAmount)),
     );
 
     const rawTxSpy = sinon.replace(
       brandedToken,
       'requestStakeRawTx',
-      sinon.fake.returns(mockRawTx),
+      sinon.fake.returns(Promise.resolve(mockRawTx)),
     );
 
     const spySendTransaction = sinon.replace(
@@ -50,6 +50,7 @@ describe('BrandedToken.requestStake()', () => {
     Spy.assert(convertToBTSpy, 1, [[stakeAmount]]);
     Spy.assert(rawTxSpy, 1, [[stakeAmount, stakeAmount]]);
     Spy.assert(spySendTransaction, 1, [[mockRawTx, txOptions]]);
+    sinon.restore();
   });
 
   it('should throw an error when transaction options is undefined', async () => {
