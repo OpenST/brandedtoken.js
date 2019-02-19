@@ -26,7 +26,7 @@ describe('BrandedToken.liftRestriction()', () => {
     const rawTx = sinon.replace(
       brandedToken,
       'liftRestrictionRawTx',
-      sinon.fake.returns(Promise.resolve(mockRawTx)),
+      sinon.fake.resolves(mockRawTx),
     );
 
     const spySendTransaction = sinon.replace(

@@ -31,7 +31,7 @@ describe('BrandedToken.acceptStakeRequest()', () => {
     const rawTx = sinon.replace(
       brandedToken,
       'acceptStakeRequestRawTx',
-      sinon.fake.returns(Promise.resolve(mockRawTx)),
+      sinon.fake.resolves(mockRawTx),
     );
 
     const spySendTransaction = sinon.replace(

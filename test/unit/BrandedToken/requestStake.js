@@ -25,13 +25,13 @@ describe('BrandedToken.requestStake()', () => {
     const convertToBTSpy = sinon.replace(
       brandedToken,
       'convertToBrandedTokens',
-      sinon.fake.returns(Promise.resolve(stakeAmount)),
+      sinon.fake.resolves(stakeAmount),
     );
 
     const rawTxSpy = sinon.replace(
       brandedToken,
       'requestStakeRawTx',
-      sinon.fake.returns(Promise.resolve(mockRawTx)),
+      sinon.fake.resolves(mockRawTx),
     );
 
     const spySendTransaction = sinon.replace(
