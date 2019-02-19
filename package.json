@@ -1,6 +1,6 @@
 {
   "name": "@openstfoundation/brandedtoken.js",
-  "version": "0.10.0",
+  "version": "0.10.0-alpha.1",
   "description": "JS interaction layer to interact with branded tokens and gateway composer contracts.",
   "main": "index.js",
   "repository": {
@@ -19,7 +19,7 @@
   ],
   "homepage": "https://openst.org",
   "author": "OpenST Limited",
-  "license": "LGPL-3.0",
+  "license": "LGPL-3.0-only",
   "bugs": {
     "url": "https://github.com/OpenSTFoundation/brandedtoken.js/issues"
   },
