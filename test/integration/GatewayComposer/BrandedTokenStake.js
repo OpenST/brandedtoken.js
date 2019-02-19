@@ -28,7 +28,6 @@ const Mosaic = require('@openstfoundation/mosaic.js');
 const Package = require('./../../../index');
 
 const Setup = Package.EconomySetup;
-const { OrganizationHelper } = Setup;
 const { assert } = chai;
 const config = require('./../../utils/configReader');
 
@@ -81,15 +80,16 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
     await originWeb3.eth.accounts.wallet.create(1);
     worker = originWeb3.eth.accounts.wallet[0].address;
 
-    const orgHelper = new OrganizationHelper(originWeb3, caOrganization);
+    const { Organization } = Mosaic.ContractInteract;
     const orgConfig = {
       deployer: deployerAddress,
       owner,
-      workers: worker,
+      admin: worker,
+      workers: [worker],
       workerExpirationHeight: config.workerExpirationHeight,
     };
-    await orgHelper.setup(orgConfig);
-    caOrganization = orgHelper.address;
+    const organizationContractInstance = await Organization.setup(originWeb3, orgConfig);
+    caOrganization = organizationContractInstance.address;
     assert.isNotNull(caOrganization, 'Organization contract address should not be null.');
   });
 
@@ -152,11 +152,8 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
   });
 
   it('Verifies ValueToken balance of owner', async () => {
-    const mockTokenInstance = Mosaic.Contracts.getEIP20Token(
-      originWeb3,
-      caMockToken,
-    );
-    const balanceOfStaker = await mockTokenInstance.methods.balanceOf(owner).call();
+    const mockTokenInstance = new Mosaic.ContractInteract.EIP20Token(originWeb3, caMockToken);
+    const balanceOfStaker = await mockTokenInstance.balanceOf(owner);
     const balanceOfStakerBN = new BN(balanceOfStaker);
     const stakeAmountBN = new BN(config.stakeAmountInWei);
     assert.strictEqual(balanceOfStakerBN.cmp(stakeAmountBN), 1, 'staker ValueToken balance should be greater/equal to stakeAmountInWei.');
@@ -209,11 +206,12 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
   });
 
   it('Validates worker is whitelisted', async () => {
-    const organizationContractInstance = Mosaic.Contracts.getOrganization(
+    const organizationContractInstance = new Mosaic.ContractInteract.Organization(
       originWeb3,
       caOrganization,
     );
-    const isWorkerResult = await organizationContractInstance.methods.isWorker(worker).call();
+    const isWorkerResult = await organizationContractInstance.contract.methods
+      .isWorker(worker).call();
     assert.strictEqual(isWorkerResult, true, 'Make sure worker is whitelisted.');
   });
 
@@ -230,17 +228,9 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
   });
 
   it('Performs Facilitator.acceptStakeRequest', async () => {
-    const hashLockInstance = Mosaic.Helpers.StakeHelper.createSecretHashLock();
-    txOptions = {
-      from: facilitator,
-      gas: '7500000',
-    };
-    const gatewayContractInstance = Mosaic.Contracts.getEIP20Gateway(
-      originWeb3,
-      caGateway,
-      txOptions,
-    );
-    const bountyAmountInWei = await gatewayContractInstance.methods.bounty().call();
+    const hashLockInstance = Mosaic.Utils.createSecretHashLock();
+    const gatewayContractInstance = new Mosaic.ContractInteract.EIP20Gateway(originWeb3, caGateway);
+    const bountyAmountInWei = await gatewayContractInstance.getBounty();
 
     const facilitatorInstance = new Facilitator(
       originWeb3,
