@@ -11,7 +11,7 @@ class Utils {
    * Helper function to send ethereum transaction.
    *
    * @param {Object} tx Transaction object.
-   * @param {Object} tx Transaction options.
+   * @param {Object} txOption Transaction options.
    *
    * @returns {Promise} Promise object.
    */
