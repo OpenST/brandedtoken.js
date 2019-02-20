@@ -1,6 +1,5 @@
 'use strict';
 
-
 /**
  * This class includes the utitity functions.
  * @class
@@ -8,7 +7,7 @@
  */
 class Utils {
   /**
-   * Helper function to send ethereum transaction.
+   * Sends an ethereum transaction.
    *
    * @param {Object} tx Transaction object.
    * @param {Object} tx Transaction options.

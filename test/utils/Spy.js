@@ -12,8 +12,8 @@ class Spy {
    * Asserts the spy data.
    *
    * @param {Object} spy Spy object.
-   * @param {number} callCount number of times the spy was called.
-   * @param {Array} inputArgs Input arguments
+   * @param {number} callCount Number of times the spy was expected to be called.
+   * @param {Array} inputArgs Expected input arguments to each call. Array of calls that contains arrays of call arguments of each call.
    *
    */
   static assert(spy, callCount, inputArgs) {
@@ -52,7 +52,7 @@ class Spy {
    * Asserts the spy data.
    *
    * @param {Object} spy Spy object.
-   * @param {number} callCount number of times the spy was called.
+   * @param {number} callCount Expected number of times the spy was called.
    */
   static assertCall(spy, callCount) {
     assert.strictEqual(
