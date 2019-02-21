@@ -48,7 +48,7 @@ describe('BrandedToken.constructor()', () => {
       sinon.fake.returns(undefined),
     );
 
-    const errorMessage = `Could not load utility branded token contract for: ${tokenAddress}`;
+    const errorMessage = `Could not load branded token contract for: ${tokenAddress}`;
     assert.throws(() => {
       // eslint-disable-next-line no-new
       new BrandedToken(web3, tokenAddress);

@@ -9,11 +9,16 @@ const BrandedToken = require('../../../lib/ContractInteract/BrandedToken');
 const AssertAsync = require('../../utils/AssertAsync');
 
 describe('BrandedToken.liftRestrictionRawTx()', () => {
-  it('should return correct raw tx', async () => {
-    const web3 = new Web3();
-    const tokenAddress = '0x0000000000000000000000000000000000000002';
-    const brandedToken = new BrandedToken(web3, tokenAddress);
+  let brandedToken;
+  let web3;
 
+  beforeEach(() => {
+    web3 = new Web3();
+    const tokenAddress = '0x0000000000000000000000000000000000000002';
+    brandedToken = new BrandedToken(web3, tokenAddress);
+  });
+
+  it('should return correct raw tx', async () => {
     const mockTx = 'mockTx';
 
     const spyRawTx = sinon.replace(
@@ -35,10 +40,6 @@ describe('BrandedToken.liftRestrictionRawTx()', () => {
   });
 
   it('should fail if addresses is not defined', async () => {
-    const web3 = new Web3();
-    const tokenAddress = '0x0000000000000000000000000000000000000002';
-    const brandedToken = new BrandedToken(web3, tokenAddress);
-
     const addresses = undefined;
     await AssertAsync.reject(
       brandedToken.liftRestrictionRawTx(addresses),
@@ -47,10 +48,6 @@ describe('BrandedToken.liftRestrictionRawTx()', () => {
   });
 
   it('should fail if addresses length is zero', async () => {
-    const web3 = new Web3();
-    const tokenAddress = '0x0000000000000000000000000000000000000002';
-    const brandedToken = new BrandedToken(web3, tokenAddress);
-
     const addresses = [];
     await AssertAsync.reject(
       brandedToken.liftRestrictionRawTx(addresses),

@@ -11,8 +11,7 @@ const Utils = require('../../../utils/Utils');
 
 describe('BrandedToken.acceptStakeRequest()', () => {
   let brandedToken;
-  let
-    web3;
+  let web3;
 
   beforeEach(() => {
     web3 = new Web3();
@@ -51,7 +50,7 @@ describe('BrandedToken.acceptStakeRequest()', () => {
     );
     assert.isTrue(
       response,
-      'Request stake should return true',
+      'Accept stake should return true',
     );
     Spy.assert(rawTx, 1, [[stakeRequestHash, r, s, v]]);
     Spy.assert(spySendTransaction, 1, [[mockRawTx, txOptions]]);

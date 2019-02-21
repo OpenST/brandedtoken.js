@@ -3,9 +3,15 @@
 const { assert } = require('chai');
 
 /**
- * This class includes the utitity assert function
+ * This class includes the function to assert promise.
  */
 class AssertAsync {
+  /**
+   * This asserts that given promise is rejected with expected message.
+   *
+   * @param promise Promise which needs to be asserted.
+   * @param message Expected message in promise rejection.
+   */
   static async reject(promise, message) {
     try {
       await promise;
