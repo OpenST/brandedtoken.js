@@ -68,7 +68,7 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
     [deployerAddress, facilitator, beneficiary] = accountsOrigin;
     // Deployer while deploying MockToken gets MAX ValueTokens.
     // Since owner is the deployer, owner also gets MAX ValueTokens.
-    owner = deployerAddress;
+    owner = originWeb3.utils.toChecksumAddress(deployerAddress);
   });
 
   after(() => {
@@ -174,7 +174,7 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
       txOptions,
     );
 
-    const stakerGatewayNonce = 1;
+    const stakerGatewayNonce = '1';
 
     const stakerInstance = new Staker(originWeb3, caMockToken, btAddress, gatewayComposerAddress);
     await stakerInstance.requestStake(
@@ -243,9 +243,7 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
       stakeRequestHash,
       signature,
       bountyAmountInWei,
-      mockTokenAbi,
       hashLockInstance.hashLock,
-      originWeb3,
       txOptions,
     );
 

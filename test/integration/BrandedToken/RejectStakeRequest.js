@@ -32,7 +32,7 @@ const Setup = Package.EconomySetup;
 const { assert } = chai;
 const config = require('../../utils/configReader');
 const StakeHelper = require('../../../lib/helpers/stake/gateway_composer/StakeHelper');
-const Staker = require('../../../lib/helpers/stake/gateway_composer/Staker');
+const Staker = require('../../../lib/Staker');
 const MockContractsDeployer = require('../../utils/MockContractsDeployer');
 
 const abiBinProvider = MockContractsDeployer.abiBinProvider();
@@ -177,7 +177,7 @@ describe('RejectStakeRequest', async () => {
     );
 
 
-    const stakerGatewayNonce = 1;
+    const stakerGatewayNonce = '1';
 
     const stakerInstance = new Staker(originWeb3, caMockToken, btAddress, gatewayComposerAddress);
     await stakerInstance.requestStake(

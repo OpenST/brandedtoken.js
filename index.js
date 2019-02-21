@@ -26,7 +26,7 @@ const AbiBinProvider = require('./lib/AbiBinProvider');
 const EconomySetup = require('./lib/EconomySetup');
 const Contracts = require('./lib/Contracts');
 const StakeHelper = require('./lib/helpers/stake/gateway_composer/StakeHelper');
-const Staker = require('./lib/helpers/stake/gateway_composer/Staker');
+const Staker = require('./lib/Staker');
 const Facilitator = require('./lib/Facilitator');
 
 module.exports = {
