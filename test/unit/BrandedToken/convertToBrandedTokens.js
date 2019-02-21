@@ -7,7 +7,7 @@ const { assert } = require('chai');
 const Spy = require('../../utils/Spy');
 const BrandedToken = require('../../../lib/ContractInteract/BrandedToken');
 
-describe('BrandedToken.isUnrestricted()', () => {
+describe('BrandedToken.convertToBrandedTokens()', () => {
   let brandedToken;
 
   beforeEach(() => {
@@ -17,22 +17,22 @@ describe('BrandedToken.isUnrestricted()', () => {
   });
 
   it('should return expected value', async () => {
-    const address = '0x0000000000000000000000000000000000000003';
+    const valueTokens = '100';
 
     const isUnrestrictedSpy = sinon.replace(
       brandedToken.contract.methods,
-      'isUnrestricted',
+      'convertToBrandedTokens',
       sinon.fake.returns({
         call: () => Promise.resolve(true),
       }),
     );
-    const response = await brandedToken.isUnrestricted(address);
+    const response = await brandedToken.convertToBrandedTokens(valueTokens);
 
     assert.isTrue(
       response,
-      'isUnrestricted must return true',
+      'convertToBrandedTokens must return true',
     );
 
-    Spy.assert(isUnrestrictedSpy, 1, [[address]]);
+    Spy.assert(isUnrestrictedSpy, 1, [[valueTokens]]);
   });
 });

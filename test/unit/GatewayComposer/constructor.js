@@ -48,7 +48,7 @@ describe('GatewayComposer.constructor()', () => {
       sinon.fake.returns(undefined),
     );
 
-    const errorMessage = `Could not load utility gateway composer contract for: ${contractAddress}`;
+    const errorMessage = `Could not load gateway composer contract for: ${contractAddress}`;
     assert.throws(() => {
       // eslint-disable-next-line no-new
       new GatewayComposer(web3, contractAddress);
