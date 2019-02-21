@@ -3,7 +3,7 @@
 const { assert } = require('chai');
 
 /**
- * This class includes the function to assert promise reject.
+ * This class includes the function to assert promise.
  */
 class AssertAsync {
   /**

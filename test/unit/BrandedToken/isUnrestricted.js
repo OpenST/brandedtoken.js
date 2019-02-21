@@ -10,7 +10,6 @@ const BrandedToken = require('../../../lib/ContractInteract/BrandedToken');
 describe('BrandedToken.isUnrestricted()', () => {
   let brandedToken;
 
-
   beforeEach(() => {
     const web3 = new Web3();
     const tokenAddress = '0x0000000000000000000000000000000000000002';

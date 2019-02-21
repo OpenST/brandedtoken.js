@@ -63,7 +63,7 @@ describe('GatewayComposer.acceptStakeRequestRawTx()', () => {
     );
   });
 
-  it('should throw an error when  r of signature is invalid', async () => {
+  it('should throw an error when r of signature is invalid', async () => {
     const stakeRequestHash = web3.utils.sha3('dummy');
     const r = undefined;
     const v = 'v';
@@ -76,7 +76,7 @@ describe('GatewayComposer.acceptStakeRequestRawTx()', () => {
     );
   });
 
-  it('should throw an error when  r of signature is invalid', async () => {
+  it('should throw an error when v of signature is invalid', async () => {
     const stakeRequestHash = web3.utils.sha3('dummy');
     const r = 'r';
     const v = undefined;
@@ -89,7 +89,20 @@ describe('GatewayComposer.acceptStakeRequestRawTx()', () => {
     );
   });
 
-  it('should throw an error when  hashlock is invalid', async () => {
+  it('should throw an error when s of signature is invalid', async () => {
+    const stakeRequestHash = web3.utils.sha3('dummy');
+    const r = 'r';
+    const v = 'v';
+    const s = undefined;
+    const hashLock = web3.utils.sha3('lock');
+
+    await AssertAsync.reject(
+      gatewayComposer.acceptStakeRequestRawTx(stakeRequestHash, r, s, v, hashLock),
+      `Invalid s of signature: ${s}.`,
+    );
+  });
+
+  it('should throw an error when hashlock is invalid', async () => {
     const stakeRequestHash = web3.utils.sha3('dummy');
     const r = 'r';
     const v = 'v';
