@@ -1,18 +1,18 @@
 'use strict';
 
 /**
- * This class includes the utitity functions.
- * @class
- * @classdesc Provides the common utility functions.
+ * This class includes the functions shared among various classes.
+
  */
 class Utils {
   /**
-   * Sends an ethereum transaction.
+   * This function sends ethereum transaction.
    *
-   * @param {Object} tx Transaction object.
-   * @param {Object} tx Transaction options.
+   * @param {Object} tx Raw transaction object generated from web3.
+   * @param {Object} txOption Transaction options.
    *
-   * @returns {Promise} Promise object.
+   * @returns {Promise<Object>} Promise object of transaction receipt in case of
+   *                            success otherwise error.
    */
   static async sendTransaction(tx, txOption) {
     return new Promise(async (onResolve, onReject) => {
