@@ -37,10 +37,10 @@ class Spy {
   /**
    * This compares values of two arrays index by index.
    *
-   * @param actualArguments The First array which represents the actual
+   * @param {Array} actualArguments The First array which represents the actual
    *                          value in the assertion.
-   * @param expectedArguments The second array which represents the expected
-   *                          value in the assertion.
+   * @param {Array} expectedArguments The second array which represents the
+   *                                  expected value in the assertion.
    */
   static assertArguments(actualArguments, expectedArguments) {
     for (let params = 0; params < actualArguments.length; params += 1) {

@@ -9,8 +9,8 @@ class AssertAsync {
   /**
    * This asserts that given promise is rejected with expected message.
    *
-   * @param promise Promise which needs to be asserted.
-   * @param message Expected message in promise rejection.
+   * @param {Promise<Object>} promise Promise which needs to be asserted.
+   * @param {string} message Expected message in promise rejection.
    */
   static async reject(promise, message) {
     try {
