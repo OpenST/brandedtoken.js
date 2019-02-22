@@ -11,8 +11,7 @@ const Utils = require('../../../utils/Utils');
 
 describe('BrandedToken.rejectStakeRequest()', () => {
   let brandedToken;
-  let
-    web3;
+  let web3;
 
   beforeEach(() => {
     web3 = new Web3();
@@ -22,7 +21,6 @@ describe('BrandedToken.rejectStakeRequest()', () => {
 
   it('should pass with correct params', async () => {
     const stakeRequestHash = web3.utils.sha3('dummy');
-
     const mockRawTx = 'mockRawTx';
 
     const rawTx = sinon.replace(

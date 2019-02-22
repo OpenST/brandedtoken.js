@@ -45,7 +45,7 @@ describe('GatewayComposer.revokeStakeRequest()', () => {
     );
     assert.isTrue(
       response,
-      'Request stake should return true',
+      'Revoke stake request should return true',
     );
     Spy.assert(rawTx, 1, [[stakeRequestHash]]);
     Spy.assert(spySendTransaction, 1, [[mockRawTx, txOptions]]);

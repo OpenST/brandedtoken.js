@@ -3,18 +3,16 @@
 const { assert } = require('chai');
 
 /**
- * This class includes the utitity functions to assert spy data.
+` * This class includes the functions to assert sinon spy on a function.
  */
 class Spy {
   /**
-   * @function assertSpy
+   * Asserts the sinon spy on a function.
    *
-   * Asserts the spy data.
-   *
-   * @param {Object} spy Spy object.
-   * @param {number} callCount number of times the spy was called.
-   * @param {Array} inputArgs Input arguments
-   *
+   * @param {Object} spy Spy object for a function.
+   * @param {number} callCount number of times the function was called.
+   * @param {Array} inputArgs Two dimensional array where each one
+   *                          dimensional array represents input to function call.
    */
   static assert(spy, callCount, inputArgs) {
     assert.strictEqual(
@@ -31,35 +29,31 @@ class Spy {
           actualArguments.length,
           'Expected and actual argument counts should be same',
         );
-        for (let params = 0; params < actualArguments.length; params += 1) {
-          assert.strictEqual(
-            actualArguments[params],
-            expectedArguments[params],
-            `Input param value ${
-              actualArguments[params]
-            } must match with the expected param value ${
-              expectedArguments[params]
-            }.`,
-          );
-        }
+        Spy.assertArguments(actualArguments, expectedArguments);
       }
     }
   }
 
   /**
-   * @function assertSpy
+   * This compares values of two arrays index by index.
    *
-   * Asserts the spy data.
-   *
-   * @param {Object} spy Spy object.
-   * @param {number} callCount number of times the spy was called.
+   * @param {Array} actualArguments The First array which represents the actual
+   *                          value in the assertion.
+   * @param {Array} expectedArguments The second array which represents the
+   *                                  expected value in the assertion.
    */
-  static assertCall(spy, callCount) {
-    assert.strictEqual(
-      spy.callCount,
-      callCount,
-      'Call count must match with the expected value.',
-    );
+  static assertArguments(actualArguments, expectedArguments) {
+    for (let params = 0; params < actualArguments.length; params += 1) {
+      assert.strictEqual(
+        actualArguments[params],
+        expectedArguments[params],
+        `Input param value ${
+          actualArguments[params]
+        } must match with the expected param value ${
+          expectedArguments[params]
+        }.`,
+      );
+    }
   }
 }
 
