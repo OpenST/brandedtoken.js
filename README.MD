@@ -264,14 +264,16 @@ const gatewayContractInstance = new Mosaic.ContractInteract.EIP20Gateway(web3Pro
 const stake = async () => {
   const bountyAmountInWei = await gatewayContractInstance.getBounty();
 
+  const stakeHelper = new StakeHelper(web3Provider, brandedTokenAddress, gatewayComposerAddress);
+  const abiBinProvider = new AbiBinProvider();
+
   const Facilitator = BrandedToken.Helpers.Facilitator;
   const facilitatorInstance = new Facilitator(
     web3Provider,
     eip20Token,
-    brandedTokenAddress,
-    gatewayComposerAddress,
     facilitator,
-    new AbiBinProvider(),
+    stakeHelper,
+    abiBinProvider,
   );
 
   txOptions = {
