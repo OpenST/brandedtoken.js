@@ -35,7 +35,6 @@ const StakeHelper = require('../../../lib/helpers/stake/gateway_composer/StakeHe
 const Staker = require('../../../lib/Staker');
 const MockContractsDeployer = require('../../utils/MockContractsDeployer');
 
-const abiBinProvider = MockContractsDeployer.abiBinProvider();
 const BTHelper = Package.EconomySetup.BrandedTokenHelper;
 const { GatewayComposerHelper } = Setup;
 const { Contracts } = Package;
@@ -53,7 +52,6 @@ let btStakeStruct;
 let caGateway;
 let btAddress;
 let stakeHelperInstance;
-let mockTokenAbi;
 let deployerAddress;
 let txOptions;
 let accountsOrigin;
@@ -162,7 +160,6 @@ describe('RejectStakeRequest', async () => {
   });
 
   it('Performs staker.requestStake', async () => {
-    mockTokenAbi = abiBinProvider.getABI('MockToken');
     stakeHelperInstance = new StakeHelper(originWeb3, btAddress, gatewayComposerAddress);
 
     txOptions = {
@@ -181,8 +178,6 @@ describe('RejectStakeRequest', async () => {
 
     const stakerInstance = new Staker(originWeb3, caMockToken, btAddress, gatewayComposerAddress);
     await stakerInstance.requestStake(
-      mockTokenAbi,
-      owner,
       config.stakeAmountInWei,
       mintBTAmountInWei,
       caGateway,
