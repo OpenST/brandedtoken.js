@@ -1,6 +1,12 @@
 BrandedToken.js
 ============
 
+![Build master](https://img.shields.io/travis/OpenSTFoundation/brandedtoken.js/master.svg?label=build%20master&style=flat)
+![Build develop](https://img.shields.io/travis/OpenSTFoundation/brandedtoken.js/develop.svg?label=build%20develop&style=flat)
+![npm version](https://img.shields.io/npm/v/@openstfoundation/brandedtoken.js.svg?style=flat)
+![Discuss on Discourse](https://img.shields.io/discourse/https/discuss.openst.org/topics.svg?style=flat)
+![Chat on Gitter](https://img.shields.io/gitter/room/OpenSTFoundation/SimpleToken.svg?style=flat)
+
 BrandedToken.js supports interaction with BrandedToken-contracts.
 
 The steps below describe the process of staking an EIP20Token to create a BrandedToken on the value chain (assumed to be Ethereum) and minting (creating) a value-backed Utility Branded Token on the sidechain for use in applications.
@@ -20,7 +26,7 @@ The BrandedToken object is an entry point: using the BrandedToken object, a stak
 
 ```js
 // Creating brandedtoken.js object
-const BrandedToken = require('./index.js');
+const BrandedToken = require('@openstfoundation/brandedtoken.js');
 
 ```
 
@@ -37,7 +43,7 @@ The abiBinProvider provides abi(s) and bin(s) for the following contracts:
 
 ```js
 
-// Get the MockToken ABI
+// Fetching ABI examples.
 let abiBinProvider = new BrandedToken.AbiBinProvider();
 const brandedTokenAbi = abiBinProvider.getABI('BrandedToken');
 
@@ -80,17 +86,7 @@ const gas = 7500000;
 
 ### Deploy EIP20Token contract
 
-To stake BrandedToken, you will need an EIP20Token for the ValueToken. You can either use an existing EIP20Token contract or deploy a new one as shown below (presently only deploys a new MockToken contract). If you have an existing ValueToken, please skip this step.
-
-```js
-const MockContractsDeployer = require('./test/utils/MockContractsDeployer');
-const mockContractDeployerObject = new MockContractsDeployer(deployerAddress, web3Provider);
-let eip20Token;
-mockContractDeployerObject.deployMockToken().then(function(){
-  eip20Token = mockContractDeployerObject.addresses.MockToken;
-});
-```
-
+To stake BrandedToken, you will need an EIP20Token for the ValueToken. You can either use an existing EIP20Token contract or deploy a new one.
 
 ### Deploy Organization contract
 
@@ -98,9 +94,9 @@ An Organization contract serves as an on-chain access control mechanism by assig
 
 ```js
 // Deploy Organization contract
+const Mosaic = require('@openstfoundation/mosaic.js');
 const Setup = BrandedToken.EconomySetup;
-const OrganizationHelper = Setup.OrganizationHelper;
-const organizationHelperObject = new OrganizationHelper(web3Provider);
+const { Organization } = Mosaic.ContractInteract;
 const organizationConfig = {
   deployer: deployerAddress,
   owner: organizationOwner,
@@ -111,9 +107,11 @@ let deployParams = {
   gas: '7500000',
   gasPrice: '0x3B9ACA00'
 };
+let organizationContractInstance;
 let organizationAddress;
-organizationHelperObject.setup(organizationConfig, deployParams).then(function(){
-    organizationAddress = organizationHelperObject.address;
+Organization.setup(originWeb3, orgConfig).then(function(instance){
+  organizationContractInstance = instance;
+  organizationAddress = organizationContractInstance.address;
 });
 
 
@@ -192,17 +190,9 @@ gatewayComposerHelper.setup(gatewayComposerConfig, deployParams).then(function()
 
 ```
 
-### Deploy Gateway Mock contract
+### Deploy Gateway contract
 Gateway contract facilitates the transposition of the BrandedToken from the value chain to the sidechain. The contract is deployed on the value chain.
-Please skip this step if real Gateway contract address is available.
-
-```js
-let gatewayAddress;
-mockContractDeployerObject.deployMockGatewayPass().then(function(){
-      gatewayAddress = mockContractDeployerObject.addresses.MockGatewayPass;
-});
-
-```
+You can either use an existing EIP20Token contract or deploy a new one.
 
 ## BrandedToken Staking through GatewayComposer
 
@@ -221,8 +211,8 @@ const stakeAmountInWei = '10000000000';
 // stakerGatewayNonce is the nonce of the staker address stored in Gateway contract. Alternatively it can also be fetched from Gateway.getNonce(stakeAddress) method.
 const stakerGatewayNonce = 1;
 let mintBTAmountInWei;
-stakeHelperInstance.convertToBTToken(stakeAmountInWei, brandedTokenAddress, web3Provider, txOptions).then(function(result){
-    mintBTAmountInWei = result;
+stakeHelperInstance.convertToBTToken(stakeAmountInWei, brandedTokenAddress, web3Provider, txOptions).then(function(mintAmount){
+    mintBTAmountInWei = mintAmount;
 });
 const stakerInstance = new Staker(web3Provider, eip20Token, brandedTokenAddress, gatewayComposerAddress);
 const stakeGasPrice = '0x3B9ACA00';
@@ -240,7 +230,9 @@ stakerInstance.requestStake(
     beneficiary,
     stakerGatewayNonce,
     txOptions
-).then(console.log)
+).then(function(){
+    console.log("Successfully completed requestStake!");
+})
 
 
 ```           
@@ -264,11 +256,10 @@ const signature = workerAccount.signEIP712TypedData(stakeRequestTypedData);
 ### Facilitator calls acceptStakeRequest
 
 ```js
-const Mosaic = require('@openstfoundation/mosaic.js');
-const hashLockInstance = Mosaic.Helpers.StakeHelper.createSecretHashLock();
-const gatewayContractInstance = Mosaic.Contracts.getEIP20Gateway(web3Provider, gatewayAddress);
+const hashLockInstance = Mosaic.Utils.createSecretHashLock();
+const gatewayContractInstance = new Mosaic.ContractInteract.EIP20Gateway(web3Provider, gatewayAddress);
 let bountyAmountInWei;
-gatewayContractInstance.methods.bounty().call().then(function(result){
+gatewayContractInstance.getBounty().then(function(result){
   bountyAmountInWei = result;
 });
 const Facilitator = BrandedToken.Helpers.Facilitator;

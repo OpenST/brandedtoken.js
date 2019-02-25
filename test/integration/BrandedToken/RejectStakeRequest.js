@@ -29,7 +29,6 @@ const Mosaic = require('@openstfoundation/mosaic.js');
 const Package = require('../../../index');
 
 const Setup = Package.EconomySetup;
-const { OrganizationHelper } = Setup;
 const { assert } = chai;
 const config = require('../../utils/configReader');
 const StakeHelper = require('../../../lib/helpers/stake/gateway_composer/StakeHelper');
@@ -82,15 +81,16 @@ describe('RejectStakeRequest', async () => {
     worker = originWeb3.eth.accounts.wallet[0].address;
     await originWeb3.eth.sendTransaction({ from: accountsOrigin[2], to: worker, value: originWeb3.utils.toWei('1') });
 
-    const orgHelper = new OrganizationHelper(originWeb3, caOrganization);
+    const { Organization } = Mosaic.ContractInteract;
     const orgConfig = {
       deployer: deployerAddress,
       owner,
-      workers: worker,
+      admin: worker,
+      workers: [worker],
       workerExpirationHeight: config.workerExpirationHeight,
     };
-    await orgHelper.setup(orgConfig);
-    caOrganization = orgHelper.address;
+    const organizationContractInstance = await Organization.setup(originWeb3, orgConfig);
+    caOrganization = organizationContractInstance.address;
     assert.isNotNull(caOrganization, 'Organization contract address should not be null.');
   });
 
@@ -154,11 +154,8 @@ describe('RejectStakeRequest', async () => {
   });
 
   it('Verifies ValueToken balance of owner', async () => {
-    const mockTokenInstance = Mosaic.Contracts.getEIP20Token(
-      originWeb3,
-      caMockToken,
-    );
-    const balanceOfStaker = await mockTokenInstance.methods.balanceOf(owner).call();
+    const mockTokenInstance = new Mosaic.ContractInteract.EIP20Token(originWeb3, caMockToken);
+    const balanceOfStaker = await mockTokenInstance.balanceOf(owner);
     const balanceOfStakerBN = new BN(balanceOfStaker);
     const stakeAmountBN = new BN(config.stakeAmountInWei);
     assert.strictEqual(balanceOfStakerBN.cmp(stakeAmountBN), 1, 'staker ValueToken balance should be greater/equal to stakeAmountInWei.');
