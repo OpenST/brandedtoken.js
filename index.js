@@ -23,19 +23,27 @@
 /* eslint object-shorthand: "off" */
 
 const AbiBinProvider = require('./lib/AbiBinProvider');
-const EconomySetup = require('./lib/EconomySetup');
+const BrandedToken = require('./lib/ContractInteract/BrandedToken');
 const Contracts = require('./lib/Contracts');
+const EconomySetup = require('./lib/EconomySetup');
+const Facilitator = require('./lib/Facilitator');
+const GatewayComposer = require('./lib/ContractInteract/GatewayComposer');
 const StakeHelper = require('./lib/helpers/stake/gateway_composer/StakeHelper');
-const Staker = require('./lib/helpers/stake/gateway_composer/Staker');
-const Facilitator = require('./lib/helpers/stake/gateway_composer/Facilitator');
+const Staker = require('./lib/Staker');
+const UtilityBrandedToken = require('./lib/ContractInteract/UtilityBrandedToken');
 
 module.exports = {
-  AbiBinProvider: AbiBinProvider,
-  EconomySetup: EconomySetup,
-  Contracts: Contracts,
+  AbiBinProvider,
+  EconomySetup,
+  Contracts,
+  ContractInteract: {
+    BrandedToken,
+    GatewayComposer,
+    UtilityBrandedToken,
+  },
   Helpers: {
-    StakeHelper: StakeHelper,
-    Staker: Staker,
-    Facilitator: Facilitator,
+    StakeHelper,
+    Staker,
+    Facilitator,
   },
 };
