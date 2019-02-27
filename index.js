@@ -32,34 +32,18 @@ const StakeHelper = require('./lib/helpers/stake/gateway_composer/StakeHelper');
 const Staker = require('./lib/Staker');
 const UtilityBrandedToken = require('./lib/ContractInteract/UtilityBrandedToken');
 
-class BrandedTokenExports {
-  static get AbiBinProvider() {
-    return AbiBinProvider;
-  }
-
-  static get EconomySetup() {
-    return EconomySetup;
-  }
-
-  static get Contracts() {
-    return Contracts;
-  }
-
-  static get ContractInteract() {
-    return {
-      BrandedToken,
-      GatewayComposer,
-      UtilityBrandedToken,
-    };
-  }
-
-  static get Helpers() {
-    return {
-      StakeHelper: StakeHelper,
-      Staker: Staker,
-      Facilitator: Facilitator,
-    };
-  }
-}
-
-module.exports = BrandedTokenExports;
+module.exports = {
+  AbiBinProvider,
+  EconomySetup,
+  Contracts,
+  ContractInteract: {
+    BrandedToken,
+    GatewayComposer,
+    UtilityBrandedToken,
+  },
+  Helpers: {
+    StakeHelper,
+    Staker,
+    Facilitator,
+  },
+};
