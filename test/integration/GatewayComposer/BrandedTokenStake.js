@@ -66,7 +66,7 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
     [deployerAddress, facilitator, beneficiary] = accountsOrigin;
     // Deployer while deploying MockToken gets MAX ValueTokens.
     // Since owner is the deployer, owner also gets MAX ValueTokens.
-    owner = originWeb3.utils.toChecksumAddress(deployerAddress);
+    owner = deployerAddress;
   });
 
   after(() => {
