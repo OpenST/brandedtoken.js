@@ -22,23 +22,19 @@
 
 // Load external packages
 const BN = require('bn.js');
-const chai = require('chai');
-
+const { assert } = require('chai');
 const Web3 = require('web3');
 const Mosaic = require('@openstfoundation/mosaic.js');
+
 const Package = require('../../../index');
-
-const Setup = Package.EconomySetup;
-const { assert } = chai;
-const config = require('../../utils/configReader');
-const StakeHelper = require('../../../lib/helpers/stake/gateway_composer/StakeHelper');
-const Staker = require('../../../lib/Staker');
 const MockContractsDeployer = require('../../utils/MockContractsDeployer');
-
-const BTHelper = Package.EconomySetup.BrandedTokenHelper;
-const { GatewayComposerHelper } = Setup;
-const { Contracts } = Package;
 const { dockerSetup, dockerTeardown } = require('../../utils/docker');
+const config = require('../../utils/configReader');
+
+const { GatewayComposerHelper } = Package.EconomySetup;
+const { Staker, StakeHelper } = Package.Helpers;
+const BTHelper = Package.EconomySetup.BrandedTokenHelper;
+const { Contracts } = Package;
 
 let originWeb3;
 let owner;
