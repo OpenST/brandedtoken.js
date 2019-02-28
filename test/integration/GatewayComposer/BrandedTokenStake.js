@@ -36,7 +36,6 @@ const { Staker } = Package.Helpers;
 const { Facilitator } = Package.Helpers;
 const MockContractsDeployer = require('./../../utils/MockContractsDeployer');
 
-const abiBinProvider = MockContractsDeployer.abiBinProvider();
 const BTHelper = Package.EconomySetup.BrandedTokenHelper;
 const { GatewayComposerHelper } = Setup;
 const { dockerSetup, dockerTeardown } = require('./../../utils/docker');
@@ -54,7 +53,6 @@ let btStakeStruct;
 let caGateway;
 let btAddress;
 let stakeHelperInstance;
-let mockTokenAbi;
 let deployerAddress;
 let txOptions;
 let signature;
@@ -160,7 +158,6 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
   });
 
   it('Performs staker.requestStake', async () => {
-    mockTokenAbi = abiBinProvider.getABI('MockToken');
     stakeHelperInstance = new StakeHelper(originWeb3, btAddress, gatewayComposerAddress);
 
     txOptions = {
@@ -174,12 +171,10 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
       txOptions,
     );
 
-    const stakerGatewayNonce = 1;
+    const stakerGatewayNonce = '1';
 
     const stakerInstance = new Staker(originWeb3, caMockToken, btAddress, gatewayComposerAddress);
     await stakerInstance.requestStake(
-      mockTokenAbi,
-      owner,
       config.stakeAmountInWei,
       mintBTAmountInWei,
       caGateway,
@@ -243,9 +238,7 @@ describe('Performs BrandedToken staking through GatewayComposer', async () => {
       stakeRequestHash,
       signature,
       bountyAmountInWei,
-      mockTokenAbi,
       hashLockInstance.hashLock,
-      originWeb3,
       txOptions,
     );
 
