@@ -16,7 +16,7 @@ describe('BrandedToken.isUnrestricted()', () => {
     brandedToken = new BrandedToken(web3, tokenAddress);
   });
 
-  it('should return expected value', async () => {
+  it('should return true for unrestricted account', async () => {
     const address = '0x0000000000000000000000000000000000000003';
 
     const isUnrestrictedSpy = sinon.replace(
@@ -31,6 +31,26 @@ describe('BrandedToken.isUnrestricted()', () => {
     assert.isTrue(
       response,
       'isUnrestricted must return true',
+    );
+
+    Spy.assert(isUnrestrictedSpy, 1, [[address]]);
+  });
+
+  it('should return false for a restricted account', async () => {
+    const address = '0x0000000000000000000000000000000000000003';
+
+    const isUnrestrictedSpy = sinon.replace(
+      brandedToken.contract.methods,
+      'isUnrestricted',
+      sinon.fake.returns({
+        call: () => Promise.resolve(false),
+      }),
+    );
+    const response = await brandedToken.isUnrestricted(address);
+
+    assert.isFalse(
+      response,
+      'isUnrestricted must return false',
     );
 
     Spy.assert(isUnrestrictedSpy, 1, [[address]]);

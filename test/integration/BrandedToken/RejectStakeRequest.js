@@ -22,24 +22,19 @@
 
 // Load external packages
 const BN = require('bn.js');
-const chai = require('chai');
-
+const { assert } = require('chai');
 const Web3 = require('web3');
 const Mosaic = require('@openstfoundation/mosaic.js');
+
 const Package = require('../../../index');
-
-const Setup = Package.EconomySetup;
-const { assert } = chai;
-const config = require('../../utils/configReader');
-const StakeHelper = require('../../../lib/helpers/stake/gateway_composer/StakeHelper');
-const Staker = require('../../../lib/helpers/stake/gateway_composer/Staker');
 const MockContractsDeployer = require('../../utils/MockContractsDeployer');
-
-const abiBinProvider = MockContractsDeployer.abiBinProvider();
-const BTHelper = Package.EconomySetup.BrandedTokenHelper;
-const { GatewayComposerHelper } = Setup;
-const { Contracts } = Package;
 const { dockerSetup, dockerTeardown } = require('../../utils/docker');
+const config = require('../../utils/configReader');
+
+const { GatewayComposerHelper } = Package.EconomySetup;
+const { Staker, StakeHelper } = Package.Helpers;
+const BTHelper = Package.EconomySetup.BrandedTokenHelper;
+const { Contracts } = Package;
 
 let originWeb3;
 let owner;
@@ -53,7 +48,6 @@ let btStakeStruct;
 let caGateway;
 let btAddress;
 let stakeHelperInstance;
-let mockTokenAbi;
 let deployerAddress;
 let txOptions;
 let accountsOrigin;
@@ -162,7 +156,6 @@ describe('RejectStakeRequest', async () => {
   });
 
   it('Performs staker.requestStake', async () => {
-    mockTokenAbi = abiBinProvider.getABI('MockToken');
     stakeHelperInstance = new StakeHelper(originWeb3, btAddress, gatewayComposerAddress);
 
     txOptions = {
@@ -177,12 +170,10 @@ describe('RejectStakeRequest', async () => {
     );
 
 
-    const stakerGatewayNonce = 1;
+    const stakerGatewayNonce = '1';
 
     const stakerInstance = new Staker(originWeb3, caMockToken, btAddress, gatewayComposerAddress);
     await stakerInstance.requestStake(
-      mockTokenAbi,
-      owner,
       config.stakeAmountInWei,
       mintBTAmountInWei,
       caGateway,
