@@ -12,16 +12,18 @@ BrandedToken.js supports interaction with BrandedToken-contracts.
 The steps below describe the process of staking an EIP20Token to create a BrandedToken on the value chain (assumed to be Ethereum) and minting (creating) a value-backed Utility Branded Token on the sidechain for use in applications.
 
 ##  Setup
+
 This library assumes that nodejs and geth are installed and running. To install BrandedToken.js in your project using npm:
 
 ```bash
 $ npm install @openstfoundation/brandedtoken.js --save
 ```
 
-This code was tested with geth version: 1.7.3-stable. Other higher versions should also work.
+The code works for Ethereum Byzantium and Petersburg.
 
 
 ## Creating a BrandedToken object
+
 The BrandedToken object is an entry point: using the BrandedToken object, a staking can be initiated.
 
 ```js
@@ -30,29 +32,10 @@ const BrandedToken = require('@openstfoundation/brandedtoken.js');
 
 ```
 
-
-## ABI and BIN provider
-
-brandedtoken.js comes with an abi-bin provider for managing abi(s) and bin(s).
-
-The abiBinProvider provides abi(s) and bin(s) for the following contracts:
-
-* [BrandedToken](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/BrandedToken.sol) (BrandedToken contract deployed on ValueChain)
-* [UtilityBrandedToken](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/UtilityBrandedToken.sol) (UtilityBrandedToken contract deployed on UtilityChain)
-* [GatewayComposer](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/GatewayComposer.sol) (GatewayComposer contract deployed on ValueChain per staker)
-
-```js
-
-// Fetching ABI examples.
-let abiBinProvider = new BrandedToken.AbiBinProvider();
-const brandedTokenAbi = abiBinProvider.getABI('BrandedToken');
-
-```
-
-
 ## Deploying contracts
 
 ## Constants
+
 Before deploying contracts, please set some constants to funded addresses that you control.
 
 ```js
@@ -76,7 +59,7 @@ const staker = '0xaabb1122....................';
 // worker address
 const worker = '0xaabb1122....................';
 
-const passphrase = 'some passphrase.....';
+const passphrase = 'some passphrase.....'; // Needed for unlocking account.
 
 // Other constants
 const gasPrice = '0x12A05F200';
@@ -95,7 +78,6 @@ An Organization contract serves as an on-chain access control mechanism by assig
 ```js
 // Deploy Organization contract
 const Mosaic = require('@openstfoundation/mosaic.js');
-const Setup = BrandedToken.EconomySetup;
 const { Organization } = Mosaic.ContractInteract;
 const organizationConfig = {
   deployer: deployerAddress,
@@ -103,13 +85,9 @@ const organizationConfig = {
   workers: worker,
   workerExpirationHeight: '20000000' // This is the block height for when the the worker is set to expire.
 };
-let deployParams = {
-  gas: '7500000',
-  gasPrice: '0x3B9ACA00'
-};
 let organizationContractInstance;
 let organizationAddress;
-Organization.setup(originWeb3, orgConfig).then(function(instance){
+Organization.setup(originWeb3, organizationConfig).then(function(instance){
   organizationContractInstance = instance;
   organizationAddress = organizationContractInstance.address;
 });
@@ -118,7 +96,9 @@ Organization.setup(originWeb3, orgConfig).then(function(instance){
 ```   
 
 ### Deploy BrandedToken contract
+
 BrandedToken is a value-backed EIP20Token with a fixed conversion rate against the ValueToken chosen. This contract is deployed on the value chain.
+
 ```js
 const brandedTokenHelperConfig = {
     deployer: deployerAddress,
@@ -144,6 +124,7 @@ brandedTokenHelperObject.setup(brandedTokenHelperConfig, deployParams).then(func
 ```  
 
 ### Deploy UtilityBrandedToken contract
+
 The UtilityBrandedToken is a representation of the BrandedToken on a sidechain. Thus, this contract is deployed on a sidechain
 
 ```js
@@ -169,6 +150,7 @@ utilityBrandedTokenHelper.setup(utilityBrandedTokenHelperConfig, deployParams).t
 ```
 
 ### Deploy GatewayComposer contract
+
 Gateway composer is a contract that optimizes the transactions required to perform the stake and mint process. This contract is deployed on the value chain.
 
 ```js
@@ -191,12 +173,14 @@ gatewayComposerHelper.setup(gatewayComposerConfig, deployParams).then(function()
 ```
 
 ### Deploy Gateway contract
+
 Gateway contract facilitates the transposition of the BrandedToken from the value chain to the sidechain. The contract is deployed on the value chain.
 You can either use an existing EIP20Token contract or deploy a new one.
 
 ## BrandedToken Staking through GatewayComposer
 
 ### Approve GatewayComposer for ValueToken and call requestStake
+
 Please make sure staker has sufficient stake amount before calling this step.
 
 ```js
@@ -280,6 +264,24 @@ facilitatorInstance.acceptStakeRequest(
 ).then(function(){
   console.log("Successfully completed acceptStakeRequest!");
 })
+```
+
+## ABI and BIN provider
+
+brandedtoken.js comes with an abi-bin provider for managing abi(s) and bin(s).
+
+The abiBinProvider provides abi(s) and bin(s) for the following contracts:
+
+* [BrandedToken](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/BrandedToken.sol) (BrandedToken contract deployed on ValueChain)
+* [UtilityBrandedToken](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/UtilityBrandedToken.sol) (UtilityBrandedToken contract deployed on UtilityChain)
+* [GatewayComposer](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/GatewayComposer.sol) (GatewayComposer contract deployed on ValueChain per staker)
+
+```js
+
+// Fetching ABI examples.
+let abiBinProvider = new BrandedToken.AbiBinProvider();
+const brandedTokenAbi = abiBinProvider.getABI('BrandedToken');
+
 ```
 
 ## Tests
