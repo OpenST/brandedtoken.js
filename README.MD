@@ -12,16 +12,18 @@ BrandedToken.js supports interaction with BrandedToken-contracts.
 The steps below describe the process of staking an EIP20Token to create a BrandedToken on the value chain (assumed to be Ethereum) and minting (creating) a value-backed Utility Branded Token on the sidechain for use in applications.
 
 ##  Setup
+
 This library assumes that nodejs and geth are installed and running. To install BrandedToken.js in your project using npm:
 
 ```bash
 $ npm install @openstfoundation/brandedtoken.js --save
 ```
 
-This code was tested with geth version: 1.7.3-stable. Other higher versions should also work.
+The code works for Ethereum Byzantium and Petersburg.
 
 
 ## Creating a BrandedToken object
+
 The BrandedToken object is an entry point: using the BrandedToken object, a staking can be initiated.
 
 ```js
@@ -30,29 +32,10 @@ const BrandedToken = require('@openstfoundation/brandedtoken.js');
 
 ```
 
-
-## ABI and BIN provider
-
-brandedtoken.js comes with an abi-bin provider for managing abi(s) and bin(s).
-
-The abiBinProvider provides abi(s) and bin(s) for the following contracts:
-
-* [BrandedToken](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/BrandedToken.sol) (BrandedToken contract deployed on ValueChain)
-* [UtilityBrandedToken](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/UtilityBrandedToken.sol) (UtilityBrandedToken contract deployed on UtilityChain)
-* [GatewayComposer](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/GatewayComposer.sol) (GatewayComposer contract deployed on ValueChain per staker)
-
-```js
-
-// Fetching ABI examples.
-let abiBinProvider = new BrandedToken.AbiBinProvider();
-const brandedTokenAbi = abiBinProvider.getABI('BrandedToken');
-
-```
-
-
 ## Deploying contracts
 
 ## Constants
+
 Before deploying contracts, please set some constants to funded addresses that you control.
 
 ```js
@@ -79,7 +62,7 @@ const staker = '0xaabb1122....................';
 // Workers addresses
 const workers = ['0xaabb1122....................'];
 
-const passphrase = 'some passphrase.....';
+const passphrase = 'some passphrase.....'; // Needed for unlocking account.
 
 // Other constants
 const gasPrice = '0x12A05F200';
@@ -283,6 +266,7 @@ You can either use an existing EIP20Token contract or deploy a new one.
 ## BrandedToken Staking through GatewayComposer
 
 ### Approve GatewayComposer for ValueToken and call requestStake
+
 Please make sure staker has sufficient stake amount before calling this step.
 
 ```js
@@ -366,6 +350,24 @@ facilitatorInstance.acceptStakeRequest(
 ).then(function(){
   console.log("Successfully completed acceptStakeRequest!");
 })
+```
+
+## ABI and BIN provider
+
+brandedtoken.js comes with an abi-bin provider for managing abi(s) and bin(s).
+
+The abiBinProvider provides abi(s) and bin(s) for the following contracts:
+
+* [BrandedToken](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/BrandedToken.sol) (BrandedToken contract deployed on ValueChain)
+* [UtilityBrandedToken](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/UtilityBrandedToken.sol) (UtilityBrandedToken contract deployed on UtilityChain)
+* [GatewayComposer](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/GatewayComposer.sol) (GatewayComposer contract deployed on ValueChain per staker)
+
+```js
+
+// Fetching ABI examples.
+let abiBinProvider = new BrandedToken.AbiBinProvider();
+const brandedTokenAbi = abiBinProvider.getABI('BrandedToken');
+
 ```
 
 ## Tests
