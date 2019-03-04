@@ -17,8 +17,8 @@ describe('Setup.organization', () => {
   it('should deploy new organizations', async () => {
     const originConfig = {
       deployer: shared.setupConfig.deployerAddress,
-      owner: shared.setupConfig.deployerAddress,
-      admin: shared.setupConfig.deployerAddress,
+      owner: shared.setupConfig.organizationOwner,
+      admin: shared.setupConfig.organizationAdmin,
       workers: [],
       workerExpirationHeight: '0',
     };
@@ -36,7 +36,6 @@ describe('Setup.organization', () => {
         originOrganization.address
       }`,
     );
-
 
     shared.setupModule.originOrganization = originOrganization;
   });

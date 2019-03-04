@@ -3,6 +3,7 @@
 const { assert } = require('chai');
 const Web3 = require('web3');
 
+const MockContractsDeployer = require('./../../utils/MockContractsDeployer');
 const Setup = require('../../../lib/Setup');
 const shared = require('../shared');
 
@@ -14,12 +15,12 @@ describe('Setup.brandedtoken', () => {
   });
 
   it('should deploy new branded token', async () => {
-    const accountsOrigin = await shared.origin.web3.eth.getAccounts();
-
-    // Fixme Deploy a EIP20 Token here.
-    const token = accountsOrigin[0];
-
-    shared.setupConfig.originToken = token;
+    const deployerInstance = new MockContractsDeployer(
+      shared.setupConfig.deployerAddress,
+      shared.origin.web3,
+    );
+    await deployerInstance.deployMockToken();
+    shared.setupConfig.originToken = deployerInstance.addresses.MockToken;
 
     const symbol = 'DT';
     const name = 'dummy token';
@@ -56,7 +57,6 @@ describe('Setup.brandedtoken', () => {
         originBrandedToken.address
       }`,
     );
-
 
     shared.setupModule.originBrandedToken = originBrandedToken;
   });

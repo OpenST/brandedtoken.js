@@ -13,6 +13,7 @@ describe('Setup Helpers - Config', () => {
       organizationOwner: accountsOrigin[1],
       organizationAdmin: accountsOrigin[2],
       organizationWorker: accountsOrigin[0],
+      gasPrice: '13000000000',
     };
   });
 });
