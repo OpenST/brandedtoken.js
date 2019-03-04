@@ -91,7 +91,7 @@ const organizationConfig = {
 const txOptions = {
   gasPrice: '0x3B9ACA00',
   from : deployerAddress,
-  gas: '7500000', // This is optional parameter, if not passed gas will be estimated.
+  gas: '7500000', // This is an optional parameter, if not passed gas will be estimated.
 };
 
 let organizationContractInstance;
@@ -121,7 +121,7 @@ const originBTConfig = {
 txOptions = {
   gasPrice: '0x3B9ACA00',
   from : deployerAddress,
-  gas: '7500000', // This is optional parameter, if not passed gas will be estimated.
+  gas: '7500000', // This is an optional parameter, if not passed gas will be estimated.
 };
 
 let brandedTokenAddress;
@@ -138,7 +138,7 @@ Setup.brandedtoken(
 
 ```  
 
-**Utility Branded Token Setup**:The UtilityBrandedToken is a representation of the BrandedToken on a sidechain. Thus, this contract is deployed on a sidechain
+**Utility Branded Token Setup**:The UtilityBrandedToken(UBT) is a representation of the BrandedToken on a sidechain. Thus, this contract is deployed on a sidechain
 
 ```js
 const auxiliaryOrganizationConfig = {
@@ -151,7 +151,7 @@ const auxiliaryOrganizationConfig = {
 
 const auxiliaryTxOptions = {
   from : auxiliaryDeployerAddress,
-  gasPrice : '0x3B9ACA00',
+  gasPrice : '0x3B9ACA00', // This is an optional parameter, if not passed gas will be estimated.
 };
 
 const auxiliaryUBTConfig = {
@@ -161,9 +161,9 @@ const auxiliaryUBTConfig = {
   decimal: decimal,
 };
 
-const auxiliaryTxUBTOptions = {
+const auxiliaryUBTTxOptions = {
   from : auxiliaryDeployerAddress,
-  gasPrice : '0x3B9ACA00',
+  gasPrice : '0x3B9ACA00', // This is an optional parameter, if not passed gas will be estimated.
 };
 
 const originGatewayConfig = {
@@ -177,9 +177,9 @@ const originGatewayConfig = {
   organizationOwner: originOrganizationAdmin,
 };
 
-const auxiliaryGatewayConfig = {
+const auxiliaryCoGatewayConfig = {
   stateRootProvider: auxiliaryAnchorAddress,
-  bounty: '0',// Bounty amount in wei, paid in base token(ETH).
+  bounty: '0', // Bounty amount in wei, paid in base token(ETH).
   burner: '0x0000000000000000000000000000000000000000',
   deployer: auxiliaryDeployer,
   organizationOwner: auxiliaryOrganizationAdmin,
@@ -187,16 +187,16 @@ const auxiliaryGatewayConfig = {
 
 const originGatewayTxOptions = {
   from : originDeployerAddress,
-  gasPrice : '0x3B9ACA00',
+  gasPrice : '0x3B9ACA00', // This is an optional parameter, if not passed gas will be estimated.
 };
 
 const auxiliaryCoGatewayTxOptions = {
   from : auxiliaryDeployerAddress,
-  gasPrice : '0x3B9ACA00',
+  gasPrice : '0x3B9ACA00', // This is an optional parameter, if not passed gas will be estimated.
 };
 
 const auxiliaryUBTSetCoGatewayTxOptions = {
-  gasPrice: '0x3B9ACA00',
+  gasPrice: '0x3B9ACA00', // This is an optional parameter, if not passed gas will be estimated.
   from: auxiliaryOrganizationAdmin,
 };
 
@@ -216,9 +216,9 @@ Setup.utilitybrandedtoken(
   auxiliaryOrganizationConfig,
   auxiliaryTxOptions,
   auxiliaryUBTConfig,
-  auxiliaryTxUBTOptions,
+  auxiliaryUBTTxOptions,
   originGatewayConfig,
-  auxiliaryGatewayConfig,
+  auxiliaryCoGatewayConfig,
   originGatewayTxOptions,
   auxiliaryCoGatewayTxOptions,
   auxiliaryUBTSetCoGatewayTxOptions,
@@ -372,11 +372,15 @@ const brandedTokenAbi = abiBinProvider.getABI('BrandedToken');
 
 ```
 
-## Tests
-
-Tests require docker-compose. To run the tests, execute below command from root directory.
+## Repository set-up and tests
 
 ```bash
+    git clone https://github.com/OpenSTFoundation/brandedtoken.js.git
+    cd brandedtoken.js
+    npm install
     npm run test
+    
+    # Requires docker:
+    npm run test:integration
 
 ```      
