@@ -142,98 +142,100 @@ Setup.brandedtoken(
 
 ```js
 const auxiliaryOrganizationConfig = {
-      deployer: auxiliaryDeployerAddress,
-      owner: auxiliaryOwner,
-      admin: auxiliaryAdmin,
-      workers: auxiliaryWorkers,
-      workerExpirationHeight: '2000',// Expiration height of worker keys. 
-    };
+  deployer: auxiliaryDeployerAddress,
+  owner: auxiliaryOwner,
+  admin: auxiliaryAdmin,
+  workers: auxiliaryWorkers,
+  workerExpirationHeight: '2000',// Expiration height of worker keys. 
+};
 
-    const auxiliaryTxOptions = {
-      from : auxiliaryDeployerAddress,
-      gasPrice : '0x3B9ACA00',
-    };
-    const auxiliaryUBTConfig = {
-      valueToken: brandedTokenAddress,
-      symbol: symbol,
-      name: name,
-      decimal: decimal,
-    };
+const auxiliaryTxOptions = {
+  from : auxiliaryDeployerAddress,
+  gasPrice : '0x3B9ACA00',
+};
 
-    const auxiliaryTxUBTOptions = {
-      from : auxiliaryDeployerAddress,
-      gasPrice : '0x3B9ACA00',
-    };
+const auxiliaryUBTConfig = {
+  valueToken: brandedTokenAddress,
+  symbol: symbol,
+  name: name,
+  decimal: decimal,
+};
 
-    const originGatewayConfig = {
-      token: brandedTokenAddress,
-      baseToken: tokenAddress, // This is EIP20 token address, can be simple token address.
-      stateRootProvider: originAnchorAddress,
-      bounty: '0', // Bounty amount in wei, paid in base token.
-      organization: originOrganizationAddress,
-      burner: '0x0000000000000000000000000000000000000000',
-      deployer: originDeployer,
-      organizationOwner: originOrganizationAdmin,
-    };
+const auxiliaryTxUBTOptions = {
+  from : auxiliaryDeployerAddress,
+  gasPrice : '0x3B9ACA00',
+};
 
-    const auxiliaryGatewayConfig = {
-      stateRootProvider: auxiliaryAnchorAddress,
-      bounty: '0',// Bounty amount in wei, paid in base token(ETH).
-      burner: '0x0000000000000000000000000000000000000000',
-      deployer: auxiliaryDeployer,
-      organizationOwner: auxiliaryOrganizationAdmin,
-    };
+const originGatewayConfig = {
+  token: brandedTokenAddress,
+  baseToken: tokenAddress, // This is EIP20 token address, can be simple   token address.
+  stateRootProvider: originAnchorAddress,
+  bounty: '0', // Bounty amount in wei, paid in base token.
+  organization: originOrganizationAddress,
+  burner: '0x0000000000000000000000000000000000000000',
+  deployer: originDeployer,
+  organizationOwner: originOrganizationAdmin,
+};
 
-    const originGatewayTxOptions = {
-      from : originDeployerAddress,
-      gasPrice : '0x3B9ACA00',
-    };
-    const auxiliaryCoGatewayTxOptions = {
-      from : auxiliaryDeployerAddress,
-      gasPrice : '0x3B9ACA00',
-    };
+const auxiliaryGatewayConfig = {
+  stateRootProvider: auxiliaryAnchorAddress,
+  bounty: '0',// Bounty amount in wei, paid in base token(ETH).
+  burner: '0x0000000000000000000000000000000000000000',
+  deployer: auxiliaryDeployer,
+  organizationOwner: auxiliaryOrganizationAdmin,
+};
 
-    const auxiliaryUBTSetCoGatewayTxOptions = {
-      gasPrice: '0x3B9ACA00',
-      from: auxiliaryOrganizationAdmin,
-    };
+const originGatewayTxOptions = {
+  from : originDeployerAddress,
+  gasPrice : '0x3B9ACA00',
+};
 
-    let auxiliaryOrganization;
-    let utilityBrandedToken;
-    let originGateway;
-    let auxiliaryCoGateway;
-    
-    let auxiliaryOrganizationAddress;
-    let utilityBrandedTokenAddress;
-    let originGatewayAddress;
-    let auxiliaryCoGatewayAddress;
-    
-    Setup.utilitybrandedtoken(
-      originWeb3,
-      auxiliaryWeb3,
-      auxiliaryOrganizationConfig,
-      auxiliaryTxOptions,
-      auxiliaryUBTConfig,
-      auxiliaryTxUBTOptions,
-      originGatewayConfig,
-      auxiliaryGatewayConfig,
-      originGatewayTxOptions,
-      auxiliaryCoGatewayTxOptions,
-      auxiliaryUBTSetCoGatewayTxOptions,
-    ).then( (contractInstances) => {
-       
-      {
-        auxiliaryOrganization,
-        utilityBrandedToken,
-        originGateway,
-        auxiliaryCoGateway
-      } = contractInstances;
-      
-       auxiliaryOrganizationAddress = auxiliaryOrganization.address;
-       utilityBrandedTokenAddress = utilityBrandedToken.address;
-       originGatewayAddress = originGateway.address;
-       auxiliaryCoGatewayAddress = auxiliaryCoGateway.address;
-    });
+const auxiliaryCoGatewayTxOptions = {
+  from : auxiliaryDeployerAddress,
+  gasPrice : '0x3B9ACA00',
+};
+
+const auxiliaryUBTSetCoGatewayTxOptions = {
+  gasPrice: '0x3B9ACA00',
+  from: auxiliaryOrganizationAdmin,
+};
+
+let auxiliaryOrganization;
+let utilityBrandedToken;
+let originGateway;
+let auxiliaryCoGateway;
+
+let auxiliaryOrganizationAddress;
+let utilityBrandedTokenAddress;
+let originGatewayAddress;
+let auxiliaryCoGatewayAddress;
+
+Setup.utilitybrandedtoken(
+  originWeb3,
+  auxiliaryWeb3,
+  auxiliaryOrganizationConfig,
+  auxiliaryTxOptions,
+  auxiliaryUBTConfig,
+  auxiliaryTxUBTOptions,
+  originGatewayConfig,
+  auxiliaryGatewayConfig,
+  originGatewayTxOptions,
+  auxiliaryCoGatewayTxOptions,
+  auxiliaryUBTSetCoGatewayTxOptions,
+).then( (contractInstances) => {
+   
+  {
+    auxiliaryOrganization,
+    utilityBrandedToken,
+    originGateway,
+    auxiliaryCoGateway
+  } = contractInstances;
+  
+   auxiliaryOrganizationAddress = auxiliaryOrganization.address;
+   utilityBrandedTokenAddress = utilityBrandedToken.address;
+   originGatewayAddress = originGateway.address;
+   auxiliaryCoGatewayAddress = auxiliaryCoGateway.address;
+});
 
 ```
 
