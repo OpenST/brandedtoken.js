@@ -1,17 +1,12 @@
 'use strict';
 
 const Web3 = require('web3');
-const Mosaic = require('@openstfoundation/mosaic.js');
-const sinon = require('sinon');
 const { assert } = require('chai');
 
 const Staker = require('../../../lib/Staker');
 
 describe('Staker.constructor()', () => {
   it('should construct successfully', () => {
-    const eip20TokenSpy = sinon.createStubInstance(Mosaic.ContractInteract.EIP20Token);
-
-    console.log(eip20TokenSpy);
     const originWeb3 = new Web3();
     const valueToken = '0x0000000000000000000000000000000000000002';
     const brandedToken = '0x0000000000000000000000000000000000000003';
