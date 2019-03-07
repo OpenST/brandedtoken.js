@@ -8,6 +8,12 @@ You can use brandedtoken.js to interact with BrandedToken contracts.
 
 ### Notable Changes
 
+* ABIs and BINs are now accessed as a dependency on brandedtoken-contracts ([#117](https://github.com/OpenSTFoundation/brandedtoken.js/pull/117))
+* Mosaic.js version is upgraded to beta-4 (#[115](https://github.com/OpenSTFoundation/brandedtoken.js/pull/115))
+* Mosaic contract interacts are now exposed ([#114](https://github.com/OpenSTFoundation/brandedtoken.js/pull/114))
+* New economy setup simplifies deployment ([#112](https://github.com/OpenSTFoundation/brandedtoken.js/pull/112)) 
+* Facilitator and Staker now uses contract interacts ([#105](https://github.com/OpenSTFoundation/brandedtoken.js/pull/105)) 
+* Added contract interacts for branded token, gateway composer, utility branded token contracts ([#99](https://github.com/OpenSTFoundation/brandedtoken.js/pull/99), [#103](https://github.com/OpenSTFoundation/brandedtoken.js/pull/103))
 * Replace mosaic-tbd with mosaic.js ([#74](https://github.com/OpenSTFoundation/brandedtoken.js/pull/74))
 * Readme ([#72](https://github.com/OpenSTFoundation/brandedtoken.js/pull/72))
 * License Update and repo alignment as per eslint configuration ([#71](https://github.com/OpenSTFoundation/brandedtoken.js/pull/71))
@@ -26,3 +32,10 @@ You can use brandedtoken.js to interact with BrandedToken contracts.
 * Updated BrandedToken contracts ABI/BIN files ([#32](https://github.com/OpenSTFoundation/brandedtoken.js/pull/32))
 * Test case added for RegisterInternalActor ([#29](https://github.com/OpenSTFoundation/brandedtoken.js/pull/29))
 * Interaction for GatewayComposer.RequestStake ([#30](https://github.com/OpenSTFoundation/brandedtoken.js/pull/30))
+
+### Deprecations
+
+* `EconomySetup` and setup helpers are now deprecated ([#121](https://github.com/OpenSTFoundation/brandedtoken.js/pull/121)).
+  * See [here](https://github.com/OpenSTFoundation/brandedtoken.js#deploy-eip20token-contract) for help on how to migrate.
+* `StakeHelper` is now deprecated ([#121](https://github.com/OpenSTFoundation/brandedtoken.js/pull/121)).
+  * See ([#119](https://github.com/OpenSTFoundation/brandedtoken.js/pull/119)) for help on how to migrate.

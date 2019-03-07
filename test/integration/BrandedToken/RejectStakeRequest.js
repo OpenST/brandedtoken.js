@@ -1,45 +1,20 @@
-// Copyright 2019 OpenST Ltd.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//    http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-// ----------------------------------------------------------------------------
-//
-// http://www.simpletoken.org/
-//
-// ----------------------------------------------------------------------------
-
 'use strict';
 
 // Load external packages
 const BN = require('bn.js');
-const chai = require('chai');
-
-const Web3 = require('web3');
+const { assert } = require('chai');
 const Mosaic = require('@openstfoundation/mosaic.js');
+
 const Package = require('../../../index');
-
-const Setup = Package.EconomySetup;
-const { assert } = chai;
-const config = require('../../utils/configReader');
-const StakeHelper = require('../../../lib/helpers/stake/gateway_composer/StakeHelper');
-const Staker = require('../../../lib/helpers/stake/gateway_composer/Staker');
 const MockContractsDeployer = require('../../utils/MockContractsDeployer');
+const config = require('../../utils/configReader');
+const shared = require('../shared');
 
-const abiBinProvider = MockContractsDeployer.abiBinProvider();
+const { GatewayComposerHelper } = Package.EconomySetup;
+const { StakeHelper } = Package.Helpers;
+const { Staker } = Package;
 const BTHelper = Package.EconomySetup.BrandedTokenHelper;
-const { GatewayComposerHelper } = Setup;
 const { Contracts } = Package;
-const { dockerSetup, dockerTeardown } = require('../../utils/docker');
 
 let originWeb3;
 let owner;
@@ -53,7 +28,6 @@ let btStakeStruct;
 let caGateway;
 let btAddress;
 let stakeHelperInstance;
-let mockTokenAbi;
 let deployerAddress;
 let txOptions;
 let accountsOrigin;
@@ -61,8 +35,7 @@ let accountsOrigin;
 describe('RejectStakeRequest', async () => {
   before(async () => {
     // Set up docker geth instance and retrieve RPC endpoint
-    const { rpcEndpointOrigin } = await dockerSetup();
-    originWeb3 = new Web3(rpcEndpointOrigin);
+    originWeb3 = shared.origin.web3;
     accountsOrigin = await originWeb3.eth.getAccounts();
     [deployerAddress, beneficiary] = accountsOrigin;
     // Deployer while deploying MockToken gets MAX ValueTokens.
@@ -70,16 +43,16 @@ describe('RejectStakeRequest', async () => {
     owner = deployerAddress;
   });
 
-  after(() => {
-    dockerTeardown();
-  });
-
   it('Deploys Organization contract', async () => {
     // Create worker address in wallet in order to sign EIP 712 hash
     //    and fund in order to execute rejectStakeRequest
     await originWeb3.eth.accounts.wallet.create(1);
     worker = originWeb3.eth.accounts.wallet[0].address;
-    await originWeb3.eth.sendTransaction({ from: accountsOrigin[2], to: worker, value: originWeb3.utils.toWei('1') });
+    await originWeb3.eth.sendTransaction({
+      from: accountsOrigin[1],
+      to: worker,
+      value: originWeb3.utils.toWei('1'),
+    });
 
     const { Organization } = Mosaic.ContractInteract;
     const orgConfig = {
@@ -162,7 +135,6 @@ describe('RejectStakeRequest', async () => {
   });
 
   it('Performs staker.requestStake', async () => {
-    mockTokenAbi = abiBinProvider.getABI('MockToken');
     stakeHelperInstance = new StakeHelper(originWeb3, btAddress, gatewayComposerAddress);
 
     txOptions = {
@@ -177,12 +149,10 @@ describe('RejectStakeRequest', async () => {
     );
 
 
-    const stakerGatewayNonce = 1;
+    const stakerGatewayNonce = '1';
 
     const stakerInstance = new Staker(originWeb3, caMockToken, btAddress, gatewayComposerAddress);
     await stakerInstance.requestStake(
-      mockTokenAbi,
-      owner,
       config.stakeAmountInWei,
       mintBTAmountInWei,
       caGateway,
