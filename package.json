@@ -25,7 +25,7 @@
   },
   "scripts": {
     "test": "mocha --recursive --timeout 120000 test/unit --exit",
-    "test:integration": "mocha --recursive --timeout 120000 test/integration --exit",
+    "test:integration": "node test/integration/integration_tests.js",
     "pre-commit": "lint-staged"
   },
   "dependencies": {

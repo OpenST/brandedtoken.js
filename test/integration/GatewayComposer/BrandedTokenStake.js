@@ -23,13 +23,13 @@
 // Load external packages
 const BN = require('bn.js');
 const chai = require('chai');
-const Web3 = require('web3');
 const Mosaic = require('@openstfoundation/mosaic.js');
 const Package = require('./../../../index');
 
 const Setup = Package.EconomySetup;
 const { assert } = chai;
 const config = require('./../../utils/configReader');
+const shared = require('../shared');
 
 const { StakeHelper } = Package.Helpers;
 const { Staker, Facilitator } = Package;
@@ -37,7 +37,6 @@ const MockContractsDeployer = require('./../../utils/MockContractsDeployer');
 
 const BTHelper = Package.EconomySetup.BrandedTokenHelper;
 const { GatewayComposerHelper } = Setup;
-const { dockerSetup, dockerTeardown } = require('./../../utils/docker');
 
 let originWeb3;
 let owner;
@@ -59,17 +58,12 @@ let signature;
 describe('Performs BrandedToken staking through GatewayComposer', async () => {
   before(async () => {
     // Set up docker geth instance and retrieve RPC endpoint
-    const { rpcEndpointOrigin } = await dockerSetup();
-    originWeb3 = new Web3(rpcEndpointOrigin);
+    originWeb3 = shared.origin.web3;
     const accountsOrigin = await originWeb3.eth.getAccounts();
     [deployerAddress, facilitator, beneficiary] = accountsOrigin;
     // Deployer while deploying MockToken gets MAX ValueTokens.
     // Since owner is the deployer, owner also gets MAX ValueTokens.
     owner = deployerAddress;
-  });
-
-  after(() => {
-    dockerTeardown();
   });
 
   it('Deploys Organization contract', async () => {
