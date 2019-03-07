@@ -22,7 +22,6 @@
 
 const Mosaic = require('@openstfoundation/mosaic.js');
 
-/* eslint object-shorthand: "off" */
 const AbiBinProvider = require('./lib/AbiBinProvider');
 const BrandedToken = require('./lib/ContractInteract/BrandedToken');
 const Contracts = require('./lib/Contracts');
