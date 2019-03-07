@@ -1,6 +1,6 @@
 {
   "name": "@openstfoundation/brandedtoken.js",
-  "version": "0.10.0-alpha.1",
+  "version": "0.10.0-alpha.2",
   "description": "JS interaction layer to interact with branded tokens and gateway composer contracts.",
   "main": "index.js",
   "repository": {
