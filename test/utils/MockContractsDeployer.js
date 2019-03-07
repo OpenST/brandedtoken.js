@@ -1,7 +1,7 @@
 'use strict';
 
 const path = require('path');
-// __NOT_FOR_WEB__END__
+const fs = require('fs');
 
 const Package = require('../../index');
 
@@ -78,7 +78,41 @@ class MockContractsDeployer {
   }
 
   static abiBinProvider() {
-    return (new AbiBinProvider(mockAbiFolder, mockBinFolder));
+    const abiBinProvider = new AbiBinProvider();
+    MockContractsDeployer.loadContracts(abiBinProvider, mockAbiFolder, mockBinFolder);
+    return abiBinProvider;
+  }
+
+  static loadContracts(provider, abiFolderPath, binFolderPath) {
+    if (!path.isAbsolute(abiFolderPath)) {
+      throw new Error(
+        '"abiFolderPath" is not Absolute. Please provide absolute path.',
+      );
+    }
+    if (!path.isAbsolute(binFolderPath)) {
+      throw new Error(
+        '"binFolderPath" is not Absolute. Please provide absolute path.',
+      );
+    }
+
+    // add all ABIs from abiFolderPath
+    fs.readdirSync(abiFolderPath).forEach((abiFile) => {
+      const contractName = path.basename(abiFile, path.extname(abiFile));
+      const contractAbi = JSON.parse(
+        fs.readFileSync(path.join(abiFolderPath, abiFile)),
+      );
+      provider.addABI(contractName, contractAbi);
+    });
+
+    // add all bins from binFolderPath
+    fs.readdirSync(binFolderPath).forEach((binFile) => {
+      const contractName = path.basename(binFile, path.extname(binFile));
+      const contractBin = fs.readFileSync(
+        path.join(binFolderPath, binFile),
+        'utf8',
+      );
+      provider.addBIN(contractName, contractBin);
+    });
   }
 }
 

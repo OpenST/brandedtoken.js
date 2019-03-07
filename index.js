@@ -27,8 +27,8 @@ module.exports = {
   },
   Helpers: {
     StakeHelper,
-    Staker,
-    Facilitator,
   },
+  Staker,
+  Facilitator,
   Setup,
 };
