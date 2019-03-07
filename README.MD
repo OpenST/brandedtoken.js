@@ -79,7 +79,7 @@ To stake BrandedToken, you will need an EIP20Token for the ValueToken. You can e
  * **Organization Setup**: An Organization contract serves as an on-chain access control mechanism by assigning roles to a set of addresses.
 
 ```js
-const {Setup} = require('@openstfoundation/brandedtoken.js');
+const {Setup, ContractInteract} = require('@openstfoundation/brandedtoken.js');
 
 const organizationConfig = {
   deployer: deployerAddress,
@@ -243,116 +243,76 @@ Setup.utilitybrandedtoken(
 Gateway composer is a contract that optimizes the transactions required to perform the stake and mint process. This contract is deployed on the value chain.
 
 ```js
-const gatewayComposerConfig = {
-    deployer: deployerAddress,
-    owner: staker,
-    valueToken: eip20Token,
-    brandedToken: brandedTokenAddress
-};
-deployParams = {
-  gas: '7500000',
-  gasPrice: '0x3B9ACA00'
-};
-const gatewayComposerHelper = new Setup.GatewayComposerHelper(web3Provider);
 let gatewayComposerAddress;
-gatewayComposerHelper.setup(gatewayComposerConfig, deployParams).then(function(){
-    gatewayComposerAddress = gatewayComposerHelper.address;
-});
 
-```
-
-### Deploy Gateway contract
-Gateway contract facilitates the transposition of the BrandedToken from the value chain to the sidechain. The contract is deployed on the value chain.
-You can either use an existing EIP20Token contract or deploy a new one.
-
-## BrandedToken Staking through GatewayComposer
-
-### Approve GatewayComposer for ValueToken and call requestStake
-
-Please make sure staker has sufficient stake amount before calling this step.
-
-```js
-const StakeHelper = BrandedToken.Helpers.StakeHelper;
-const stakeHelperInstance = new StakeHelper(web3Provider, brandedTokenAddress, gatewayComposerAddress);
-let txOptions = {
-  from: staker,
-  gas: '7500000',
-};
-const stakeAmountInWei = '10000000000';
-
-// stakerGatewayNonce is the nonce of the staker address stored in Gateway contract. Alternatively it can also be fetched from Gateway.getNonce(stakeAddress) method.
-const stakerGatewayNonce = 1;
-let mintBTAmountInWei;
-stakeHelperInstance.convertToBTToken(stakeAmountInWei, brandedTokenAddress, web3Provider, txOptions).then(function(mintAmount){
-    mintBTAmountInWei = mintAmount;
-});
-const stakerInstance = new Staker(web3Provider, eip20Token, brandedTokenAddress, gatewayComposerAddress);
-const stakeGasPrice = '0x3B9ACA00';
-const stakeGasLimit = '7500000';
-const beneficiary = '0xaabb1122....................';
-const eip20TokenAbi = ''; // Add JSON parsed eip20Token ABI here
-stakerInstance.requestStake(
-    eip20TokenAbi,
-    staker,
-    stakeAmountInWei,
-    mintBTAmountInWei,
-    gatewayAddress,
-    stakeGasPrice,
-    stakeGasLimit,
-    beneficiary,
-    stakerGatewayNonce,
-    txOptions
-).then(function(){
-    console.log("Successfully completed requestStake!");
-})
-
-
-```           
-
-### Facilitator collects worker signature
-
-The facilitator is a service that facilitates progress of the stake and mint.
-You must have access to the private key to sign with the worker account. Please see web3 documentation for signing with accounts.
-
-```js
-// StakeRequest nonce stored in BrandedToken contract.
-let stakeRequestNonce = 0;
-// 1. Create TypedData
-const stakeRequestTypedData = stakeHelperInstance.getStakeRequestTypedData(stakeAmountInWei, stakeRequestNonce);
-
-// 2. Generate EIP712 signature object.
-// Worker account is unlocked which means access to the private key.
-const signature = workerAccount.signEIP712TypedData(stakeRequestTypedData);
-```
-
-### Facilitator calls acceptStakeRequest
-
-```js
-const hashLockInstance = Mosaic.Utils.createSecretHashLock();
-const gatewayContractInstance = new Mosaic.ContractInteract.EIP20Gateway(web3Provider, gatewayAddress);
-let bountyAmountInWei;
-gatewayContractInstance.getBounty().then(function(result){
-  bountyAmountInWei = result;
-});
-const Facilitator = BrandedToken.Helpers.Facilitator;
-const facilitatorInstance = new Facilitator(web3Provider, eip20Token, brandedTokenAddress, gatewayComposerAddress, facilitator);
 txOptions = {
-  from: facilitator,
-  gas: '7500000'
-};    
-let stakeRequestHash; // stakeRequestHash unique per stake request stored in GatewayComposer.stakeRequests mapping
-facilitatorInstance.acceptStakeRequest(
-  stakeRequestHash,
-  signature,
-  bountyAmountInWei,
-  eip20TokenAbi,
-  hashLockInstance.hashLock,
-  web3Provider,
-  txOptions
-).then(function(){
-  console.log("Successfully completed acceptStakeRequest!");
-})
+  gasPrice: '0x3B9ACA00',
+  from: originDeployer,
+};
+
+ContractInteract.GatewayComposer.deploy(originWeb3, stakerAddress ,eip20Token, brandedTokenAddress, txOptions).then((instance) => {
+   gatewayComposerAddress = instance.address;
+});
+
 ```
+
+## BrandedToken Stake and Mint
+
+```js
+const staker = new Staker(
+      originWeb3,
+      eip20Token, // Value token
+      brandedTokenAddress,
+      gatewayComposerAddress,
+);
+
+txOptions = {
+  from: stakerAddress,
+  gasPrice : '0x3B9ACA00',
+};
+
+const stakeVTAmountInWei = '100'; // Stake amount in wei
+const mintBTAmountInWei = '100'; // Mint amount in wei, you can get this value for Branded Token contract interact.
+const gasPrice = '100'; 
+const gasLimit = '100';
+const beneficiary = '0x123abcd................'; // Address of auxiliary chain.
+const stakerGatewayNonce = '1'; // You can get this value from EIP20Gateway contract interact.
+
+const requestStakeReceipt;
+
+staker.requestStake(
+      stakeVTAmountInWei,
+      mintBTAmountInWei,
+      gatewayAddress,
+      gasPrice,
+      gasLimit,
+      beneficiary,
+      stakerGatewayNonce,
+      txOptions,
+).then( (receipt) => {
+   requestStakeReceipt = receipt;
+});
+
+const facilitator = new Facilitator(
+      originWeb3,
+      eip20Token,
+      brandedTokenAddress,
+      gatewayComposerAddress,
+);
+
+const facilitatorReceipt;
+
+facilitator.acceptStakeRequest(
+      stakeRequestHash, // You can get this hash from event in request stake receipt.
+      signature, // This is signature of the worker key.
+      bountyInWei, // Use EIP20Gateway interact to get bounty.
+      hashLock,   
+      txOptions,
+    ).then( (receipt) => {
+      facilitatorReceipt = receipt;
+    });
+```
+Now you can use mosaic facilitator to progress stake and mint. Refer [this](https://github.com/OpenSTFoundation/mosaic.js#facilitator).
 
 ## ABI and BIN provider
 
