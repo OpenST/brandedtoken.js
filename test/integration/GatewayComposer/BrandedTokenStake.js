@@ -32,8 +32,7 @@ const { assert } = chai;
 const config = require('./../../utils/configReader');
 
 const { StakeHelper } = Package.Helpers;
-const { Staker } = Package.Helpers;
-const { Facilitator } = Package.Helpers;
+const { Staker, Facilitator } = Package;
 const MockContractsDeployer = require('./../../utils/MockContractsDeployer');
 
 const BTHelper = Package.EconomySetup.BrandedTokenHelper;

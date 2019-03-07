@@ -32,7 +32,8 @@ const { dockerSetup, dockerTeardown } = require('../../utils/docker');
 const config = require('../../utils/configReader');
 
 const { GatewayComposerHelper } = Package.EconomySetup;
-const { Staker, StakeHelper } = Package.Helpers;
+const { StakeHelper } = Package.Helpers;
+const { Staker } = Package;
 const BTHelper = Package.EconomySetup.BrandedTokenHelper;
 const { Contracts } = Package;
 
