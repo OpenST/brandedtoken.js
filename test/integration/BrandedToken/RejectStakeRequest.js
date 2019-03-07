@@ -3,13 +3,12 @@
 // Load external packages
 const BN = require('bn.js');
 const { assert } = require('chai');
-const Web3 = require('web3');
 const Mosaic = require('@openstfoundation/mosaic.js');
 
 const Package = require('../../../index');
 const MockContractsDeployer = require('../../utils/MockContractsDeployer');
-const { dockerSetup, dockerTeardown } = require('../../utils/docker');
 const config = require('../../utils/configReader');
+const shared = require('../shared');
 
 const { GatewayComposerHelper } = Package.EconomySetup;
 const { Staker, StakeHelper } = Package.Helpers;
@@ -35,8 +34,7 @@ let accountsOrigin;
 describe('RejectStakeRequest', async () => {
   before(async () => {
     // Set up docker geth instance and retrieve RPC endpoint
-    const { rpcEndpointOrigin } = await dockerSetup();
-    originWeb3 = new Web3(rpcEndpointOrigin);
+    originWeb3 = shared.origin.web3;
     accountsOrigin = await originWeb3.eth.getAccounts();
     [deployerAddress, beneficiary] = accountsOrigin;
     // Deployer while deploying MockToken gets MAX ValueTokens.
@@ -44,16 +42,16 @@ describe('RejectStakeRequest', async () => {
     owner = deployerAddress;
   });
 
-  after(() => {
-    dockerTeardown();
-  });
-
   it('Deploys Organization contract', async () => {
     // Create worker address in wallet in order to sign EIP 712 hash
     //    and fund in order to execute rejectStakeRequest
     await originWeb3.eth.accounts.wallet.create(1);
     worker = originWeb3.eth.accounts.wallet[0].address;
-    await originWeb3.eth.sendTransaction({ from: accountsOrigin[2], to: worker, value: originWeb3.utils.toWei('1') });
+    await originWeb3.eth.sendTransaction({
+      from: accountsOrigin[1],
+      to: worker,
+      value: originWeb3.utils.toWei('1'),
+    });
 
     const { Organization } = Mosaic.ContractInteract;
     const orgConfig = {
