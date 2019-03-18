@@ -9,7 +9,7 @@ const Spy = require('../../utils/Spy');
 const Utils = require('../../../utils/Utils');
 const AssertAsync = require('../../utils/AssertAsync');
 
-describe('UtilityToken.registerInternalActor()', () => {
+describe('UtilityToken.registerInternalActors()', () => {
   let web3;
   let utilityTokenAddress;
   let utilityToken;
@@ -25,7 +25,7 @@ describe('UtilityToken.registerInternalActor()', () => {
 
     const rawTx = sinon.replace(
       utilityToken,
-      'registerInternalActorRawTx',
+      'registerInternalActorsRawTx',
       sinon.fake.resolves(mockRawTx),
     );
 
@@ -38,7 +38,7 @@ describe('UtilityToken.registerInternalActor()', () => {
       from: '0x0000000000000000000000000000000000000003',
     };
     const addresses = ['0x0000000000000000000000000000000000000002', '0x0000000000000000000000000000000000000005'];
-    const response = await utilityToken.registerInternalActor(
+    const response = await utilityToken.registerInternalActors(
       addresses,
       txOptions,
     );
@@ -57,7 +57,7 @@ describe('UtilityToken.registerInternalActor()', () => {
     const txOptions = undefined;
 
     await AssertAsync.reject(
-      utilityToken.registerInternalActor(addresses, txOptions),
+      utilityToken.registerInternalActors(addresses, txOptions),
       'Invalid transaction options: undefined.',
     );
   });
@@ -66,7 +66,7 @@ describe('UtilityToken.registerInternalActor()', () => {
     const addresses = ['0x0000000000000000000000000000000000000002', '0x0000000000000000000000000000000000000005'];
     const txOptions = {};
     await AssertAsync.reject(
-      utilityToken.registerInternalActor(addresses, txOptions),
+      utilityToken.registerInternalActors(addresses, txOptions),
       `Invalid from address ${txOptions.from} in transaction options.`,
     );
   });
@@ -77,7 +77,7 @@ describe('UtilityToken.registerInternalActor()', () => {
       from: '0x123',
     };
     await AssertAsync.reject(
-      utilityToken.registerInternalActor(addresses, txOptions),
+      utilityToken.registerInternalActors(addresses, txOptions),
       `Invalid from address ${txOptions.from} in transaction options.`,
     );
   });
