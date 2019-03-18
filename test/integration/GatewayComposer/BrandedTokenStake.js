@@ -3,7 +3,7 @@
 // Load external packages
 const BN = require('bn.js');
 const chai = require('chai');
-const Mosaic = require('@openstfoundation/mosaic.js');
+const Mosaic = require('@openst/mosaic.js');
 const Package = require('./../../../index');
 
 const Setup = Package.EconomySetup;
