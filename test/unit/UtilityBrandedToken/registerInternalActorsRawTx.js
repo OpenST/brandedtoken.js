@@ -8,7 +8,7 @@ const UtilityToken = require('../../../lib/ContractInteract/UtilityBrandedToken'
 const Spy = require('../../utils/Spy');
 const AssertAsync = require('../../utils/AssertAsync');
 
-describe('UtilityToken.registerInternalActorRawTx()', () => {
+describe('UtilityToken.registerInternalActorsRawTx()', () => {
   let web3;
   let utilityTokenAddress;
   let utilityToken;
@@ -24,12 +24,12 @@ describe('UtilityToken.registerInternalActorRawTx()', () => {
 
     const spyContractMethod = sinon.replace(
       utilityToken.contract.methods,
-      'registerInternalActor',
+      'registerInternalActors',
       sinon.fake.returns(mockRawTx),
     );
 
     const addresses = ['0x0000000000000000000000000000000000000002', '0x0000000000000000000000000000000000000005'];
-    const response = await utilityToken.registerInternalActorRawTx(
+    const response = await utilityToken.registerInternalActorsRawTx(
       addresses,
     );
     assert.strictEqual(
@@ -45,7 +45,7 @@ describe('UtilityToken.registerInternalActorRawTx()', () => {
   it('should fail if addresses is not defined', async () => {
     const addresses = undefined;
     await AssertAsync.reject(
-      utilityToken.registerInternalActorRawTx(addresses),
+      utilityToken.registerInternalActorsRawTx(addresses),
       `At least one addresses must be defined : ${addresses}`,
     );
   });
@@ -53,7 +53,7 @@ describe('UtilityToken.registerInternalActorRawTx()', () => {
   it('should fail if addresses length is zero', async () => {
     const addresses = [];
     await AssertAsync.reject(
-      utilityToken.registerInternalActorRawTx(addresses),
+      utilityToken.registerInternalActorsRawTx(addresses),
       `At least one addresses must be defined : ${addresses}`,
     );
   });

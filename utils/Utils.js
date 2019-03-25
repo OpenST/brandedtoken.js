@@ -30,18 +30,18 @@ class Utils {
 
   /**
    * Prints a deprecation warning for deprecated Economy setup methods.
-   * See {@link 'https://github.com/OpenSTFoundation/brandedtoken.js#economy-setup'.
+   * See {@link 'https://github.com/OpenST/brandedtoken.js#economy-setup'.
    *
    * @param {string} object Identifier of the chain setup related object that has been deprecated.
    */
   static deprecationNoticeEconomySetup(object) {
-    const link = 'https://github.com/OpenSTFoundation/brandedtoken.js#economy-setup';
+    const link = 'https://github.com/OpenST/brandedtoken.js#economy-setup';
     Utils.deprecationNoticeWithLink(object, link);
   }
 
   /**
    * Prints a deprecation warning for deprecated StakeHelper.
-   * See {@link https://github.com/OpenSTFoundation/brandedtoken.js/issues/119}.
+   * See {@link https://github.com/OpenST/brandedtoken.js/issues/119}.
    *
    * @param {string} [method] The method on the StakeHelper that is deprecated.
    */
@@ -78,7 +78,7 @@ class Utils {
    */
   static deprecationNoticeWithIssue(object, issueNumber) {
     console.warn(
-      `⚠️ '${object}' has been deprecated. See https://github.com/OpenSTFoundation/brandedtoken.js/issues/${issueNumber} for migration instructions.`,
+      `⚠️ '${object}' has been deprecated. See https://github.com/OpenST/brandedtoken.js/issues/${issueNumber} for migration instructions.`,
     );
   }
 }

@@ -1,11 +1,11 @@
 BrandedToken.js
 ============
 
-![Build master](https://img.shields.io/travis/OpenSTFoundation/brandedtoken.js/master.svg?label=build%20master&style=flat)
-![Build develop](https://img.shields.io/travis/OpenSTFoundation/brandedtoken.js/develop.svg?label=build%20develop&style=flat)
-![npm version](https://img.shields.io/npm/v/@openstfoundation/brandedtoken.js.svg?style=flat)
+![Build master](https://img.shields.io/travis/OpenST/brandedtoken.js/master.svg?label=build%20master&style=flat)
+![Build develop](https://img.shields.io/travis/OpenST/brandedtoken.js/develop.svg?label=build%20develop&style=flat)
+![npm version](https://img.shields.io/npm/v/@openst/brandedtoken.js.svg?style=flat)
 ![Discuss on Discourse](https://img.shields.io/discourse/https/discuss.openst.org/topics.svg?style=flat)
-![Chat on Gitter](https://img.shields.io/gitter/room/OpenSTFoundation/SimpleToken.svg?style=flat)
+![Chat on Gitter](https://img.shields.io/gitter/room/OpenST/SimpleToken.svg?style=flat)
 
 BrandedToken.js supports interaction with BrandedToken-contracts.
 
@@ -16,7 +16,7 @@ The steps below describe the process of staking an EIP20Token to create a Brande
 This library assumes that nodejs and geth are installed and running. To install BrandedToken.js in your project using npm:
 
 ```bash
-$ npm install @openstfoundation/brandedtoken.js --save
+$ npm install @openst/brandedtoken.js --save
 ```
 
 The code works for Ethereum Byzantium and Petersburg.
@@ -28,7 +28,7 @@ The BrandedToken object is an entry point: using the BrandedToken object, a stak
 
 ```js
 // Creating brandedtoken.js object
-const BrandedToken = require('@openstfoundation/brandedtoken.js');
+const BrandedToken = require('@openst/brandedtoken.js');
 
 ```
 
@@ -79,7 +79,7 @@ To stake BrandedToken, you will need an EIP20Token for the ValueToken. You can e
  * **Organization Setup**: An Organization contract serves as an on-chain access control mechanism by assigning roles to a set of addresses.
 
 ```js
-const {Setup, ContractInteract} = require('@openstfoundation/brandedtoken.js');
+const {Setup, ContractInteract} = require('@openst/brandedtoken.js');
 
 const organizationConfig = {
   deployer: deployerAddress,
@@ -301,7 +301,6 @@ const facilitator = new Facilitator(
 );
 
 const facilitatorReceipt;
-
 facilitator.acceptStakeRequest(
       stakeRequestHash, // You can get this hash from event in request stake receipt.
       signature, // This is signature of the worker key.
@@ -312,7 +311,7 @@ facilitator.acceptStakeRequest(
       facilitatorReceipt = receipt;
     });
 ```
-Now you can use mosaic facilitator to progress stake and mint. Refer [this](https://github.com/OpenSTFoundation/mosaic.js#facilitator).
+Now you can use mosaic facilitator to progress stake and mint. Refer [this](https://github.com/OpenST/mosaic.js#facilitator).
 
 ## ABI and BIN provider
 
@@ -320,9 +319,9 @@ brandedtoken.js comes with an abi-bin provider for managing abi(s) and bin(s).
 
 The abiBinProvider provides abi(s) and bin(s) for the following contracts:
 
-* [BrandedToken](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/BrandedToken.sol) (BrandedToken contract deployed on ValueChain)
-* [UtilityBrandedToken](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/UtilityBrandedToken.sol) (UtilityBrandedToken contract deployed on UtilityChain)
-* [GatewayComposer](https://github.com/OpenSTFoundation/brandedtoken-contracts/blob/0.10.0-alpha.1/contracts/GatewayComposer.sol) (GatewayComposer contract deployed on ValueChain per staker)
+* [BrandedToken](https://github.com/OpenST/brandedtoken-contracts/blob/release-0.10/contracts/BrandedToken.sol) (BrandedToken contract deployed on ValueChain)
+* [UtilityBrandedToken](https://github.com/OpenST/brandedtoken-contracts/blob/release-0.10/contracts/UtilityBrandedToken.sol) (UtilityBrandedToken contract deployed on UtilityChain)
+* [GatewayComposer](https://github.com/OpenST/brandedtoken-contracts/blob/release-0.10/contracts/GatewayComposer.sol) (GatewayComposer contract deployed on ValueChain per staker)
 
 ```js
 
@@ -335,7 +334,7 @@ const brandedTokenAbi = abiBinProvider.getABI('BrandedToken');
 ## Repository set-up and tests
 
 ```bash
-    git clone https://github.com/OpenSTFoundation/brandedtoken.js.git
+    git clone https://github.com/OpenST/brandedtoken.js.git
     cd brandedtoken.js
     npm install
     npm run test
