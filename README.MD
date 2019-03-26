@@ -331,6 +331,13 @@ const brandedTokenAbi = abiBinProvider.getABI('BrandedToken');
 
 ```
 
+## Logger
+
+* By default logs are published on the console.
+* Follow below steps to enable publishing of logs in a file: 
+  * Set environment variable: `ENABLE_BRANDED_TOKEN_JS_LOGGER=true`
+  * Set log file location: `BRANDED_TOKEN_JS_LOGGER_PATH=~`
+
 ## Repository set-up and tests
 
 ```bash
