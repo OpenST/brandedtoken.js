@@ -1,11 +1,11 @@
 {
-  "name": "@openstfoundation/brandedtoken.js",
-  "version": "0.10.0-alpha.1",
+  "name": "@openst/brandedtoken.js",
+  "version": "0.10.0-beta.1",
   "description": "JS interaction layer to interact with branded tokens and gateway composer contracts.",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/OpenSTFoundation/brandedtoken.js.git"
+    "url": "git+https://github.com/OpenST/brandedtoken.js.git"
   },
   "keywords": [
     "OpenST",
@@ -21,15 +21,16 @@
   "author": "OpenST Limited",
   "license": "LGPL-3.0-only",
   "bugs": {
-    "url": "https://github.com/OpenSTFoundation/brandedtoken.js/issues"
+    "url": "https://github.com/OpenST/brandedtoken.js/issues"
   },
   "scripts": {
     "test": "mocha --recursive --timeout 120000 test/unit --exit",
-    "test:integration": "mocha --recursive --timeout 120000 test/integration --exit",
+    "test:integration": "node test/integration/integration_tests.js",
     "pre-commit": "lint-staged"
   },
   "dependencies": {
-    "@openstfoundation/mosaic.js": "0.10.0-beta.2",
+    "@openst/brandedtoken-contracts": "0.10.0-rc.1",
+    "@openst/mosaic.js": "0.10.0-beta.5",
     "winston": "3.2.1"
   },
   "devDependencies": {

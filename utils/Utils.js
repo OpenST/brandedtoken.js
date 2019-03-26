@@ -37,6 +37,60 @@ class Utils {
         });
     });
   }
+
+  /**
+   * Prints a deprecation warning for deprecated Economy setup methods.
+   * See {@link 'https://github.com/OpenST/brandedtoken.js#economy-setup'.
+   *
+   * @param {string} object Identifier of the chain setup related object that has been deprecated.
+   */
+  static deprecationNoticeEconomySetup(object) {
+    const link = 'https://github.com/OpenST/brandedtoken.js#economy-setup';
+    Utils.deprecationNoticeWithLink(object, link);
+  }
+
+  /**
+   * Prints a deprecation warning for deprecated StakeHelper.
+   * See {@link https://github.com/OpenST/brandedtoken.js/issues/119}.
+   *
+   * @param {string} [method] The method on the StakeHelper that is deprecated.
+   */
+  static deprecationNoticeStakeHelper(method) {
+    const issueNumber = '119';
+
+    let object = 'StakeHelper';
+    if (method !== undefined) {
+      object = `${object}::${method}()`;
+    }
+
+    Utils.deprecationNoticeWithIssue(object, issueNumber);
+  }
+
+  /**
+   * Prints a deprecation warning for deprecated code.
+   *
+   * @param {string} object Identifier of what has been deprecated.
+   * @param {string} link Link that has instructions on how to migrate.
+   *
+   */
+  static deprecationNoticeWithLink(object, link) {
+    console.warn(
+      `⚠️ '${object}' has been deprecated. See ${link}`,
+    );
+  }
+
+
+  /**
+   * Prints a deprecation warning for deprecated code.
+   *
+   * @param {string} object Identifier of what has been deprecated.
+   * @param {string} issueNumber Issue number on GitHub that has instructions on how to migrate.
+   */
+  static deprecationNoticeWithIssue(object, issueNumber) {
+    console.warn(
+      `⚠️ '${object}' has been deprecated. See https://github.com/OpenST/brandedtoken.js/issues/${issueNumber} for migration instructions.`,
+    );
+  }
 }
 
 module.exports = Utils;
