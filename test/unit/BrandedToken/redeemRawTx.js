@@ -43,7 +43,7 @@ describe('BrandedToken.redeemRawTx()', () => {
     sinon.restore();
   });
 
-  it('should throw an error when brandedTokens is invalid', async () => {
+  it('should throw an error when brandedTokens are invalid', async () => {
     const brandedTokens = undefined;
     await AssertAsync.reject(
       brandedToken.redeemRawTx(brandedTokens),
