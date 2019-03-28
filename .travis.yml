@@ -1,0 +1,22 @@
+dist: trusty
+language: node_js
+sudo: required
+branches:
+  only:
+  - master
+  - develop
+  - /^release-.*/
+notifications:
+  email:
+    recipients:
+      - ci.report@ost.com
+    on_success: always
+    on_failure: always
+node_js:
+  - "9"
+install:
+  - npm install
+  - npm install -g mocha
+script:
+  - npm run test
+  - npm run test:integration
