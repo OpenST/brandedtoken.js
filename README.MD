@@ -331,6 +331,27 @@ const brandedTokenAbi = abiBinProvider.getABI('BrandedToken');
 
 ```
 
+## Logger
+
+* By default logs are published on the console.
+* Default log level is `info`. Log level can be changed by updating environment variable. 
+
+```bash
+export LOG_LEVEL=error
+```
+logger support `error`, `warn`, `info`, `verbose`, `debug`, and `silly` log levels.
+* Follow below steps to publish logs in a file: 
+  * Enable file logging:
+   
+  ```bash
+  export ENABLE_BRANDED_TOKEN_JS_LOGGER=true
+  ```
+  * Set log file location: 
+  
+  ```
+  export BRANDED_TOKEN_JS_LOGGER_PATH=/path
+  ```
+  Replace `path` with the desired path. 
 ## Repository set-up and tests
 
 ```bash

@@ -8,6 +8,14 @@ You can use brandedtoken.js to interact with BrandedToken contracts.
 
 ### Notable Changes
 
+* Implementation of BrandedToken.redeem interaction layer (#[134](https://github.com/OpenST/brandedtoken.js/pull/134))
+* Merge release-0.10 into develop (#[133](https://github.com/OpenST/brandedtoken.js/pull/133))
+* Updated openstfoundation to openst (#[130](https://github.com/OpenST/brandedtoken.js/pull/130))
+* Rename registerInternalActor to registerInternalActors (#[128](https://github.com/OpenST/brandedtoken.js/pull/128))
+* Release of version 0.10.0-alpha.2 (#[124](https://github.com/OpenST/brandedtoken.js/pull/124))
+* Changelog and readme update (#[123](https://github.com/OpenST/brandedtoken.js/pull/123))
+* Deprecation of StakeHelper and EconomySetup (#[121](https://github.com/OpenST/brandedtoken.js/pull/121))
+* Remove license from top of javascript files (#[118](https://github.com/OpenST/brandedtoken.js/pull/118))
 * ABIs and BINs are now accessed as a dependency on brandedtoken-contracts ([#117](https://github.com/OpenST/brandedtoken.js/pull/117))
 * Mosaic.js version is upgraded to beta-4 (#[115](https://github.com/OpenST/brandedtoken.js/pull/115))
 * Mosaic contract interacts are now exposed ([#114](https://github.com/OpenST/brandedtoken.js/pull/114))

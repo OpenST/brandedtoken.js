@@ -1,5 +1,6 @@
 'use strict';
 
+const logger = require('../logger');
 /**
  * This class includes the functions shared among various classes.
 
@@ -22,9 +23,18 @@ class Utils {
       }
 
       tx.send(txOptions)
+        .on('transactionHash', (transactionHash) => {
+          logger.info(`Transaction Hash : ${transactionHash}`);
+        })
         .on('receipt', receipt => onResolve(receipt))
-        .on('error', error => onReject(error))
-        .catch(exception => onReject(exception));
+        .on('error', (error) => {
+          logger.error(`Error while sending transaction ${error}`);
+          return onReject(error);
+        })
+        .catch((exception) => {
+          logger.error(`Exception while sending transaction ${exception}`);
+          return onReject(exception);
+        });
     });
   }
 
