@@ -1,6 +1,6 @@
 {
   "name": "@openst/brandedtoken.js",
-  "version": "0.10.0-beta.1",
+  "version": "0.10.0",
   "description": "JS interaction layer to interact with branded tokens and gateway composer contracts.",
   "main": "index.js",
   "repository": {
@@ -29,8 +29,8 @@
     "pre-commit": "lint-staged"
   },
   "dependencies": {
-    "@openst/brandedtoken-contracts": "0.10.0-rc.1",
-    "@openst/mosaic.js": "0.10.0-beta.5",
+    "@openst/brandedtoken-contracts": ">=0.10.0 <0.11.0",
+    "@openst/mosaic.js": ">=0.10.0 <0.11.0",
     "winston": "3.2.1"
   },
   "devDependencies": {
