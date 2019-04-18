@@ -1,17 +1,12 @@
-BrandedToken.js
-============
+# BrandedToken.js
 
-![Build master](https://img.shields.io/travis/OpenST/brandedtoken.js/master.svg?label=build%20master&style=flat)
-![Build develop](https://img.shields.io/travis/OpenST/brandedtoken.js/develop.svg?label=build%20develop&style=flat)
-![npm version](https://img.shields.io/npm/v/@openst/brandedtoken.js.svg?style=flat)
-![Discuss on Discourse](https://img.shields.io/discourse/https/discuss.openst.org/topics.svg?style=flat)
-![Chat on Gitter](https://img.shields.io/gitter/room/OpenST/SimpleToken.svg?style=flat)
+![Build master](https://img.shields.io/travis/OpenST/brandedtoken.js/master.svg?label=build%20master&style=flat) ![Build develop](https://img.shields.io/travis/OpenST/brandedtoken.js/develop.svg?label=build%20develop&style=flat) ![npm version](https://img.shields.io/npm/v/@openst/brandedtoken.js.svg?style=flat) ![Discuss on Discourse](https://img.shields.io/discourse/https/discuss.openst.org/topics.svg?style=flat) ![Chat on Gitter](https://img.shields.io/gitter/room/OpenST/SimpleToken.svg?style=flat)
 
 BrandedToken.js supports interaction with BrandedToken-contracts.
 
-The steps below describe the process of staking an EIP20Token to create a BrandedToken on the value chain (assumed to be Ethereum) and minting (creating) a value-backed Utility Branded Token on the sidechain for use in applications.
+The steps below describe the process of staking an EIP20Token to create a BrandedToken on the value chain \(assumed to be Ethereum\) and minting \(creating\) a value-backed Utility Branded Token on the sidechain for use in applications.
 
-##  Setup
+## Setup
 
 This library assumes that nodejs and geth are installed and running. To install BrandedToken.js in your project using npm:
 
@@ -21,15 +16,13 @@ $ npm install @openst/brandedtoken.js --save
 
 The code works for Ethereum Byzantium and Petersburg.
 
-
 ## Creating a BrandedToken object
 
 The BrandedToken object is an entry point: using the BrandedToken object, a staking can be initiated.
 
-```js
+```javascript
 // Creating brandedtoken.js object
 const BrandedToken = require('@openst/brandedtoken.js');
-
 ```
 
 ## Deploying contracts
@@ -38,8 +31,7 @@ const BrandedToken = require('@openst/brandedtoken.js');
 
 Before deploying contracts, please set some constants to funded addresses that you control.
 
-```js
-
+```javascript
 // Initialize web3 object using the geth endpoint
 const Web3 = require('web3');
 const web3Provider = new Web3('http://127.0.0.1:8545');
@@ -67,7 +59,6 @@ const passphrase = 'some passphrase.....'; // Needed for unlocking account.
 // Other constants
 const gasPrice = '0x12A05F200';
 const gas = 7500000;
-
 ```
 
 ### Deploy EIP20Token contract
@@ -76,9 +67,9 @@ To stake BrandedToken, you will need an EIP20Token for the ValueToken. You can e
 
 ### Economy Setup
 
- * **Organization Setup**: An Organization contract serves as an on-chain access control mechanism by assigning roles to a set of addresses.
+* **Organization Setup**: An Organization contract serves as an on-chain access control mechanism by assigning roles to a set of addresses.
 
-```js
+```javascript
 const {Setup, ContractInteract} = require('@openst/brandedtoken.js');
 
 const organizationConfig = {
@@ -101,43 +92,21 @@ Setup.organization(originWeb3, organizationConfig, txOptions).then((instance) =>
   organizationContractInstance = instance;
   organizationAddress = organizationContractInstance.address;
 });
-
-
-```   
+```
 
 * **Branded Token Setup**: BrandedToken is a value-backed EIP20Token with a fixed conversion rate against the ValueToken chosen. This contract is deployed on the value chain.
-```js
 
-const originBTConfig = {
-  valueToken: eip20Token,
-  symbol: 'BT',
-  name: 'Branded Token',
-  decimal: '18',
-  conversionRate: 10,
-  conversionRateDecimals: 5,
-  organizationAddress,
-};
+  \`\`\`js
 
-txOptions = {
-  gasPrice: '0x3B9ACA00',
-  from : deployerAddress,
-  gas: '7500000', // This is an optional parameter, if not passed gas will be estimated.
-};
+const originBTConfig = { valueToken: eip20Token, symbol: 'BT', name: 'Branded Token', decimal: '18', conversionRate: 10, conversionRateDecimals: 5, organizationAddress, };
 
-let brandedTokenAddress;
-let brandedTokenContractInstance;
+txOptions = { gasPrice: '0x3B9ACA00', from : deployerAddress, gas: '7500000', // This is an optional parameter, if not passed gas will be estimated. };
 
-Setup.brandedtoken(
-  originWeb3,
-  originBTConfig,
-  txOptions,
-).then((instance) =>{
-  brandedTokenContractInstance = instance;
-  brandedTokenAddress = brandedTokenContractInstance.address;
-});
+let brandedTokenAddress; let brandedTokenContractInstance;
 
-```  
+Setup.brandedtoken\( originWeb3, originBTConfig, txOptions, \).then\(\(instance\) =&gt;{ brandedTokenContractInstance = instance; brandedTokenAddress = brandedTokenContractInstance.address; }\);
 
+```text
 **Utility Branded Token Setup**:The UtilityBrandedToken(UBT) is a representation of the BrandedToken on a sidechain. Thus, this contract is deployed on a sidechain
 
 ```js
@@ -223,26 +192,26 @@ Setup.utilitybrandedtoken(
   auxiliaryCoGatewayTxOptions,
   auxiliaryUBTSetCoGatewayTxOptions,
 ).then( (contractInstances) => {
-   
+
   {
     auxiliaryOrganization,
     utilityBrandedToken,
     originGateway,
     auxiliaryCoGateway
   } = contractInstances;
-  
+
    auxiliaryOrganizationAddress = auxiliaryOrganization.address;
    utilityBrandedTokenAddress = utilityBrandedToken.address;
    originGatewayAddress = originGateway.address;
    auxiliaryCoGatewayAddress = auxiliaryCoGateway.address;
 });
-
 ```
 
 ### Deploy GatewayComposer contract
+
 Gateway composer is a contract that optimizes the transactions required to perform the stake and mint process. This contract is deployed on the value chain.
 
-```js
+```javascript
 let gatewayComposerAddress;
 
 txOptions = {
@@ -253,12 +222,11 @@ txOptions = {
 ContractInteract.GatewayComposer.deploy(originWeb3, stakerAddress ,eip20Token, brandedTokenAddress, txOptions).then((instance) => {
    gatewayComposerAddress = instance.address;
 });
-
 ```
 
 ## BrandedToken Stake and Mint
 
-```js
+```javascript
 const staker = new Staker(
       originWeb3,
       eip20Token, // Value token
@@ -311,24 +279,23 @@ facilitator.acceptStakeRequest(
       facilitatorReceipt = receipt;
     });
 ```
+
 Now you can use mosaic facilitator to progress stake and mint. Refer [this](https://github.com/OpenST/mosaic.js#facilitator).
 
 ## ABI and BIN provider
 
-brandedtoken.js comes with an abi-bin provider for managing abi(s) and bin(s).
+brandedtoken.js comes with an abi-bin provider for managing abi\(s\) and bin\(s\).
 
-The abiBinProvider provides abi(s) and bin(s) for the following contracts:
+The abiBinProvider provides abi\(s\) and bin\(s\) for the following contracts:
 
-* [BrandedToken](https://github.com/OpenST/brandedtoken-contracts/blob/release-0.10/contracts/BrandedToken.sol) (BrandedToken contract deployed on ValueChain)
-* [UtilityBrandedToken](https://github.com/OpenST/brandedtoken-contracts/blob/release-0.10/contracts/UtilityBrandedToken.sol) (UtilityBrandedToken contract deployed on UtilityChain)
-* [GatewayComposer](https://github.com/OpenST/brandedtoken-contracts/blob/release-0.10/contracts/GatewayComposer.sol) (GatewayComposer contract deployed on ValueChain per staker)
+* [BrandedToken](https://github.com/OpenST/brandedtoken-contracts/blob/release-0.10/contracts/BrandedToken.sol) \(BrandedToken contract deployed on ValueChain\)
+* [UtilityBrandedToken](https://github.com/OpenST/brandedtoken-contracts/blob/release-0.10/contracts/UtilityBrandedToken.sol) \(UtilityBrandedToken contract deployed on UtilityChain\)
+* [GatewayComposer](https://github.com/OpenST/brandedtoken-contracts/blob/release-0.10/contracts/GatewayComposer.sol) \(GatewayComposer contract deployed on ValueChain per staker\)
 
-```js
-
+```javascript
 // Fetching ABI examples.
 let abiBinProvider = new BrandedToken.AbiBinProvider();
 const brandedTokenAbi = abiBinProvider.getABI('BrandedToken');
-
 ```
 
 ## Logger
@@ -339,28 +306,34 @@ const brandedTokenAbi = abiBinProvider.getABI('BrandedToken');
 ```bash
 export LOG_LEVEL=error
 ```
+
 logger support `error`, `warn`, `info`, `verbose`, `debug`, and `silly` log levels.
-* Follow below steps to publish logs in a file: 
+
+* Follow below steps to publish logs in a file:
+
   * Enable file logging:
-   
+
   ```bash
   export ENABLE_BRANDED_TOKEN_JS_LOGGER=true
   ```
+
   * Set log file location: 
-  
-  ```
+
+  ```text
   export BRANDED_TOKEN_JS_LOGGER_PATH=/path
   ```
-  Replace `path` with the desired path. 
-## Repository set-up and tests
+
+  Replace `path` with the desired path.
+
+  **Repository set-up and tests**
 
 ```bash
     git clone https://github.com/OpenST/brandedtoken.js.git
     cd brandedtoken.js
     npm install
     npm run test
-    
+
     # Requires docker:
     npm run test:integration
+```
 
-```      
