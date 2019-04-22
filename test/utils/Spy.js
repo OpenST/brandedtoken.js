@@ -44,7 +44,7 @@ class Spy {
    */
   static assertArguments(actualArguments, expectedArguments) {
     for (let params = 0; params < actualArguments.length; params += 1) {
-      assert.strictEqual(
+      assert.deepEqual(
         actualArguments[params],
         expectedArguments[params],
         `Input param value ${

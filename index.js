@@ -12,6 +12,7 @@ const GatewayComposer = require('./lib/ContractInteract/GatewayComposer');
 const StakeHelper = require('./lib/helpers/stake/gateway_composer/StakeHelper');
 const Staker = require('./lib/Staker');
 const UtilityBrandedToken = require('./lib/ContractInteract/UtilityBrandedToken');
+const Utils = require('./utils/Utils');
 
 const mosaicContractInteracts = Mosaic.ContractInteract;
 
@@ -31,4 +32,7 @@ module.exports = {
   Staker,
   Facilitator,
   Setup,
+  Utils: {
+    getStakeRequestTypedData: Utils.getStakeRequestTypedData,
+  },
 };
